@@ -1,0 +1,11 @@
+module_config {
+    module_library : "/apollo/bazel-bin/modules/tools/scroll_recorder/libscroll_recorder_component.so",
+    timer_components {
+        class_name : "ScrollRecorderComponent"
+        config {
+            name: "scroll_recorder"
+            config_file_path: "/apollo/modules/tools/scroll_recorder/conf/scroll_recorder_conf.pb.txt"
+            interval: 1000
+        }
+    }
+}

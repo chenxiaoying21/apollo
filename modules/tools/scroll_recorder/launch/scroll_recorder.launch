@@ -1,0 +1,7 @@
+<cyber>
+    <module>
+        <name>scroll_recorder</name>
+        <dag_conf>/apollo/modules/tools/scroll_recorder/dag/scroll_recorder.dag</dag_conf>
+        <process_name>scroll_recorder</process_name>
+    </module>
+</cyber>

@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package apollo.scroll_recorder;
+
+enum TopicSpecifiedMode {
+  SPECIFY_INCLUDE_ONLY = 0;
+  SPECIFY_EXCLUDE_ONLY = 1;
+}
+
+message ScrollRecorderConf {
+  optional string bag_directory = 1 [default = "/apollo/data/scroll_bag"];
+  optional TopicSpecifiedMode topic_specified_mode = 2 [default = SPECIFY_INCLUDE_ONLY];
+  // The time length for the recent recorded files in second unit.
+  optional double scroll_time = 3 [default = 600];
+  repeated string topic = 4;
+}

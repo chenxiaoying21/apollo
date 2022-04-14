@@ -14,6 +14,7 @@ cyber_modules {
   key: "Canbus"
   value: {
     dag_files: "/apollo/modules/canbus/dag/canbus.dag"
+    dag_files: "/apollo/modules/tools/scroll_recorder/dag/scroll_recorder.dag"
   }
 }
 cyber_modules {
