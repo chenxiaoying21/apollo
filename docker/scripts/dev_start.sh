@@ -33,7 +33,7 @@ TESTING_VERSION_X86_64="dev-x86_64-18.04-testing-20210112_0008"
 VERSION_AARCH64="dev-aarch64-18.04-20201218_0030"
 USER_VERSION_OPT=
 
-FAST_MODE="y"
+FAST_MODE="n"
 
 GEOLOC=
 
@@ -56,7 +56,14 @@ DEFAULT_PYTHON_TOOLS=(
 # Model
 MODEL_REPOSITORY="https://apollo-pkg-beta.cdn.bcebos.com/perception_model"
 DEFAULT_INSTALL_MODEL=(
+  "${MODEL_REPOSITORY}/tl_detection_caffe.zip"
+  "${MODEL_REPOSITORY}/horizontal_caffe.zip"
+  "${MODEL_REPOSITORY}/quadrate_caffe.zip"
+  "${MODEL_REPOSITORY}/vertical_caffe.zip"
+  "${MODEL_REPOSITORY}/darkSCNN_caffe.zip"
   "${MODEL_REPOSITORY}/cnnseg128_caffe.zip"
+  "${MODEL_REPOSITORY}/3d-r4-half_caffe.zip"
+  "${MODEL_REPOSITORY}/smoke_torch.zip"
 )
 
 # Map
@@ -333,6 +340,10 @@ function install_python_tools() {
   for tool in ${DEFAULT_PYTHON_TOOLS[@]}; do
     info "Install python tool ${tool} ..."
     pip3 install --user "${tool}"
+    if [ $? -ne 0 ]; then
+        error "Failed to install ${tool}"
+        exit 1
+    fi
   done
 }
 
