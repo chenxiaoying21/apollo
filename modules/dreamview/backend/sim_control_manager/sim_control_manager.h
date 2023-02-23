@@ -46,6 +46,7 @@ class SimControlManager {
   bool DeleteDynamicModel(const std::string &dynamic_model_name);
   void ResetDynamicModel();
   void Restart(double x, double y);
+  void Restart();
   void Reset();
 
   virtual ~SimControlManager() { Stop(); }

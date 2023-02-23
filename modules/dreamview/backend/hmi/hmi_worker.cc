@@ -554,33 +554,40 @@ bool HMIWorker::ChangeDrivingMode(const Chassis::DrivingMode mode) {
   return false;
 }
 
-bool HMIWorker::ChangeMap(const std::string &map_name, bool reset_scenario_id) {
+bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynamic_model) {
+  if (status_.current_map() == map_name &&
+    restart_dynamic_model == false) {
+    return true;
+  }
   const std::string *map_dir = FindOrNull(config_.maps(), map_name);
   if (map_dir == nullptr) {
     AERROR << "Unknown map " << map_name;
     return false;
   }
-
-  {
-    // Update current_map status.
-    WLock wlock(status_mutex_);
-    if (status_.current_map() == map_name) {
-      return true;
+	
+  if (map_name != status_.current_map()) {
+    {
+      // Update current_map status.
+      WLock wlock(status_mutex_);
+      status_.set_current_map(map_name);
+      status_changed_ = true;
     }
-    status_.set_current_map(map_name);
-    status_changed_ = true;
+    SetGlobalFlag("map_dir", *map_dir, &FLAGS_map_dir);
+    ResetMode();
   }
 
-  SetGlobalFlag("map_dir", *map_dir, &FLAGS_map_dir);
-  ResetMode();
-
-  if (reset_scenario_id) {
+  // true : restart dynamic model on change map
+  // false : change scenario not restart
+  // 1. 场景切换到空场景
+  // 2. 场景切换到其他地图
+  if (restart_dynamic_model) {
+    callback_api_("RestartDynamicModel", {});
+    // 场景id不为空进行切换地图需要停止sim_obstacle
+    StopModuleByCommand(FLAGS_sim_obstacle_stop_command);
     {
       WLock wlock(status_mutex_);
       status_.set_current_scenario_id("");
       status_changed_ = true;
-      
-      StopModuleByCommand(FLAGS_sim_obstacle_stop_command);
     }
   }
   return true;
