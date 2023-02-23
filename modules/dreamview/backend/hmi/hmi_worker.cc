@@ -554,25 +554,42 @@ bool HMIWorker::ChangeDrivingMode(const Chassis::DrivingMode mode) {
   return false;
 }
 
-bool HMIWorker::ChangeMap(const std::string &map_name) {
+bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynamic_model) {
+  if (status_.current_map() == map_name &&
+    restart_dynamic_model == false) {
+    return true;
+  }
   const std::string *map_dir = FindOrNull(config_.maps(), map_name);
   if (map_dir == nullptr) {
     AERROR << "Unknown map " << map_name;
     return false;
   }
-
-  {
-    // Update current_map status.
-    WLock wlock(status_mutex_);
-    if (status_.current_map() == map_name) {
-      return true;
+	
+  if (map_name != status_.current_map()) {
+    {
+      // Update current_map status.
+      WLock wlock(status_mutex_);
+      status_.set_current_map(map_name);
+      status_changed_ = true;
     }
-    status_.set_current_map(map_name);
-    status_changed_ = true;
+    SetGlobalFlag("map_dir", *map_dir, &FLAGS_map_dir);
+    ResetMode();
   }
 
-  SetGlobalFlag("map_dir", *map_dir, &FLAGS_map_dir);
-  ResetMode();
+  // true : restart dynamic model on change map
+  // false : change scenario not restart
+  // 1. 场景切换到空场景
+  // 2. 场景切换到其他地图
+  if (restart_dynamic_model) {
+    callback_api_("RestartDynamicModel", {});
+    // 场景id不为空进行切换地图需要停止sim_obstacle
+    StopModuleByCommand(FLAGS_sim_obstacle_stop_command);
+    {
+      WLock wlock(status_mutex_);
+      status_.set_current_scenario_id("");
+      status_changed_ = true;
+    }
+  }
   return true;
 }
 
@@ -657,6 +674,14 @@ void HMIWorker::ChangeMode(const std::string &mode_name) {
 
   FuelMonitorManager::Instance()->SetCurrentMode(mode_name);
   KVDB::Put(FLAGS_current_mode_db_key, mode_name);
+
+  // Toggle Mode Set scenario to empty
+  {
+    WLock wlock(status_mutex_);
+    status_.set_current_scenario_id("");
+    status_changed_ = true;
+  }
+  StopModuleByCommand(FLAGS_sim_obstacle_stop_command);
 }
 
 void HMIWorker::StartModule(const std::string &module) const {
@@ -817,6 +842,15 @@ bool HMIWorker::StopModuleByCommand(const std::string &stop_command) const {
 }
 
 bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
+  bool startObstacle = true;
+  std::string cur_scenario_id;
+  if (scenario_id.empty()) {
+    startObstacle = false;
+    cur_scenario_id = status_.current_scenario_id();
+  } else {
+    cur_scenario_id = scenario_id;
+  }
+  
   // Todo: Check sim obstacle status before closing it
   const std::string absolute_path =
       cyber::common::GetEnv("HOME") + FLAGS_sim_obstacle_path;
@@ -833,7 +867,7 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
   std::string scenario_set_path;
   GetScenarioSetPath(scenario_set_id, &scenario_set_path);
   const std::string scenario_path =
-      scenario_set_path + "/scenarios/" + scenario_id + ".json";
+      scenario_set_path + "/scenarios/" + cur_scenario_id + ".json";
   if (!cyber::common::PathExists(scenario_path)) {
     AERROR << "Failed to find scenario!";
     return false;
@@ -850,7 +884,7 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
       return false;
     }
     for (auto &scenario : scenario_set.at(scenario_set_id).scenarios()) {
-      if (scenario.scenario_id() == scenario_id) {
+      if (scenario.scenario_id() == cur_scenario_id) {
         map_name = scenario.map_name();
         x = scenario.start_point().x();
         y = scenario.start_point().y();
@@ -863,8 +897,16 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
     }
     need_to_change_map = (status_.current_map() != map_name);
   }
+  // resetmodule before save open modules
+  std::vector<std::string> modules_open;
+  auto modulesMap = status_.modules();
+  for (auto it = modulesMap.begin(); it != modulesMap.end(); ++it) {
+    if (it->second == true) {
+      modules_open.push_back(it->first);
+    }
+  }
   if (need_to_change_map) {
-    if (!ChangeMap(map_name)) {
+    if (!ChangeMap(map_name, false)) {
       AERROR << "Failed to change map!";
       return false;
     }
@@ -873,21 +915,27 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
     // Change scenario under the same map requires reset mode
     ResetMode();
   }
+  for (const auto& module : modules_open) {
+    StartModule(module);
+  }
   // After changing the map, reset the start point from the scenario by
   // sim_control
   Json info;
   info["x"] = x;
   info["y"] = y;
   callback_api_("SimControlRestart", info);
-  // 启动sim obstacle
-  const std::string start_command = "nohup " + absolute_path + " " +
-                                    scenario_path + FLAGS_gflag_command_arg +
-                                    " &";
-  int ret = std::system(start_command.data());
-  if (ret != 0) {
-    AERROR << "Failed to start sim obstacle";
-    return false;
+  if (startObstacle) {
+    // 启动sim obstacle
+    const std::string start_command = "nohup " + absolute_path + " " +
+                                      scenario_path + FLAGS_gflag_command_arg +
+                                      " &";
+    int ret = std::system(start_command.data());
+    if (ret != 0) {
+      AERROR << "Failed to start sim obstacle";
+      return false;
+    }
   }
+
   return true;
 }
 
@@ -927,12 +975,11 @@ void HMIWorker::ChangeScenario(const std::string &scenario_id) {
   // restart sim obstacle
   // move sim obstacle position for rlock wlock together will result to dead
   // lock
-  if (!scenario_id.empty()) {
-    if (!ResetSimObstacle(scenario_id)) {
-      AERROR << "Cannot start sim obstacle by new scenario!";
-      return;
-    }
+  if (!ResetSimObstacle(scenario_id)) {
+    AERROR << "Cannot start sim obstacle by new scenario!";
+    return;
   }
+
   {
     WLock wlock(status_mutex_);
     status_.set_current_scenario_id(scenario_id);

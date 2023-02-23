@@ -297,10 +297,10 @@ void SimControlWithModelBase::InitStartPoint(nlohmann::json start_point_attr,
   start_heading_ = start_point_attr["start_heading"];
   SimCarStatus point;
   localization_reader_->Observe();
+  start_point_from_localization_ = false;
   if (use_start_point_position) {
     // add start point position for dynamic model
     // new add feature to keep same with simcontrol
-    start_point_from_localization_ = false;
     point.set_x(start_point_attr["x"]);
     point.set_y(start_point_attr["y"]);
     // z use default 0
@@ -312,38 +312,55 @@ void SimControlWithModelBase::InitStartPoint(nlohmann::json start_point_attr,
     // point.set_theta();
     point.set_speed(start_velocity_);
     point.set_acceleration_s(start_acceleration_);
-  } else {
-    if (localization_reader_->Empty()) {
-      // Routing will provide all other pose info
-      start_point_from_localization_ = false;
+  } else 
+  {
+    if (!localization_reader_->Empty()) {
+      const auto& pose = localization_reader_->GetLatestObserved()->pose();
+      if (map_service_->PointIsValid(pose.position().x(), pose.position().y())) {
+        point.set_x(pose.position().x());
+        point.set_y(pose.position().y());
+        point.set_z(pose.position().z());
+        point.set_theta(pose.heading());
+        point.set_speed(
+            std::hypot(pose.linear_velocity().x(), pose.linear_velocity().y()));
+        // Calculates the dot product of acceleration and velocity. The sign
+        // of this projection indicates whether this is acceleration or
+        // deceleration.
+        double projection =
+            pose.linear_acceleration().x() * pose.linear_velocity().x() +
+            pose.linear_acceleration().y() * pose.linear_velocity().y();
+
+        // Calculates the magnitude of the acceleration. Negate the value if
+        // it is indeed a deceleration.
+        double magnitude = std::hypot(pose.linear_acceleration().x(),
+                                      pose.linear_acceleration().y());
+        point.set_acceleration_s(std::signbit(projection) ? -magnitude
+                                                          : magnitude);
+        // Set init gear to neutral position
+        point.set_gear_position(0);
+        start_point_from_localization_ = true;
+      } 
+    } 
+    if (!start_point_from_localization_) {
+      apollo::common::PointENU start_point;
+      if (!map_service_->GetStartPoint(&start_point)) {
+        AWARN << "Failed to get a dummy start point from map!";
+        return;
+      }
+      point.set_x(start_point.x());
+      point.set_y(start_point.y());
+      point.set_z(start_point.z());
+      double theta = 0.0;
+      double s = 0.0;
+      map_service_->GetPoseWithRegardToLane(start_point.x(), start_point.y(),
+                                            &theta, &s);
+      point.set_theta(theta);
       point.set_speed(start_velocity_);
       point.set_acceleration_s(start_acceleration_);
-    } else {
-      start_point_from_localization_ = true;
-      const auto& pose = localization_reader_->GetLatestObserved()->pose();
-
-      point.set_x(pose.position().x());
-      point.set_y(pose.position().y());
-      point.set_z(pose.position().z());
-      point.set_theta(pose.heading());
-      point.set_speed(
-          std::hypot(pose.linear_velocity().x(), pose.linear_velocity().y()));
-      // Calculates the dot product of acceleration and velocity. The sign
-      // of this projection indicates whether this is acceleration or
-      // deceleration.
-      double projection =
-          pose.linear_acceleration().x() * pose.linear_velocity().x() +
-          pose.linear_acceleration().y() * pose.linear_velocity().y();
-
-      // Calculates the magnitude of the acceleration. Negate the value if
-      // it is indeed a deceleration.
-      double magnitude = std::hypot(pose.linear_acceleration().x(),
-                                    pose.linear_acceleration().y());
-      point.set_acceleration_s(std::signbit(projection) ? -magnitude
-                                                        : magnitude);
-      // Set init gear to neutral position
-      point.set_gear_position(0);
+      AINFO << "start point from map default point" 
+              << " x: " << start_point.x() << " y: " << start_point.y();
     }
+    
   }
   SetStartPoint(point);
 }

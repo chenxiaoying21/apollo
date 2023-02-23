@@ -103,6 +103,17 @@ void SimControlManager::Restart(double x, double y) {
   return;
 }
 
+void SimControlManager::Restart() {
+  // reset start point for dynamic model.
+  if (!IsEnabled() || !model_ptr_) {
+    AERROR << "Sim control is invalid,Failed to restart!";
+    return;
+  }
+  model_ptr_->Stop();
+  model_ptr_->Start();
+  return;
+}
+
 void SimControlManager::RunOnce() { model_ptr_->RunOnce(); }
 
 void SimControlManager::Stop() {

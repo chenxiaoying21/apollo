@@ -121,7 +121,7 @@ class HMIWorker {
 
   // Change current mode, launch, map, vehicle and driving mode.
   void ChangeMode(const std::string& mode_name);
-  bool ChangeMap(const std::string& map_name);
+  bool ChangeMap(const std::string& map_name, bool restart_dynamic_model = true);
   void ChangeVehicle(const std::string& vehicle_name);
   void ChangeScenarioSet(const std::string& scenario_set_id);
   void ChangeRecord(const std::string& record_id);
