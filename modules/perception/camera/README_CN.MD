@@ -40,7 +40,7 @@ $$ -->
 
 最终网络结构图如下所示
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/camera_network.png" alt="图片名称" width="60%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/camera_network.png" alt="图片名称" width="60%" />
 </div>
 
 ## 训练
@@ -58,7 +58,7 @@ $$ -->
 
 可视化效果如下图所示：
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/smoke_example.png" alt="图片名称" width="40%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/smoke_example.png" alt="图片名称" width="40%" />
 </div>
 
 同时我们还联合百度PaddlePaddle团队提供了模型的paddle版本训练代码。详细可以参考链接[SMOKE-Paddle](https://github.com/PaddlePaddle/models/tree/develop/PaddleCV/3d_vision/SMOKE).

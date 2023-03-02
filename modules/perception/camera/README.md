@@ -43,7 +43,7 @@ $$ -->
 
 The final network structure is shown below
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/camera_network.png" alt="图片名称" width="60%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/camera_network.png" alt="图片名称" width="60%" />
 </div>
 
 ## Training
@@ -61,7 +61,7 @@ We trained model on the waymo open source dataset. Firstly, we used the conversi
 The visualize on waymo image data as follwos：
 
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/smoke_example.png" alt="图片名称" width="40%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/smoke_example.png" alt="图片名称" width="40%" />
 </div>
 
 At the same time, we provide the paddle-version model code with the training code together with the Baidu PaddlePaddle team. Please refer to the [SMOKE-Paddle](https://github.com/PaddlePaddle/models/tree/develop/PaddleCV/3d_vision/SMOKE) for more details.

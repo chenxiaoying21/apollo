@@ -19,7 +19,7 @@ $$
 
 最终FPN部分的网络结构如下图所示
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/lidar_network.png" alt="图片名称" width="60%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/lidar_network.png" alt="图片名称" width="60%" />
 </div>
 
 ## 结果
@@ -43,7 +43,7 @@ $$
 
 我们将PointPillars和我们模型在KITTI数据集上的检测结果进行了可视化，如下图所示。从图中可以看出我们的模型具有更好的检出效果。可以看到，我们的模型可以召回被截断和阻挡的车辆：
 <div align=center>
-<img src="../../../docs/specs/images/3d_obstacle_perception/lidar_detection_compare.png" alt="图片名称" width="60%" />
+<img src="https://github.com/ApolloAuto/apollo/blob/r6.0.0/docs/specs/images/3d_obstacle_perception/lidar_detection_compare.png" alt="图片名称" width="60%" />
 </div>
 
 
