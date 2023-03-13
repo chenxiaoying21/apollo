@@ -26,6 +26,8 @@ ARCH="$(uname -m)"
 : ${USE_ESD_CAN:=false}
 USE_GPU=-1
 
+ENABLE_PROFILER=true
+
 CMDLINE_OPTIONS=
 SHORTHAND_TARGETS=
 DISABLED_TARGETS=
@@ -226,6 +228,11 @@ function format_bazel_targets() {
 function run_bazel_build() {
   if ${USE_ESD_CAN}; then
     CMDLINE_OPTIONS="${CMDLINE_OPTIONS} --define USE_ESD_CAN=${USE_ESD_CAN}"
+  fi
+
+  # Add profiler
+  if $ENABLE_PROFILER; then
+    CMDLINE_OPTIONS="${CMDLINE_OPTIONS} --define ENABLE_PROFILER=${ENABLE_PROFILER}"
   fi
 
   CMDLINE_OPTIONS="$(echo ${CMDLINE_OPTIONS} | xargs)"
