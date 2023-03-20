@@ -34,6 +34,8 @@ void ModuleArgument::DisplayUsage() {
            "namespace for running this module, default in manager process\n"
         << "    -s, --sched_name=sched_name: sched policy "
            "conf for hole process, sched_name should be conf in cyber.pb.conf\n"
+        << "    --plugin=plugin_description_file_path: the description file of "
+           "plugin"
         << "Example:\n"
         << "    " << binary_name_ << " -h\n"
         << "    " << binary_name_ << " -d dag_conf_file1 -d dag_conf_file2 "
@@ -70,6 +72,7 @@ void ModuleArgument::GetOptions(const int argc, char* const argv[]) {
       {"dag_conf", required_argument, nullptr, 'd'},
       {"process_name", required_argument, nullptr, 'p'},
       {"sched_name", required_argument, nullptr, 's'},
+      {"plugin", required_argument, nullptr, ARGS_OPT_CODE_PLUGIN},
       {NULL, no_argument, nullptr, 0}};
 
   // log command for info
@@ -107,6 +110,9 @@ void ModuleArgument::GetOptions(const int argc, char* const argv[]) {
         break;
       case 's':
         sched_name_ = std::string(optarg);
+        break;
+      case ARGS_OPT_CODE_PLUGIN:
+        plugin_description_list_.emplace_back(std::string(optarg));
         break;
       case 'h':
         DisplayUsage();
