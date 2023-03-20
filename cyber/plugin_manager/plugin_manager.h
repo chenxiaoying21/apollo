@@ -19,9 +19,7 @@
 #include <memory>
 #include <string>
 
-#include "cyber/class_loader/class_loader.h"
 #include "cyber/class_loader/class_loader_manager.h"
-#include "cyber/common/log.h"
 #include "cyber/common/macros.h"
 
 namespace apollo {
@@ -46,7 +44,7 @@ class PluginManager {
    * @param pluin_description_file_path file path
    * @return result of loadding plugin, true for success
    */
-  bool LoadPlugin(const std::string plugin_description_file_path);
+  bool LoadPlugin(const std::string& plugin_description_file_path);
 
   /**
    * @brief create plugin instance of derived class based on `Base`

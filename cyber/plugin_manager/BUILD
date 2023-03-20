@@ -12,7 +12,6 @@ cc_library(
         "plugin_manager.h",
     ],
     deps = [
-        "//cyber/class_loader",
         "//cyber/class_loader:class_loader_manager",
         "//cyber/common",
         "@tinyxml2",

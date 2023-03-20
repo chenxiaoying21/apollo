@@ -17,11 +17,6 @@
 
 #include <tinyxml2.h>
 
-#include <memory>
-#include <string>
-
-#include "cyber/class_loader/class_loader.h"
-#include "cyber/class_loader/class_loader_manager.h"
 #include "cyber/common/log.h"
 
 namespace apollo {
@@ -49,7 +44,8 @@ bool PluginManager::ProcessPluginDescriptionFile(const std::string& file_path) {
   return true;
 }
 
-bool PluginManager::LoadPlugin(const std::string plugin_description_file_path) {
+bool PluginManager::LoadPlugin(
+    const std::string& plugin_description_file_path) {
   return ProcessPluginDescriptionFile(plugin_description_file_path);
 }
 
