@@ -44,6 +44,8 @@ function parse_arguments {
 
 xhost +local:root 1>/dev/null 2>&1
 
+parse_arguments "$@"
+
 docker exec \
     -u "${DOCKER_USER}" \
     -e HISTFILE=/apollo/.dev_bash_hist \
