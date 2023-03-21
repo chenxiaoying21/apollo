@@ -21,7 +21,8 @@ source "${CURR_DIR}/docker_base.sh"
 CACHE_ROOT_DIR="${APOLLO_ROOT_DIR}/.cache"
 
 DOCKER_REPO="apolloauto/apollo"
-DEV_CONTAINER="apollo_dev_${USER}"
+DEV_CONTAINER_PREFIX='apollo_dev_'
+DEV_CONTAINER="${DEV_CONTAINER_PREFIX}${USER}"
 DEV_INSIDE="in-dev-docker"
 
 SUPPORTED_ARCHS=(x86_64 aarch64)
@@ -140,6 +141,30 @@ function parse_arguments() {
 
             -l | --local)
                 USE_LOCAL_IMAGE=1
+                ;;
+
+            --user)
+                export CUSTOM_USER="$1"
+                shift
+                ;;
+
+            --uid)
+                export CUSTOM_UID="$1"
+                shift
+                ;;
+
+            --group)
+                export CUSTOM_GROUP="$1"
+                shift
+                ;;
+            --gid)
+                export CUSTOM_GID="$1"
+                shift
+                ;;
+
+            -n | --name)
+                DEV_CONTAINER="${DEV_CONTAINER_PREFIX}${1}"
+                shift
                 ;;
 
             --shm-size)
@@ -402,16 +427,17 @@ function main() {
 
     local local_host="$(hostname)"
     local display="${DISPLAY:-:0}"
-    local user="${USER}"
-    local uid="$(id -u)"
-    local group="$(id -g -n)"
-    local gid="$(id -g)"
+    local user="${CUSTOM_USER-$USER}"
+    local uid="${CUSTOM_UID-$(id -u)}"
+    local group="${CUSTOM_GROUP-$(id -g -n)}"
+    local gid="${CUSTOM_GID-$(id -g)}"
 
     set -x
 
     ${DOCKER_RUN_CMD} -itd \
         --privileged \
         --name "${DEV_CONTAINER}" \
+        --label "owner=${USER}" \
         -e DISPLAY="${display}" \
         -e DOCKER_USER="${user}" \
         -e USER="${user}" \
