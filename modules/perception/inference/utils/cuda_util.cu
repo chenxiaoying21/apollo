@@ -62,8 +62,8 @@ bool CudaUtil::set_device_id(int device_id) {
 cublasHandle_t &CudaUtil::get_handler() { return get().cublas_handle_; }
 
 CudaUtil::~CudaUtil() {
-  if (get().cublas_handle_) {
-    CUBLAS_CHECK(cublasDestroy(get().cublas_handle_));
+  if (cublas_handle_) {
+    CUBLAS_CHECK(cublasDestroy(cublas_handle_));
   }
 }
 
