@@ -612,7 +612,6 @@ int CameraObstacleDetectionComponent::InitProjectMatrix() {
 }
 
 int CameraObstacleDetectionComponent::InitCameraListeners() {
-  
   const std::string &camera_name = camera_names_[camera_id_];
   const std::string &channel_name = input_camera_channel_names_[camera_id_];
   const std::string &listener_name = camera_name + "_fusion_camera_listener";

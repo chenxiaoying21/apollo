@@ -312,14 +312,16 @@ void SimControlWithModelBase::InitStartPoint(nlohmann::json start_point_attr,
     // point.set_theta();
     point.set_speed(start_velocity_);
     point.set_acceleration_s(start_acceleration_);
-  } else 
-  {
+  } else {
     if (!localization_reader_->Empty()) {
       const auto& pose = localization_reader_->GetLatestObserved()->pose();
-      if (map_service_->PointIsValid(pose.position().x(), pose.position().y())) {
-        point.set_x(pose.position().x());
-        point.set_y(pose.position().y());
-        point.set_z(pose.position().z());
+      auto x = pose.position().x();
+      auto y = pose.position().y();
+      auto z = pose.position().z();
+      if (map_service_->PointIsValid(x, y)) {
+        point.set_x(x);
+        point.set_y(y);
+        point.set_z(z);
         point.set_theta(pose.heading());
         point.set_speed(
             std::hypot(pose.linear_velocity().x(), pose.linear_velocity().y()));
@@ -339,8 +341,8 @@ void SimControlWithModelBase::InitStartPoint(nlohmann::json start_point_attr,
         // Set init gear to neutral position
         point.set_gear_position(0);
         start_point_from_localization_ = true;
-      } 
-    } 
+      }
+    }
     if (!start_point_from_localization_) {
       apollo::common::PointENU start_point;
       if (!map_service_->GetStartPoint(&start_point)) {
@@ -357,10 +359,9 @@ void SimControlWithModelBase::InitStartPoint(nlohmann::json start_point_attr,
       point.set_theta(theta);
       point.set_speed(start_velocity_);
       point.set_acceleration_s(start_acceleration_);
-      AINFO << "start point from map default point" 
+      AINFO << "start point from map default point"
               << " x: " << start_point.x() << " y: " << start_point.y();
     }
-    
   }
   SetStartPoint(point);
 }

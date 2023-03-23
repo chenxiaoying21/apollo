@@ -21,7 +21,6 @@
 TEST(ProfilerTest, single_block) {
   PERF_BLOCK("block")
   for (int i = 0; i < 1000; ++i) {
-    ;
   }
   PERF_BLOCK_END
 }
@@ -29,17 +28,14 @@ TEST(ProfilerTest, single_block) {
 TEST(ProfilerTest, multi_block) {
   PERF_BLOCK("block1")
   for (int i = 0; i < 500; ++i) {
-    ;
   }
   PERF_BLOCK_END
 
   for (int i = 0; i < 500; ++i) {
-    ;
   }
 
   PERF_BLOCK("block2")
   for (int i = 0; i < 500; ++i) {
-    ;
   }
   PERF_BLOCK_END
 }
@@ -47,17 +43,14 @@ TEST(ProfilerTest, multi_block) {
 TEST(ProfilerTest, nested_block) {
   PERF_BLOCK("outer_block")
   for (int i = 0; i < 500; ++i) {
-    ;
   }
 
   PERF_BLOCK("inner_block")
   for (int i = 0; i < 500; ++i) {
-    ;
   }
   PERF_BLOCK_END
 
   for (int i = 0; i < 500; ++i) {
-    ;
   }
   PERF_BLOCK_END
 }
@@ -65,6 +58,5 @@ TEST(ProfilerTest, nested_block) {
 TEST(ProfilerTest, function) {
   PERF_FUNCION()
   for (int i = 0; i < 1000; ++i) {
-    ;
   }
 }

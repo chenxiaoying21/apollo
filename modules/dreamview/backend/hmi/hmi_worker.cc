@@ -554,7 +554,8 @@ bool HMIWorker::ChangeDrivingMode(const Chassis::DrivingMode mode) {
   return false;
 }
 
-bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynamic_model) {
+bool HMIWorker::ChangeMap(const std::string &map_name,
+    const bool restart_dynamic_model) {
   if (status_.current_map() == map_name &&
     restart_dynamic_model == false) {
     return true;
@@ -564,7 +565,7 @@ bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynami
     AERROR << "Unknown map " << map_name;
     return false;
   }
-	
+
   if (map_name != status_.current_map()) {
     {
       // Update current_map status.
@@ -850,7 +851,7 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
   } else {
     cur_scenario_id = scenario_id;
   }
-  
+
   // Todo: Check sim obstacle status before closing it
   const std::string absolute_path =
       cyber::common::GetEnv("HOME") + FLAGS_sim_obstacle_path;
