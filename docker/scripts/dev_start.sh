@@ -48,8 +48,7 @@ USER_SPECIFIED_MAPS=
 MAP_VOLUMES_CONF=
 
 # Install python tools
-PYTHON_INSTALL_PATH="/opt/apollo/python_tools"
-PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[0:2])))')
+source docker/setup_host/host_env.sh
 DEFAULT_PYTHON_TOOLS=(
   amodel
 )
