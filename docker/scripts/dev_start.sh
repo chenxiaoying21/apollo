@@ -375,7 +375,7 @@ function install_perception_models() {
   if [ "$FAST_MODE" == "n" ] || [ "$FAST_MODE" == "no" ]; then
     for model_url in ${DEFAULT_INSTALL_MODEL[@]}; do
         info "Install model ${model_url} ..."
-        amodel install "${model_url}"
+        amodel install "${model_url}" -s
     done
   else
     warning "Skip the model installation, if you need to run the perception module, you can manually install."
