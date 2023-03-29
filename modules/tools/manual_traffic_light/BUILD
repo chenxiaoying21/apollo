@@ -26,6 +26,7 @@ cc_library(
     name = "manual_traffic_light",
     srcs = ["manual_traffic_light.cc"],
     copts = ["-DMODULE_NAME=\\\"manual_traffic_light\\\""],
+    alwayslink = True,
     deps = [
         "//cyber",
         "//modules/common/adapters:adapter_gflags",
