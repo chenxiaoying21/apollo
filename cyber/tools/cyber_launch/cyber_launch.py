@@ -379,13 +379,7 @@ def start(launch_file=''):
               plugin_description = plugin.text.strip()
               if len(plugin_description) > 0:
                 plugin_list.append(plugin_description)
-            if len(plugin_list) == 0:
-              logger.warn('plugin description path is empty')
-              continue
-            else:
-              total_plugin_num += len(plugin_list)
-            print('total_plugin_num:', total_plugin_num)
-            print('plugin_list:', plugin_list)
+            total_plugin_num += len(plugin_list)
 
             if process_name is None:
                 process_name = 'mainboard_default_' + str(os.getpid())
@@ -401,7 +395,7 @@ def start(launch_file=''):
             if str(process_name) not in plugin_dict:
                 plugin_dict[str(process_name)] = plugin_list
             else:
-              plugin_dict[str(process_name)].extend(plugin_list)
+                plugin_dict[str(process_name)].extend(plugin_list)
 
     process_list = []
     root = tree.getroot()
