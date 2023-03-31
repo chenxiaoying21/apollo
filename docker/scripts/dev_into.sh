@@ -42,9 +42,17 @@ function parse_arguments {
     [[ ! -z "${CUSTOM_USER}" ]] && DOCKER_USER="${CUSTOM_USER}"
 }
 
+function restart_stopped_container {
+    if docker ps -f status=exited -f name="${DEV_CONTAINER}" | grep "${DEV_CONTAINER}"; then
+        docker start "${DEV_CONTAINER}"
+    fi
+}
+
 xhost +local:root 1>/dev/null 2>&1
 
 parse_arguments "$@"
+
+restart_stopped_container
 
 docker exec \
     -u "${DOCKER_USER}" \
