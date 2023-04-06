@@ -20,6 +20,7 @@
 #include <string>
 
 #include "cyber/class_loader/class_loader_manager.h"
+#include "cyber/common/log.h"
 #include "cyber/common/macros.h"
 
 namespace apollo {
@@ -47,6 +48,13 @@ class PluginManager {
   bool LoadPlugin(const std::string& plugin_description_file_path);
 
   /**
+   * @brief get singleton instance of PluginManager
+   *
+   * @return instance pointer
+   */
+  static PluginManager* Instance();
+
+  /**
    * @brief create plugin instance of derived class based on `Base`
    *
    * @param derived_class class name of the derived class
@@ -58,12 +66,13 @@ class PluginManager {
  private:
   apollo::cyber::class_loader::ClassLoaderManager class_loader_manager_;
 
-  DECLARE_SINGLETON(PluginManager)
+  static PluginManager* instance_;
 };
 
 template <typename Base>
 std::shared_ptr<Base> PluginManager::CreateInstance(
     const std::string& derived_class) {
+  AINFO << "creating plugin instance of " << derived_class;
   return class_loader_manager_.CreateClassObj<Base>(derived_class);
 }
 

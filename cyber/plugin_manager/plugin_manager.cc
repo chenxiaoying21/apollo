@@ -23,8 +23,6 @@ namespace apollo {
 namespace cyber {
 namespace plugin_manager {
 
-PluginManager::PluginManager() {}
-
 PluginManager::~PluginManager() {}
 
 bool PluginManager::ProcessPluginDescriptionFile(const std::string& file_path) {
@@ -46,8 +44,13 @@ bool PluginManager::ProcessPluginDescriptionFile(const std::string& file_path) {
 
 bool PluginManager::LoadPlugin(
     const std::string& plugin_description_file_path) {
+  AINFO << "loading plugin from " << plugin_description_file_path;
   return ProcessPluginDescriptionFile(plugin_description_file_path);
 }
+
+PluginManager* PluginManager::Instance() { return instance_; }
+
+PluginManager* PluginManager::instance_ = new PluginManager;
 
 }  // namespace plugin_manager
 }  // namespace cyber

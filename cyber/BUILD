@@ -34,6 +34,7 @@ install(
     ],
     deps = [
         "//cyber/mainboard:install",
+        "//cyber/plugin_manager:install",
         "//cyber/proto:cyber_proto_hdrs",
         "//cyber/proto:cyber_proto_so",
         "//cyber/proto:pb_cyber",
