@@ -770,7 +770,7 @@ _install_plugin_rule = rule(
             allow_files = True,
             executable = True,
             cfg = "target",
-            default = Label("//tools/install:install_plugin.py.in"),
+            default = Label("//tools/install:install.py.in"),
         ),
     },
     executable = True,
