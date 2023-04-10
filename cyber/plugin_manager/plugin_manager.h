@@ -20,8 +20,10 @@
 #include <string>
 
 #include "cyber/class_loader/class_loader_manager.h"
+#include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "cyber/common/macros.h"
+#include "cyber/plugin_manager/plugin_description.h"
 
 namespace apollo {
 namespace cyber {
@@ -33,11 +35,13 @@ class PluginManager {
 
   /**
    * @brief parse plugin description file and load the library
+   * TODO(liangjinping): parse description to struct
    *
    * @param file_path the path of plugin description file
    * @return process result, true for success
    */
-  bool ProcessPluginDescriptionFile(const std::string& file_path);
+  bool ProcessPluginDescriptionFile(const std::string& file_path,
+                                    std::string* library_path);
 
   /**
    * @brief load plugin clases from file
@@ -63,8 +67,28 @@ class PluginManager {
   template <typename Base>
   std::shared_ptr<Base> CreateInstance(const std::string& derived_class);
 
+  bool FindPluginIndexAndLoad(const std::string& plugin_index_path,
+                              const bool is_sys);
+
+  /**
+   * @brief load plugins from installed path
+   *
+   * @return result of loadding plugins, true for success
+   */
+  bool LoadInstalledPlugins();
+
+  /**
+   * @bried get plugin description file location that class belongs to
+   * @param class_name derived class name
+   * @return location of plugin description file
+   */
+  template <typename Base>
+  std::string GetPluginClassHomePath(const std::string& class_name);
+
  private:
   apollo::cyber::class_loader::ClassLoaderManager class_loader_manager_;
+  std::map<std::string, std::shared_ptr<PluginDescription>>
+      plugin_description_map_;
 
   static PluginManager* instance_;
 };
@@ -74,6 +98,25 @@ std::shared_ptr<Base> PluginManager::CreateInstance(
     const std::string& derived_class) {
   AINFO << "creating plugin instance of " << derived_class;
   return class_loader_manager_.CreateClassObj<Base>(derived_class);
+}
+
+template <typename Base>
+std::string PluginManager::GetPluginClassHomePath(
+    const std::string& class_name) {
+  std::string library_path =
+      class_loader_manager_.GetClassValidLibrary<Base>(class_name);
+  if (library_path == "") {
+    AWARN << "plugin of class " << class_name << " not found";
+    return ".";
+  }
+  for (auto it = plugin_description_map_.begin();
+       it != plugin_description_map_.end(); ++it) {
+    if (it->second->library_path_ == library_path) {
+      return apollo::cyber::common::GetDirName(it->second->description_path_);
+    }
+  }
+  // not found
+  return ".";
 }
 
 #define CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(name, base) \

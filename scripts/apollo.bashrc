@@ -32,6 +32,9 @@ export APOLLO_IN_DOCKER="${APOLLO_IN_DOCKER}"
 export APOLLO_CACHE_DIR="${APOLLO_ROOT_DIR}/.cache"
 export APOLLO_SYSROOT_DIR="/opt/apollo/sysroot"
 
+# TODO(liangjinping): remove `/packages` suffix
+export APOLLO_DISTRIBUTION_HOME="${APOLLO_DISTRIBUTION_HOME:=/opt/apollo/neo/packages}"
+
 export TAB="    " # 4 spaces
 
 source ${APOLLO_ROOT_DIR}/scripts/common.bashrc

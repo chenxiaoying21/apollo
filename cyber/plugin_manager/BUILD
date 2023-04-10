@@ -15,6 +15,7 @@ install(
 cc_binary(
     name = "libplugin_manager.so",
     srcs = [
+        "plugin_description.h",
         "plugin_manager.cc",
         "plugin_manager.h",
     ],
@@ -33,6 +34,7 @@ cc_library(
         ":libplugin_manager.so",
     ],
     hdrs = [
+        "plugin_description.h",
         "plugin_manager.h",
     ],
     alwayslink = True,

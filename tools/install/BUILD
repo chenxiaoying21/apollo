@@ -6,5 +6,6 @@ exports_files(
     [
         "install.py.in",
         "install_source.py.in",
+        "install_plugin.py.in",
     ],
 )
