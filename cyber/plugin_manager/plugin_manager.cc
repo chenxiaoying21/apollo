@@ -147,8 +147,7 @@ bool PluginManager::FindPluginIndexAndLoad(const std::string& plugin_index_path,
   for (auto plugin_index : plugin_index_list) {
     AINFO << "plugin index found " << plugin_index;
     std::string plugin_description_file_path;
-    std::string plugin_name =
-        apollo::cyber::common::GetFileName(plugin_description_file_path);
+    std::string plugin_name = apollo::cyber::common::GetFileName(plugin_index);
     if (apollo::cyber::common::GetContent(plugin_index,
                                           &plugin_description_file_path)) {
       if (plugin_description_file_path[0] != '/') {
