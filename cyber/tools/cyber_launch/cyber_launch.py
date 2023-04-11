@@ -84,7 +84,6 @@ logger.addHandler(console)
 
 def exit_handler():
     stop()
-    os.chdir(g_pwd)
     logger.info('cyber_launch exit.')
 
 
@@ -372,7 +371,6 @@ def start(launch_file=''):
                 total_dag_num += len(dag_list)
 
             plugin_list = []
-            print('module.findall(plugin)', module.findall('plugin'))
             for plugin in module.findall('plugin'):
               if plugin.text is None:
                 continue
@@ -522,7 +520,6 @@ def main():
         logger.error(
             'Error: environment variable CYBER_PATH not found, set environment first.')
         sys.exit(1)
-    os.chdir(cyber_path)
     parser = argparse.ArgumentParser(description='cyber launcher')
     subparsers = parser.add_subparsers(help='sub-command help')
 

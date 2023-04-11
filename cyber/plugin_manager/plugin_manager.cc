@@ -201,7 +201,7 @@ bool PluginManager::LoadInstalledPlugins() {
   const std::string bazel_bin_path = cwd + "/bazel-bin";
 
   std::vector<std::string> user_plugin_index_path_list;
-  AINFO << "scanning user plugin index path";
+  AINFO << "scanning user plugin index path under " << bazel_bin_path;
   FindPlunginIndexPath(bazel_bin_path, &user_plugin_index_path_list);
   // load user plugin with higher priority
   for (auto dir : user_plugin_index_path_list) {
