@@ -15,6 +15,8 @@ SHORTHAND_TARGETS=
 CMDLINE_OPTIONS=
 INSTALL_OPTIONS=
 USE_GPU=-1
+LEGACY_RELEASE=0
+USER_INPUT_PREFIX=
 
 function _usage() {
     info "Usage: $0 <module>(Can be empty) [Options]"
@@ -23,9 +25,8 @@ function _usage() {
     info "${TAB} -l, --list         Print the list of installed files; don't install anything"
     info "${TAB} -c, --clean        Ensure clean install by removing prefix dir if exist before installing"
     info "${TAB} -r, --resolve      Also resolve APT packages on which this release build depends"
+    info "${TAB} --legacy           Legacy way to release apollo output"
     info "${TAB} -h, --help         Show this message and exit"
-    info "${TAB} --gpu              Running GPU build"
-    info "${TAB} --cpu              Running CPU build"
 }
 
 function _check_arg_for_opt() {
@@ -47,9 +48,13 @@ function parse_cmdline_args() {
             -p | --prefix)
                 _check_arg_for_opt "${opt}" "$1"
                 prefix_dir="$1"; shift
+                USER_INPUT_PREFIX="${prefix_dir}"
                 ;;
             -l | --list)
                 LIST_ONLY=1
+                ;;
+            --legacy)
+                LEGACY_RELEASE=1
                 ;;
             -r | --resolve)
                 RESOLVE_DEPS=1
@@ -61,12 +66,7 @@ function parse_cmdline_args() {
                 _usage
                 exit 0
                 ;;
-            --cpu)
-                USE_GPU=0
-                ;;
-            --gpu)
-                USE_GPU=1
-                ;;
+
             *)
                 remained_args="${remained_args} ${opt}"
                 ;;
@@ -219,12 +219,18 @@ function resolve_directory_path() {
 function run_install() {
     local install_targets
     install_targets="$(determine_release_targets ${SHORTHAND_TARGETS})"
-    bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} ${install_targets} \
-        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
+    if [[ "${LEGACY_RELEASE}" -gt 0 ]]; then
+        bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} ${install_targets} \
+            -- ${install_opts} ${INSTALL_OPTIONS} ${PREFIX_DIR}
+    else
+        bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} ${install_targets} \
+            -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
 
-    # install files copy from source code.
-    bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} //:install_src \
-        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
+        # install files copy from source code.
+        bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} //:install_src \
+            -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
+    fi
+    
 }
 
 function export_python_path() {
@@ -236,6 +242,10 @@ function export_python_path() {
 function main() {
     parse_cmdline_args "$@"
 
+    # force to use gpu build to release package
+    USE_GPU=1
+    determine_cpu_or_gpu_build
+
     local install_opts=
     if [[ "${LIST_ONLY}" -gt 0 ]]; then
         install_opts="${install_opts} --list"
@@ -244,10 +254,13 @@ function main() {
         install_opts="${install_opts} --pre_clean"
     fi
 
-    determine_cpu_or_gpu_build
+    if [[ "${LEGACY_RELEASE}" -gt 0 ]]; then
+        PREFIX_DIR=${prefix_dir:="${PWD}/output"}
+        install_opts="${install_opts} --legacy"
+    fi
 
     run_install
-
+    
     if [[ "${LIST_ONLY}" -gt 0 ]]; then
         return
     fi
@@ -268,8 +281,10 @@ function main() {
 
     export_python_path
 
-    # generate_py_packages
-    # resolve_directory_path
+    if [[ "${LEGACY_RELEASE}" -gt 0 ]]; then 
+        generate_py_packages
+        resolve_directory_path
+    fi
 }
 
 main "$@"

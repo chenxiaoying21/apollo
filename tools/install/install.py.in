@@ -175,6 +175,9 @@ def copy_or_link(src, dst):
 def install(src, dst):
     global subdirs
     dst = rename_package_name(dst)
+    if legacy:
+        if not dst.startswith("lib/"):
+            dst = src 
 
     # Do not install files in ${prefx}/lib dir
     if not install_lib and dst.startswith("lib/"):
@@ -379,6 +382,7 @@ def main(args):
     global strip
     global strip_tool
     global install_lib
+    global legacy
 
     global dbg
     global gpu
@@ -415,6 +419,8 @@ def main(args):
                         help='build with gpu.')
     parser.add_argument('--dev', action='store_true', default=False,
                         help='dev package with headers.')
+    parser.add_argument('--legacy', action='store_true', default=False,
+                        help='legacy way to release output.')
     args = parser.parse_args(args)
 
     color = args.color
@@ -431,6 +437,8 @@ def main(args):
     dbg = args.dbg
     gpu = args.gpu
     dev = args.dev
+
+    legacy = args.legacy
 
     # Transform install prefix if DESTDIR is set.
     # https://www.gnu.org/prep/standards/html_node/DESTDIR.html
