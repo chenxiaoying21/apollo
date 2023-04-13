@@ -20,56 +20,71 @@
 
 #include "modules/planning/scenarios/scenario.h"
 
+#include <cxxabi.h>
+
+#include "cyber/class_loader/class_loader_manager.h"
 #include "cyber/common/file.h"
+#include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/common/frame.h"
+#include "modules/planning/scenarios/stage.h"
 
 namespace apollo {
 namespace planning {
-namespace scenario {
 
-Scenario::Scenario(const ScenarioConfig& config, const ScenarioContext* context,
-                   const std::shared_ptr<DependencyInjector>& injector)
-    : config_(config), scenario_context_(context), injector_(injector) {
-  name_ = ScenarioType_Name(config.scenario_type());
-}
+Scenario::Scenario()
+    : scenario_status_(STATUS_UNKNOWN),
+      current_stage_(nullptr),
+      msg_(""),
+      injector_(nullptr),
+      config_path_(""),
+      config_dir_(""),
+      name_("") {}
 
-bool Scenario::LoadConfig(const std::string& config_file,
-                          ScenarioConfig* config) {
-  return apollo::cyber::common::GetProtoFromFile(config_file, config);
-}
-
-void Scenario::Init() {
-  ACHECK(!config_.stage_type().empty());
-
+bool Scenario::Init(std::shared_ptr<DependencyInjector> injector,
+                    const std::string& name) {
+  name_ = name;
+  injector_ = injector;
   // set scenario_type in PlanningContext
   auto* scenario = injector_->planning_context()
                        ->mutable_planning_status()
                        ->mutable_scenario();
   scenario->Clear();
-  scenario->set_scenario_type(scenario_type());
+  scenario->set_scenario_type(name_);
 
-  for (const auto& stage_config : config_.stage_config()) {
-    stage_config_map_[stage_config.stage_type()] = &stage_config;
+  // Generate the default config path.
+  int status;
+  // Get the name of this class.
+  std::string class_name =
+      abi::__cxa_demangle(typeid(*this).name(), 0, 0, &status);
+  // Generate the default task config path from PluginManager.
+  config_dir_ = apollo::cyber::plugin_manager::PluginManager::Instance()
+                    ->GetPluginClassHomePath<Scenario>(class_name) +
+                "/conf";
+  config_path_ = config_dir_ + "/scenario_conf.pb.txt";
+
+  // Load the pipeline config.
+  std::string pipeline_config_path = config_dir_ + "/pipeline.pb.txt";
+  AINFO << "Load config path:" << pipeline_config_path;
+  // Load the pipeline of scenario.
+  if (!apollo::cyber::common::GetProtoFromFile(pipeline_config_path,
+                                               &scenario_pipeline_config_)) {
+    AERROR << "Load pipeline of " << name_ << " failed!";
+    return false;
   }
-  for (int i = 0; i < config_.stage_type_size(); ++i) {
-    auto stage_type = config_.stage_type(i);
-    ACHECK(common::util::ContainsKey(stage_config_map_, stage_type))
-        << "stage type : " << StageType_Name(stage_type)
-        << " has no config";
+  for (const auto& stage : scenario_pipeline_config_.stage()) {
+    stage_pipeline_map_[stage.name()] = &stage;
   }
-  ADEBUG << "init stage "
-         << StageType_Name(config_.stage_type(0));
-  current_stage_ =
-      CreateStage(*stage_config_map_[config_.stage_type(0)], injector_);
+  return true;
 }
 
 Scenario::ScenarioStatus Scenario::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   if (current_stage_ == nullptr) {
-    AWARN << "Current stage is a null pointer.";
-    return STATUS_UNKNOWN;
+    current_stage_ = CreateStage(
+        *stage_pipeline_map_[scenario_pipeline_config_.stage(0).name()]);
+    AINFO << "Create stage" << current_stage_->Name();
   }
-  if (current_stage_->stage_type() == StageType::NO_STAGE) {
+  if (current_stage_->Name().empty()) {
     scenario_status_ = STATUS_DONE;
     return scenario_status_;
   }
@@ -86,26 +101,25 @@ Scenario::ScenarioStatus Scenario::Process(
     }
     case Stage::FINISHED: {
       auto next_stage = current_stage_->NextStage();
-      if (next_stage != current_stage_->stage_type()) {
+      if (next_stage != current_stage_->Name()) {
         AINFO << "switch stage from " << current_stage_->Name() << " to "
-              << StageType_Name(next_stage);
-        if (next_stage == StageType::NO_STAGE) {
+              << next_stage;
+        if (next_stage.empty()) {
           scenario_status_ = STATUS_DONE;
           return scenario_status_;
         }
-        if (stage_config_map_.find(next_stage) == stage_config_map_.end()) {
+        if (stage_pipeline_map_.find(next_stage) == stage_pipeline_map_.end()) {
           AERROR << "Failed to find config for stage: " << next_stage;
           scenario_status_ = STATUS_UNKNOWN;
           return scenario_status_;
         }
-        current_stage_ = CreateStage(*stage_config_map_[next_stage], injector_);
+        current_stage_ = CreateStage(*stage_pipeline_map_[next_stage]);
         if (current_stage_ == nullptr) {
           AWARN << "Current stage is a null pointer.";
           return STATUS_UNKNOWN;
         }
       }
-      if (current_stage_ != nullptr &&
-          current_stage_->stage_type() != StageType::NO_STAGE) {
+      if (current_stage_ != nullptr && !current_stage_->Name().empty()) {
         scenario_status_ = STATUS_PROCESSING;
       } else {
         scenario_status_ = STATUS_DONE;
@@ -120,8 +134,29 @@ Scenario::ScenarioStatus Scenario::Process(
   return scenario_status_;
 }
 
-const std::string& Scenario::Name() const { return name_; }
+std::shared_ptr<Stage> Scenario::CreateStage(
+    const StagePipeline& stage_pipeline) {
+  auto stage_ptr =
+      apollo::cyber::plugin_manager::PluginManager::Instance()
+          ->CreateInstance<Stage>(
+              ConfigUtil::GetFullPlanningClassName(stage_pipeline.type()));
+  if (nullptr == stage_ptr ||
+      !stage_ptr->Init(stage_pipeline, injector_, config_dir_, GetContext())) {
+    AERROR << "Create stage " << stage_pipeline.name() << " of " << name_
+           << "failed!";
+    return nullptr;
+  }
+  return stage_ptr;
+}
 
-}  // namespace scenario
+const std::string Scenario::GetStage() const {
+  return current_stage_ ? current_stage_->Name() : "";
+}
+
+void Scenario::Reset() {
+  scenario_status_ = ScenarioStatus::STATUS_UNKNOWN;
+  current_stage_ = nullptr;
+}
+
 }  // namespace planning
 }  // namespace apollo

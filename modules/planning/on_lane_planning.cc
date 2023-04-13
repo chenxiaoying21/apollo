@@ -44,7 +44,6 @@
 #include "modules/planning/learning_based/img_feature_renderer/birdview_img_feature_renderer.h"
 #include "modules/planning/planner/rtk/rtk_replay_planner.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
-#include "modules/planning/tasks/task_factory.h"
 #include "modules/planning/traffic_rules/traffic_decider.h"
 
 namespace apollo {
@@ -294,7 +293,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     vehicle_state = AlignTimeStamp(vehicle_state, start_timestamp);
   }
 
-  // Update reference line provider and reset pull over if necessary
+  // Update reference line provider and reset scenario if new routing
   reference_line_provider_->UpdateVehicleState(vehicle_state);
   if (util::IsDifferentRouting(last_routing_, *local_view_.routing)) {
     last_routing_ = *local_view_.routing;
@@ -302,7 +301,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
     reference_line_provider_->UpdateRoutingResponse(*local_view_.routing);
-    planner_->Init(config_);
+    planner_->Reset(frame_.get());
   }
 
   failed_to_update_reference_line =

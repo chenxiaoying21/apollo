@@ -15,7 +15,6 @@ install_files(
     ),
     files = [
         ":st_drivable_boundary_py_pb2",
-        ":planning_stats_py_pb2",
         ":planning_semantic_map_config_py_pb2",
         ":traffic_rule_config_py_pb2",
         ":planning_status_py_pb2",
@@ -26,10 +25,12 @@ install_files(
         ":reference_line_smoother_config_py_pb2",
         ":ipopt_return_status_py_pb2",
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_py_pb2",
-        ":open_space_task_config_py_pb2",
         ":planner_open_space_config_py_pb2",
-        ":task_config_py_pb2",
         ":planning_config_py_pb2",
+        ":scenario_pipeline_py_pb2",
+        ":plugin_declare_info_py_pb2",
+        ":navi_task_config_py_pb2",
+        ":creep_decider_py_pb2",
     ]
 )
 
@@ -41,7 +42,6 @@ install_files(
     ),
     files = [
         ":st_drivable_boundary_cc_proto",
-        ":planning_stats_cc_proto",
         ":planning_semantic_map_config_cc_proto",
         ":traffic_rule_config_cc_proto",
         ":planning_status_cc_proto",
@@ -54,10 +54,12 @@ install_files(
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_cc_proto",
         "//modules/planning/proto/math:cos_theta_smoother_config_cc_proto",
         "//modules/planning/proto/math:qp_problem_cc_proto",
-        ":open_space_task_config_cc_proto",
         ":planner_open_space_config_cc_proto",
-        ":task_config_cc_proto",
         ":planning_config_cc_proto", 
+        ":scenario_pipeline_cc_proto",
+        ":plugin_declare_info_cc_proto",
+        ":navi_task_config_cc_proto",
+        ":creep_decider_cc_proto",
     ]
 )
 
@@ -80,24 +82,6 @@ py_proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "planning_stats_cc_proto",
-    deps = [
-        ":planning_stats_proto",
-    ],
-)
-
-proto_library(
-    name = "planning_stats_proto",
-    srcs = ["planning_stats.proto"],
-)
-
-py_proto_library(
-    name = "planning_stats_py_pb2",
-    deps = [
-        ":planning_stats_proto",
-    ],
-)
 cc_proto_library(
     name = "planning_semantic_map_config_cc_proto",
     deps = [
@@ -149,7 +133,6 @@ proto_library(
         "//modules/common_msgs/basic_msgs:geometry_proto",
         ":planning_config_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
-        "//modules/common_msgs/planning_msgs:scenario_type_proto",
     ],
 )
 
@@ -160,7 +143,6 @@ py_proto_library(
         "//modules/common_msgs/basic_msgs:geometry_py_pb2",
         ":planning_config_py_pb2",
         "//modules/common_msgs/routing_msgs:routing_py_pb2",
-        "//modules/common_msgs/planning_msgs:scenario_type_py_pb2",
     ],
 )
 
@@ -309,30 +291,6 @@ py_proto_library(
 )
 
 cc_proto_library(
-    name = "open_space_task_config_cc_proto",
-    deps = [
-        ":open_space_task_config_proto",
-    ],
-)
-
-proto_library(
-    name = "open_space_task_config_proto",
-    srcs = ["open_space_task_config.proto"],
-    deps = [
-        ":planner_open_space_config_proto",
-    ],
-)
-
-py_proto_library(
-    name = "open_space_task_config_py_pb2",
-    deps = [
-        ":open_space_task_config_proto",
-        ":planner_open_space_config_py_pb2",
-    ],
-)
-
-
-cc_proto_library(
     name = "planner_open_space_config_cc_proto",
     deps = [
         ":planner_open_space_config_proto",
@@ -344,7 +302,6 @@ proto_library(
     srcs = ["planner_open_space_config.proto"],
     deps = [
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_proto",
-        ":task_config_proto",
     ],
 )
 
@@ -353,26 +310,6 @@ py_proto_library(
     deps = [
         ":planner_open_space_config_proto",
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_py_pb2",
-        ":task_config_py_pb2",
-    ],
-)
-
-cc_proto_library(
-    name = "task_config_cc_proto",
-    deps = [
-        ":task_config_proto",
-    ],
-)
-
-proto_library(
-    name = "task_config_proto",
-    srcs = ["task_config.proto"],
-)
-
-py_proto_library(
-    name = "task_config_py_pb2",
-    deps = [
-        ":task_config_proto",
     ],
 )
 
@@ -387,9 +324,8 @@ proto_library(
     name = "planning_config_proto",
     srcs = ["planning_config.proto"],
     deps = [
-        ":open_space_task_config_proto",
-        ":task_config_proto",
-        "//modules/common_msgs/planning_msgs:scenario_type_proto",
+        ":plugin_declare_info_proto",
+        ":navi_task_config_proto",
     ],
 )
 
@@ -397,8 +333,92 @@ py_proto_library(
     name = "planning_config_py_pb2",
     deps = [
         ":planning_config_proto",
-        ":open_space_task_config_py_pb2",
-        ":task_config_py_pb2",
-        "//modules/common_msgs/planning_msgs:scenario_type_py_pb2",
+    ],
+)
+
+cc_proto_library(
+    name = "plugin_declare_info_cc_proto",
+    deps = [
+        ":plugin_declare_info_proto",
+    ],
+)
+
+proto_library(
+    name = "plugin_declare_info_proto",
+    srcs = [":plugin_declare_info.proto"],
+)
+
+py_proto_library(
+    name = "plugin_declare_info_py_pb2",
+    deps = [
+        ":plugin_declare_info_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "scenario_pipeline_cc_proto",
+    deps = [
+        ":scenario_pipeline_proto",
+    ],
+)
+
+proto_library(
+    name = "scenario_pipeline_proto",
+    srcs = ["scenario_pipeline.proto"],
+    deps = [
+        ":plugin_declare_info_proto",
+    ]
+)
+
+py_proto_library(
+    name = "scenario_pipeline_py_pb2",
+    deps = [
+        ":scenario_pipeline_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "navi_task_config_cc_proto",
+    deps = [
+        ":navi_task_config_proto",
+    ],
+)
+
+proto_library(
+    name = "navi_task_config_proto",
+    srcs = ["navi_task_config.proto"],
+)
+
+py_proto_library(
+    name = "navi_task_config_py_pb2",
+    deps = [
+        ":navi_task_config_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "creep_decider_cc_proto",
+    deps = [
+        ":creep_decider_proto",
+    ],
+)
+
+proto_library(
+    name = "creep_decider_proto",
+    srcs = ["creep_decider.proto"],
+    deps = [
+        "//modules/common_msgs/basic_msgs:geometry_proto",
+        ":planning_config_proto",
+        "//modules/common_msgs/routing_msgs:routing_proto",
+    ],
+)
+
+py_proto_library(
+    name = "creep_decider_py_pb2",
+    deps = [
+        ":creep_decider_proto",
+        "//modules/common_msgs/basic_msgs:geometry_py_pb2",
+        ":planning_config_py_pb2",
+        "//modules/common_msgs/routing_msgs:routing_py_pb2",
     ],
 )

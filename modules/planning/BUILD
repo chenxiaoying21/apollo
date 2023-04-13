@@ -80,7 +80,6 @@ cc_library(
         "//modules/planning/planner",
         "//modules/planning/proto:planning_config_cc_proto",
         "//modules/planning/proto:traffic_rule_config_cc_proto",
-        "//modules/planning/tasks:task_factory",
     ],
 )
 
@@ -143,7 +142,6 @@ cc_library(
         "//modules/planning/planner/rtk:rtk_planner",
         "//modules/planning/proto:planning_semantic_map_config_cc_proto",
         "//modules/planning/reference_line:reference_line_provider",
-        "//modules/planning/tasks:task_factory",
         "//modules/planning/traffic_rules:traffic_decider",
         "@com_google_absl//:absl",
         "@com_google_googletest//:gtest_main",
@@ -220,7 +218,6 @@ install_files(
         "//modules/common_msgs/planning_msgs:planning_internal_py_pb2",
         "//modules/common_msgs/planning_msgs:planning_py_pb2",
         "//modules/planning/proto:planning_semantic_map_config_py_pb2",
-        "//modules/planning/proto:planning_stats_py_pb2",
         "//modules/planning/proto:planning_status_py_pb2",
         "//modules/planning/proto:reference_line_smoother_config_py_pb2",
         "//modules/common_msgs/planning_msgs:sl_boundary_py_pb2",
@@ -228,6 +225,7 @@ install_files(
         "//modules/planning/proto:traffic_rule_config_py_pb2",
         "//modules/planning/proto/math:cos_theta_smoother_config_py_pb2",
         "//modules/planning/proto/math:qp_problem_py_pb2",
+        "//modules/planning/proto:creep_decider_py_pb2",
     ],
 )
 
@@ -264,7 +262,6 @@ install(
     data_dest = "planning/include",
     data = [
         "//modules/planning/proto:st_drivable_boundary_py_pb2",
-        "//modules/planning/proto:planning_stats_py_pb2",
         "//modules/planning/proto:planning_semantic_map_config_py_pb2",
         "//modules/planning/proto:traffic_rule_config_py_pb2",
         "//modules/planning/proto:planning_status_py_pb2",
@@ -275,10 +272,12 @@ install(
         "//modules/planning/proto:reference_line_smoother_config_py_pb2",
         "//modules/planning/proto:ipopt_return_status_py_pb2",
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_py_pb2",
-        "//modules/planning/proto:open_space_task_config_py_pb2",
         "//modules/planning/proto:planner_open_space_config_py_pb2",
-        "//modules/planning/proto:task_config_py_pb2",
+        "//modules/planning/proto:navi_task_config_py_pb2",
         "//modules/planning/proto:planning_config_py_pb2",
+        "//modules/planning/proto:scenario_pipeline_py_pb2",
+        "//modules/planning/proto:plugin_declare_info_py_pb2",
+        "//modules/planning/proto:creep_decider_py_pb2",
     ],
 )
 

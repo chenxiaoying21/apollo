@@ -25,21 +25,18 @@
 
 namespace apollo {
 namespace planning {
-namespace scenario {
-namespace lane_follow {
 
-std::unique_ptr<Stage> LaneFollowScenario::CreateStage(
-    const ScenarioConfig::StageConfig& stage_config,
-    const std::shared_ptr<DependencyInjector>& injector) {
-  if (stage_config.stage_type() != StageType::LANE_FOLLOW_DEFAULT_STAGE) {
-    AERROR << "Follow lane does not support stage type: "
-           << StageType_Name(stage_config.stage_type());
-    return nullptr;
+bool LaneFollowScenario::IsTransferable(const Scenario* other_scenario,
+                                        const Frame& frame) {
+  if (other_scenario == nullptr) {
+    return true;
   }
-  return std::unique_ptr<Stage>(new LaneFollowStage(stage_config, injector));
+  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
+      !other_scenario->IsSwitchable()) {
+    return false;
+  }
+  return true;
 }
 
-}  // namespace lane_follow
-}  // namespace scenario
 }  // namespace planning
 }  // namespace apollo

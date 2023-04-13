@@ -28,12 +28,18 @@
 #include <utility>
 #include <vector>
 
+#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+#include "modules/common_msgs/basic_msgs/geometry.pb.h"
+#include "modules/common_msgs/localization_msgs/pose.pb.h"
+#include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
+#include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
+#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/common/math/vec2d.h"
 #include "modules/common/monitor_log/monitor_log_buffer.h"
-#include "modules/common_msgs/basic_msgs/geometry.pb.h"
 #include "modules/common/status/status.h"
-#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
-#include "modules/common_msgs/localization_msgs/pose.pb.h"
 #include "modules/planning/common/ego_info.h"
 #include "modules/planning/common/indexed_queue.h"
 #include "modules/planning/common/local_view.h"
@@ -41,13 +47,7 @@
 #include "modules/planning/common/open_space_info.h"
 #include "modules/planning/common/reference_line_info.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
-#include "modules/common_msgs/planning_msgs/planning.pb.h"
-#include "modules/planning/proto/planning_config.pb.h"
-#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
-#include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
-#include "modules/common_msgs/routing_msgs/routing.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -149,9 +149,7 @@ class Frame {
     return current_frame_planned_path_;
   }
 
-  const bool is_near_destination() const {
-    return is_near_destination_;
-  }
+  const bool is_near_destination() const { return is_near_destination_; }
 
   /**
    * @brief Adjust reference line priority according to actual road conditions
@@ -160,21 +158,13 @@ class Frame {
   void UpdateReferenceLinePriority(
       const std::map<std::string, uint32_t> &id_to_priority);
 
-  const LocalView &local_view() const {
-    return local_view_;
-  }
+  const LocalView &local_view() const { return local_view_; }
 
-  ThreadSafeIndexedObstacles *GetObstacleList() {
-    return &obstacles_;
-  }
+  ThreadSafeIndexedObstacles *GetObstacleList() { return &obstacles_; }
 
-  const OpenSpaceInfo &open_space_info() const {
-    return open_space_info_;
-  }
+  const OpenSpaceInfo &open_space_info() const { return open_space_info_; }
 
-  OpenSpaceInfo *mutable_open_space_info() {
-    return &open_space_info_;
-  }
+  OpenSpaceInfo *mutable_open_space_info() { return &open_space_info_; }
 
   perception::TrafficLight GetSignal(const std::string &traffic_light_id) const;
 

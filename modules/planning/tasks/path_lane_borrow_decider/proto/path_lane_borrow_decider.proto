@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+package apollo.planning;
+
+message PathLaneBorrowDeciderConfig {
+  // The speed threshold for lane-borrow
+  optional double lane_borrow_max_speed = 1 [default = 5.0];
+  // The cycle threshold for long-term blocking obstacle.
+  optional int32 long_term_blocking_obstacle_cycle_threshold = 2 [default = 3];
+}

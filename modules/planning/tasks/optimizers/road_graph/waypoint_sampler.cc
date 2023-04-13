@@ -30,7 +30,7 @@
 #include "modules/planning/common/path/frenet_frame_path.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/tasks/deciders/lane_change_decider/lane_change_decider.h"
+#include "modules/planning/tasks/common/lane_change_util/lane_change_util.h"
 
 namespace apollo {
 namespace planning {
@@ -100,7 +100,7 @@ bool WaypointSampler::SamplePathWaypoints(
 
     double kDefaultUnitL = kChangeLaneDeltaL / (num_sample_per_level - 1);
     if (reference_line_info_->IsChangeLanePath() &&
-        LaneChangeDecider::IsClearToChangeLane(reference_line_info_)) {
+        IsClearToChangeLane(reference_line_info_)) {
       kDefaultUnitL = 1.0;
     }
     const double sample_l_range = kDefaultUnitL * (num_sample_per_level - 1);
@@ -128,7 +128,7 @@ bool WaypointSampler::SamplePathWaypoints(
 
     std::vector<double> sample_l;
     if (reference_line_info_->IsChangeLanePath() &&
-        LaneChangeDecider::IsClearToChangeLane(reference_line_info_)) {
+        IsClearToChangeLane(reference_line_info_)) {
       sample_l.push_back(reference_line_info_->OffsetToOtherReferenceLine());
     } else {
       common::util::uniform_slice(

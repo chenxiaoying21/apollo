@@ -1,0 +1,60 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//tools:cpplint.bzl", "cpplint")
+load("//tools/install:install.bzl", "install", "install_files", "install_plugin", "install_src_files")
+load("//tools:apollo.bzl", "cyber_plugin_description")
+
+package(default_visibility = ["//visibility:public"])
+PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\""]
+
+install(
+    name = "install",
+    data_dest = "planning-task-piecewise-jerk-speed",
+    data = [
+        ":cyberfile.xml",
+        ":planning-task-piecewise-jerk-speed.BUILD",
+    ],
+    deps = [
+        "install_plugin_piecewise_jerk_speed_optimizer",
+    ],
+)
+
+install_plugin(
+    name = "install_plugin_piecewise_jerk_speed_optimizer",
+    data = [
+    ] + glob(["conf/**"]),
+    description = ":plugins.xml",
+    plugin = ":libpiecewise_jerk_speed_optimizer.so",
+)
+
+cyber_plugin_description(
+    name = "plugin_piecewise_jerk_speed_optimizer_description",
+    description = ":plugins.xml",
+    plugin = ":libpiecewise_jerk_speed_optimizer.so",
+)
+
+cc_binary(
+    name = "libpiecewise_jerk_speed_optimizer.so",
+    linkshared = True,
+    linkstatic = True,
+    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    deps = [":piecewise_jerk_speed_optimizer_lib"],
+)
+
+cc_library(
+    name = "piecewise_jerk_speed_optimizer_lib",
+    srcs = ["piecewise_jerk_speed_optimizer.cc"],
+    hdrs = ["piecewise_jerk_speed_optimizer.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//modules/common_msgs/basic_msgs:error_code_cc_proto",
+        "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
+        "//modules/planning/common:speed_profile_generator",
+        "//modules/planning/common:st_graph_data",
+        "//modules/planning/math/piecewise_jerk:piecewise_jerk_speed_problem",
+        "//modules/planning/tasks/optimizers:speed_optimizer",
+        "//modules/planning/tasks/piecewise_jerk_speed/proto:piecewise_jerk_speed_cc_proto",
+    ],
+    alwayslink = True,
+)
+
+cpplint()

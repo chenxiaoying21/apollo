@@ -33,6 +33,7 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap.h"
 #include "modules/map/hdmap/hdmap_common.h"
+#include "modules/planning/common/dependency_injector.h"
 #include "modules/planning/common/ego_info.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/planning_gflags.h"
@@ -65,9 +66,9 @@ constexpr double kStraightForwardLineCost = 10.0;
 }  // namespace
 
 void NaviPlanner::RegisterTasks() {
-  task_factory_.Register(TaskConfig::NAVI_PATH_DECIDER,
+  task_factory_.Register(NAVI_PATH_DECIDER,
                          []() -> NaviTask* { return new NaviPathDecider(); });
-  task_factory_.Register(TaskConfig::NAVI_SPEED_DECIDER,
+  task_factory_.Register(NAVI_SPEED_DECIDER,
                          []() -> NaviTask* { return new NaviSpeedDecider(); });
 }
 
@@ -86,13 +87,13 @@ Status NaviPlanner::Init(const PlanningConfig& config) {
       config.navigation_planning_config().planner_navi_config();
   for (const auto task : planner_conf.task()) {
     tasks_.emplace_back(
-        task_factory_.CreateObject(static_cast<TaskConfig::TaskType>(task)));
+        task_factory_.CreateObject(static_cast<NaviTaskType>(task)));
     AINFO << "Created task:" << tasks_.back()->Name();
   }
   for (auto& task : tasks_) {
     if (!task->Init(config)) {
-      const std::string msg = absl::StrCat(
-          "Init task[", task->Name(), "] failed.");
+      const std::string msg =
+          absl::StrCat("Init task[", task->Name(), "] failed.");
       AERROR << msg;
       return Status(ErrorCode::PLANNING_ERROR, msg);
     }

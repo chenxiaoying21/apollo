@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file decider.cc
  **/
 
 #include "modules/planning/tasks/deciders/decider.h"
@@ -24,12 +24,6 @@
 
 namespace apollo {
 namespace planning {
-
-Decider::Decider(const TaskConfig& config) : Task(config) {}
-
-Decider::Decider(const TaskConfig& config,
-                 const std::shared_ptr<DependencyInjector>& injector)
-    : Task(config, injector) {}
 
 apollo::common::Status Decider::Execute(
     Frame* frame, ReferenceLineInfo* reference_line_info) {

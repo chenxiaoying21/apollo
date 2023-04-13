@@ -25,15 +25,14 @@
 #include <string>
 #include <vector>
 
+#include "modules/planning/proto/scenario_pipeline.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/common/util/factory.h"
 #include "modules/planning/common/frame.h"
-#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/planning/tasks/task.h"
 
 namespace apollo {
 namespace planning {
-namespace scenario {
 
 class Stage {
  public:
@@ -44,14 +43,13 @@ class Stage {
     FINISHED = 4,
   };
 
-  Stage(const ScenarioConfig::StageConfig& config,
-        const std::shared_ptr<DependencyInjector>& injector);
+  Stage();
+
+  virtual bool Init(const StagePipeline& config,
+                    const std::shared_ptr<DependencyInjector>& injector,
+                    const std::string& config_dir, void* context);
 
   virtual ~Stage() = default;
-
-  const ScenarioConfig::StageConfig& config() const { return config_; }
-
-  StageType stage_type() const { return config_.stage_type(); }
 
   /**
    * @brief Each stage does its business logic inside Process function.
@@ -65,7 +63,9 @@ class Stage {
    * @brief The sequence of tasks inside the stage. These tasks usually will be
    * executed in order.
    */
-  const std::vector<Task*>& TaskList() const { return task_list_; }
+  const std::vector<std::shared_ptr<Task>>& TaskList() const {
+    return task_list_;
+  }
 
   const std::string& Name() const;
 
@@ -74,11 +74,9 @@ class Stage {
     return static_cast<T*>(context_);
   }
 
-  void SetContext(void* context) { context_ = context; }
+  Task* FindTask(const std::string& task_type) const;
 
-  Task* FindTask(TaskConfig::TaskType task_type) const;
-
-  StageType NextStage() const { return next_stage_; }
+  const std::string& NextStage() const { return next_stage_; }
 
  protected:
   bool ExecuteTaskOnReferenceLine(
@@ -95,26 +93,16 @@ class Stage {
                        const std::string& name, const double time_diff_ms);
 
  protected:
-  std::map<TaskConfig::TaskType, std::unique_ptr<Task>> tasks_;
-  std::vector<Task*> task_list_;
-  ScenarioConfig::StageConfig config_;
-  StageType next_stage_;
-  void* context_ = nullptr;
-  std::string name_;
+  std::map<std::string, std::shared_ptr<Task>> tasks_;
+  std::vector<std::shared_ptr<Task>> task_list_;
+  std::string next_stage_;
+  void* context_;
   std::shared_ptr<DependencyInjector> injector_;
+  StagePipeline pipeline_config_;
+
+ private:
+  std::string name_;
 };
 
-#define DECLARE_STAGE(NAME, CONTEXT)                          \
-  class NAME : public Stage {                                 \
-   public:                                                    \
-    explicit NAME(const ScenarioConfig::StageConfig& config)  \
-        : Stage(config) {}                                    \
-    Stage::StageStatus Process(                               \
-        const common::TrajectoryPoint& planning_init_point,   \
-        Frame* frame) override;                               \
-    CONTEXT* GetContext() { return GetContextAs<CONTEXT>(); } \
-  }
-
-}  // namespace scenario
 }  // namespace planning
 }  // namespace apollo

@@ -24,19 +24,23 @@
 #include <string>
 #include <unordered_map>
 
+#include "modules/planning/proto/scenario_pipeline.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/common/util/factory.h"
+#include "modules/planning/common/config_util.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/planning_context.h"
-#include "modules/planning/proto/planning_config.pb.h"
-#include "modules/planning/scenarios/stage.h"
-#include "modules/planning/tasks/task.h"
 
 namespace apollo {
 namespace planning {
-namespace scenario {
 
-struct ScenarioContext {};
+struct ScenarioContext {
+ public:
+  ScenarioContext() {}
+};
+
+class Stage;
+class DependencyInjector;
 
 class Scenario {
  public:
@@ -46,17 +50,35 @@ class Scenario {
     STATUS_DONE = 2,
   };
 
-  Scenario(const ScenarioConfig& config, const ScenarioContext* context,
-           const std::shared_ptr<DependencyInjector>& injector);
-
-  static bool LoadConfig(const std::string& config_file,
-                         ScenarioConfig* config);
+  Scenario();
 
   virtual ~Scenario() = default;
 
-  ScenarioType scenario_type() const {
-    return config_.scenario_type();
+  virtual bool Init(std::shared_ptr<DependencyInjector> injector,
+                    const std::string& name);
+
+  /**
+   * @brief Get the scenario context.
+   */
+  virtual ScenarioContext* GetContext() = 0;
+
+  /**
+   * Each scenario should define its own transfer condition, i.e., when it
+   * should allow to transfer from other scenario to itself.
+   */
+  virtual bool IsTransferable(const Scenario* other_scenario,
+                              const Frame& frame) {
+    return false;
   }
+  // The scenario can be interrupted by other scenario
+  virtual bool IsSwitchable() const { return false; }
+
+  virtual ScenarioStatus Process(
+      const common::TrajectoryPoint& planning_init_point, Frame* frame);
+
+  virtual bool Exit(Frame* frame) { return true; }
+
+  virtual bool Enter(Frame* frame) { return true; }
 
   /**
    * Each scenario should define its own stages object's creation
@@ -64,45 +86,41 @@ class Scenario {
    * order, The return value of Stage::Process function determines the
    * transition from one stage to another.
    */
-  virtual std::unique_ptr<Stage> CreateStage(
-      const ScenarioConfig::StageConfig& stage_config,
-      const std::shared_ptr<DependencyInjector>& injector) = 0;
-
-  // Each scenario should define its own transfer condition, i.e., when it
-  // should allow to transfer from other scenario to itself.
-  virtual bool IsTransferable(const Scenario& other_scenario,
-                              const Frame& frame) {
-    return true;
-  }
-
-  virtual ScenarioStatus Process(
-      const common::TrajectoryPoint& planning_init_point, Frame* frame);
+  std::shared_ptr<Stage> CreateStage(const StagePipeline& stage_pipeline);
 
   const ScenarioStatus& GetStatus() const { return scenario_status_; }
 
-  const StageType GetStage() const {
-    return current_stage_ ? current_stage_->stage_type()
-                          : StageType::NO_STAGE;
-  }
+  const std::string GetStage() const;
 
-  virtual void Init();
-
-  const std::string& Name() const;
   const std::string& GetMsg() const { return msg_; }
 
+  const std::string& Name() const { return name_; }
+
+  /**
+   * @brief Reset the scenario, used before entering the scenario.
+   */
+  void Reset();
+
  protected:
-  ScenarioStatus scenario_status_ = STATUS_UNKNOWN;
-  std::unique_ptr<Stage> current_stage_;
-  ScenarioConfig config_;
-  std::unordered_map<StageType,
-                     const ScenarioConfig::StageConfig*, std::hash<int>>
-      stage_config_map_;
-  const ScenarioContext* scenario_context_ = nullptr;
-  std::string name_;
+  template <typename T>
+  bool LoadConfig(T* config);
+
+  ScenarioStatus scenario_status_;
+  std::shared_ptr<Stage> current_stage_;
+  std::unordered_map<std::string, const StagePipeline*> stage_pipeline_map_;
   std::string msg_;  // debug msg
   std::shared_ptr<DependencyInjector> injector_;
+
+  std::string config_path_;
+  std::string config_dir_;
+  std::string name_;
+  ScenarioPipeline scenario_pipeline_config_;
 };
 
-}  // namespace scenario
+template <typename T>
+bool Scenario::LoadConfig(T* config) {
+  return apollo::cyber::common::GetProtoFromFile(config_path_, config);
+}
+
 }  // namespace planning
 }  // namespace apollo

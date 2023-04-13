@@ -1,0 +1,92 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("//tools:cpplint.bzl", "cpplint")
+load("//tools/install:install.bzl", "install", "install_files", "install_plugin", "install_src_files")
+load("//tools:apollo.bzl", "cyber_plugin_description")
+
+package(default_visibility = ["//visibility:public"])
+PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\""]
+FOPENMP_COPTS = ["-fopenmp"]
+
+install(
+    name = "install",
+    data_dest = "planning-task-open-space-trajectory-provider",
+    data = [
+        ":cyberfile.xml",
+        ":planning-task-open-space-trajectory-provider.BUILD",
+    ],
+    deps = [
+        "install_plugin_open_space_trajectory_provider",
+    ],
+)
+
+install_plugin(
+    name = "install_plugin_open_space_trajectory_provider",
+    data = [
+    ] + glob(["conf/**"]),
+    description = ":plugins.xml",
+    plugin = ":libopen_space_trajectory_provider.so",
+)
+
+cyber_plugin_description(
+    name = "plugin_open_space_trajectory_provider_description",
+    description = ":plugins.xml",
+    plugin = ":libopen_space_trajectory_provider.so",
+)
+
+cc_binary(
+    name = "libopen_space_trajectory_provider.so",
+    linkshared = True,
+    linkstatic = True,
+    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    deps = [":open_space_trajectory_provider_lib"],
+)
+
+cc_library(
+    name = "open_space_trajectory_provider_lib",
+    srcs = ["open_space_trajectory_provider.cc"],
+    hdrs = ["open_space_trajectory_provider.h"],
+    copts = [
+        "-DMODULE_NAME=\\\"planning\\\"",
+        "-fopenmp",
+    ],
+    deps = [
+        ":open_space_trajectory_optimizer",
+        "//modules/common/status",
+        "//modules/planning/common:planning_common",
+        "//modules/planning/common:planning_gflags",
+        "//modules/planning/common:trajectory_stitcher",
+        "//modules/planning/common/trajectory:discretized_trajectory",
+        "//modules/planning/tasks:task",
+        "//modules/planning/tasks/optimizers:trajectory_optimizer",
+        "//modules/planning/tasks/open_space_trajectory_provider/proto:open_space_trajectory_provider_cc_proto",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "open_space_trajectory_optimizer",
+    srcs = ["open_space_trajectory_optimizer.cc"],
+    hdrs = ["open_space_trajectory_optimizer.h"],
+    copts = [
+        "-DMODULE_NAME=\\\"planning\\\"",
+        "-fopenmp",
+    ],
+    deps = [
+        "//cyber",
+        "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
+        "//modules/common/status",
+        "//modules/common/util",
+        "//modules/common/vehicle_state:vehicle_state_provider",
+        "//modules/planning/common:frame",
+        "//modules/planning/open_space/coarse_trajectory_generator:hybrid_a_star",
+        "//modules/planning/open_space/trajectory_smoother:distance_approach_problem",
+        "//modules/planning/open_space/trajectory_smoother:dual_variable_warm_start_problem",
+        "//modules/planning/open_space/trajectory_smoother:iterative_anchoring_smoother",
+        "//modules/planning/tasks/open_space_trajectory_provider/proto:open_space_trajectory_provider_cc_proto",
+        "@com_github_gflags_gflags//:gflags",
+        "@eigen",
+    ],
+)
+
+
+cpplint()

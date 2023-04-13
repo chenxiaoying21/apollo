@@ -32,9 +32,6 @@ namespace planning {
 
 class TrajectoryOptimizer : public Task {
  public:
-  explicit TrajectoryOptimizer(const TaskConfig &config);
-  TrajectoryOptimizer(const TaskConfig &config,
-                      const std::shared_ptr<DependencyInjector> &injector);
   virtual ~TrajectoryOptimizer() = default;
 
   apollo::common::Status Execute(Frame *frame) override;

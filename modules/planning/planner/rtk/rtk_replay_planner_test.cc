@@ -21,6 +21,7 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/common/configs/config_gflags.h"
 #include "modules/planning/common/planning_gflags.h"
+#include "modules/planning/common/dependency_injector.h"
 
 using apollo::common::TrajectoryPoint;
 

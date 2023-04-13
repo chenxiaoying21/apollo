@@ -36,6 +36,7 @@ cc_test(
         "//cyber",
         "//modules/common/util",
         "@com_google_googletest//:gtest_main",
+        "//modules/planning/common:dependency_injector",
     ],
     linkstatic = True,
 )

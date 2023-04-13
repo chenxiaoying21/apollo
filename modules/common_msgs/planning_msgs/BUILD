@@ -85,7 +85,6 @@ proto_library(
         "//modules/common_msgs/perception_msgs:traffic_light_detection_proto",
         ":decision_proto",
         ":navigation_proto",
-        ":scenario_type_proto",
         ":sl_boundary_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
     ],
@@ -104,7 +103,6 @@ py_proto_library(
         "//modules/common_msgs/perception_msgs:traffic_light_detection_py_pb2",
         ":decision_py_pb2",
         ":navigation_py_pb2",
-        ":scenario_type_py_pb2",
         ":sl_boundary_py_pb2",
         "//modules/common_msgs/routing_msgs:routing_py_pb2",
     ],
@@ -141,24 +139,6 @@ py_proto_library(
     ],
 )
 
-cc_proto_library(
-    name = "scenario_type_cc_proto",
-    deps = [
-        ":scenario_type_proto",
-    ],
-)
-
-proto_library(
-    name = "scenario_type_proto",
-    srcs = ["scenario_type.proto"],
-)
-
-py_proto_library(
-    name = "scenario_type_py_pb2",
-    deps = [
-        ":scenario_type_proto",
-    ],
-)
 cc_proto_library(
     name = "pad_msg_cc_proto",
     deps = [

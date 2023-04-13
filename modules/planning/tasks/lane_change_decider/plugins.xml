@@ -1,0 +1,3 @@
+<library path="modules/planning/tasks/lane_change_decider/liblane_change_decider.so">
+    <class type="apollo::planning::LaneChangeDecider" base_class="apollo::planning::Task"></class>
+</library>

@@ -21,7 +21,6 @@
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/tasks/task_factory.h"
 
 namespace apollo {
 namespace planning {
@@ -35,7 +34,6 @@ PlanningBase::~PlanningBase() {}
 
 Status PlanningBase::Init(const PlanningConfig& config) {
   injector_->planning_context()->Init();
-  TaskFactory::Init(config, injector_);
   return Status::OK();
 }
 

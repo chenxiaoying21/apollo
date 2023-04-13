@@ -21,6 +21,7 @@
 #pragma once
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
+#include "modules/planning/proto/dp_poly_path_config.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/planning/common/obstacle.h"
 #include "modules/planning/common/path/path_data.h"
@@ -29,7 +30,6 @@
 #include "modules/planning/common/speed/speed_data.h"
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
 #include "modules/planning/math/curve1d/quintic_polynomial_curve1d.h"
-#include "modules/planning/proto/dp_poly_path_config.pb.h"
 #include "modules/planning/reference_line/reference_point.h"
 #include "modules/planning/tasks/optimizers/road_graph/trajectory_cost.h"
 #include "modules/planning/tasks/optimizers/road_graph/waypoint_sampler.h"

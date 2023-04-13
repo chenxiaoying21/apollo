@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package apollo.planning;
+
+//////////////////////////////////
+// SpeedDeciderConfig
+
+message SpeedDeciderConfig {
+  // obstacle min lateral distance to follow
+  optional double follow_min_obs_lateral_distance = 1 [default = 2.5];
+  // min follow time in st region before considering a valid follow, this is 
+  // to differentiate a moving obstacle cross adc's current lane and move to a
+  // different direction
+  optional double follow_min_time_sec = 2 [default = 2.0];
+}

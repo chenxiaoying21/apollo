@@ -555,9 +555,8 @@ bool HMIWorker::ChangeDrivingMode(const Chassis::DrivingMode mode) {
 }
 
 bool HMIWorker::ChangeMap(const std::string &map_name,
-    const bool restart_dynamic_model) {
-  if (status_.current_map() == map_name &&
-    restart_dynamic_model == false) {
+                          const bool restart_dynamic_model) {
+  if (status_.current_map() == map_name && restart_dynamic_model == false) {
     return true;
   }
   const std::string *map_dir = FindOrNull(config_.maps(), map_name);
@@ -912,11 +911,8 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
       return false;
     }
     callback_api_("MapServiceReloadMap", {});
-  } else {
-    // Change scenario under the same map requires reset mode
-    ResetMode();
   }
-  for (const auto& module : modules_open) {
+  for (const auto &module : modules_open) {
     StartModule(module);
   }
   // After changing the map, reset the start point from the scenario by

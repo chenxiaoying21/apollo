@@ -268,7 +268,7 @@ bool ReferenceLineProvider::GetReferenceLines(
   return true;
 }
 
-void ReferenceLineProvider::PrioritzeChangeLane(
+void ReferenceLineProvider::PrioritizeChangeLane(
     std::list<hdmap::RouteSegments> *route_segments) {
   CHECK_NOTNULL(route_segments);
   auto iter = route_segments->begin();
@@ -541,7 +541,7 @@ bool ReferenceLineProvider::CreateRouteSegments(
   }
 
   if (FLAGS_prioritize_change_lane) {
-    PrioritzeChangeLane(segments);
+    PrioritizeChangeLane(segments);
   }
   return !segments->empty();
 }

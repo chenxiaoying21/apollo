@@ -80,30 +80,29 @@ int Destination::MakeDecisions(Frame* frame,
   const std::string stop_wall_id = FLAGS_destination_obstacle_id;
   const std::vector<std::string> wait_for_obstacle_ids;
 
-  if (FLAGS_enable_scenario_pull_over) {
-    const auto& pull_over_status =
-        injector_->planning_context()->planning_status().pull_over();
-    if (pull_over_status.has_position() &&
-        pull_over_status.position().has_x() &&
-        pull_over_status.position().has_y()) {
-      // build stop decision based on pull-over position
-      ADEBUG << "BuildStopDecision: pull-over position";
-      common::SLPoint pull_over_sl;
-      reference_line.XYToSL(pull_over_status.position(), &pull_over_sl);
+  const auto& pull_over_status =
+      injector_->planning_context()->planning_status().pull_over();
+  if (pull_over_status.has_position() &&
+      pull_over_status.position().has_x() &&
+      pull_over_status.position().has_y()) {
+    // build stop decision based on pull-over position
+    ADEBUG << "BuildStopDecision: pull-over position";
+    common::SLPoint pull_over_sl;
+    reference_line.XYToSL(pull_over_status.position(), &pull_over_sl);
 
-      const double stop_line_s = pull_over_sl.s() +
-                                 VehicleConfigHelper::GetConfig()
-                                     .vehicle_param()
-                                     .front_edge_to_center() +
-                                 config_.destination().stop_distance();
-      util::BuildStopDecision(
-          stop_wall_id, stop_line_s, config_.destination().stop_distance(),
-          StopReasonCode::STOP_REASON_PULL_OVER, wait_for_obstacle_ids,
-          TrafficRuleConfig::RuleId_Name(config_.rule_id()), frame,
-          reference_line_info);
-      return 0;
-    }
+    const double stop_line_s = pull_over_sl.s() +
+                                VehicleConfigHelper::GetConfig()
+                                    .vehicle_param()
+                                    .front_edge_to_center() +
+                                config_.destination().stop_distance();
+    util::BuildStopDecision(
+        stop_wall_id, stop_line_s, config_.destination().stop_distance(),
+        StopReasonCode::STOP_REASON_PULL_OVER, wait_for_obstacle_ids,
+        TrafficRuleConfig::RuleId_Name(config_.rule_id()), frame,
+        reference_line_info);
+    return 0;
   }
+
 
   // build stop decision
   ADEBUG << "BuildStopDecision: destination";

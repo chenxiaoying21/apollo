@@ -35,7 +35,6 @@ class GarageTest : public PlanningTestBase {
  public:
   virtual void SetUp() {
     FLAGS_use_multi_thread_to_add_obstacles = false;
-    FLAGS_enable_multi_thread_in_dp_st_graph = false;
     FLAGS_use_navigation_mode = false;
     FLAGS_map_dir = "modules/planning/testdata/garage_map";
     FLAGS_base_map_filename = "base_map.txt";
@@ -48,8 +47,6 @@ class GarageTest : public PlanningTestBase {
     FLAGS_test_chassis_file = "";
     FLAGS_enable_rss_info = false;
 
-    FLAGS_enable_scenario_stop_sign = false;
-    FLAGS_enable_scenario_traffic_light = false;
   }
 };
 

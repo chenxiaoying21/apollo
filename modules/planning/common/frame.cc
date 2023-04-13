@@ -23,6 +23,7 @@
 #include <limits>
 
 #include "absl/strings/str_cat.h"
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
 #include "modules/common/configs/vehicle_config_helper.h"
@@ -37,7 +38,7 @@
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/common/util/util.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
-#include "modules/common_msgs/routing_msgs/routing.pb.h"
+
 
 namespace apollo {
 namespace planning {
@@ -370,8 +371,8 @@ Status Frame::InitFrameData(
   if (planning_start_point_.v() < 1e-3) {
     const auto *collision_obstacle = FindCollisionObstacle(ego_info);
     if (collision_obstacle != nullptr) {
-      const std::string msg = absl::StrCat(
-          "Found collision with obstacle: ", collision_obstacle->Id());
+      const std::string msg = absl::StrCat("Found collision with obstacle: ",
+                                           collision_obstacle->Id());
       AERROR << msg;
       monitor_logger_buffer_.ERROR(msg);
       return Status(ErrorCode::PLANNING_ERROR, msg);
@@ -479,8 +480,8 @@ void Frame::ReadTrafficLights() {
   if (traffic_light_detection == nullptr) {
     return;
   }
-  const double delay = traffic_light_detection->header().timestamp_sec() -
-                       Clock::NowInSeconds();
+  const double delay =
+      traffic_light_detection->header().timestamp_sec() - Clock::NowInSeconds();
   if (delay > FLAGS_signal_expire_time_sec) {
     ADEBUG << "traffic signals msg is expired, delay = " << delay
            << " seconds.";

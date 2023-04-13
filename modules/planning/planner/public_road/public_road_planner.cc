@@ -33,7 +33,7 @@ Status PublicRoadPlanner::Init(const PlanningConfig& config) {
 Status PublicRoadPlanner::Plan(const TrajectoryPoint& planning_start_point,
                                Frame* frame,
                                ADCTrajectory* ptr_computed_trajectory) {
-  scenario_manager_.Update(planning_start_point, *frame);
+  scenario_manager_.Update(planning_start_point, frame);
   scenario_ = scenario_manager_.mutable_scenario();
   auto result = scenario_->Process(planning_start_point, frame);
 
@@ -41,16 +41,16 @@ Status PublicRoadPlanner::Plan(const TrajectoryPoint& planning_start_point,
     auto scenario_debug = ptr_computed_trajectory->mutable_debug()
                               ->mutable_planning_data()
                               ->mutable_scenario();
-    scenario_debug->set_scenario_type(scenario_->scenario_type());
+    scenario_debug->set_scenario_type(scenario_->Name());
     scenario_debug->set_stage_type(scenario_->GetStage());
     scenario_debug->set_msg(scenario_->GetMsg());
   }
 
-  if (result == scenario::Scenario::STATUS_DONE) {
+  if (result == Scenario::STATUS_DONE) {
     // only updates scenario manager when previous scenario's status is
     // STATUS_DONE
-    scenario_manager_.Update(planning_start_point, *frame);
-  } else if (result == scenario::Scenario::STATUS_UNKNOWN) {
+    scenario_manager_.Update(planning_start_point, frame);
+  } else if (result == Scenario::STATUS_UNKNOWN) {
     return Status(common::PLANNING_ERROR, "scenario returned unknown");
   }
   return Status::OK();

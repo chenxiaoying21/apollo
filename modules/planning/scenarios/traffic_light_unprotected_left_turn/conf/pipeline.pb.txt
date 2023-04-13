@@ -1,0 +1,159 @@
+stage: {
+  name: "TRAFFIC_LIGHT_UNPROTECTED_LEFT_TURN_APPROACH"
+  type: "TrafficLightUnprotectedLeftTurnStageApproach"
+  enabled: true
+  task {
+    name: "PATH_LANE_BORROW_DECIDER"
+    type: "PathLaneBorrowDecider"
+  }
+  task {
+    name: "PATH_BOUNDS_DECIDER"
+    type: "PathBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
+    type: "PiecewiseJerkPathOptimizer"
+  }
+  task {
+    name: "PATH_ASSESSMENT_DECIDER"
+    type: "PathAssessmentDecider"
+  }
+  task {
+    name: "PATH_DECIDER"
+    type: "PathDecider"
+  }
+  task {
+    name: "RULE_BASED_STOP_DECIDER"
+    type: "RuleBasedStopDecider"
+  }
+  task {
+    name: "ST_BOUNDS_DECIDER"
+    type: "STBoundsDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_PRIORI_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "SPEED_HEURISTIC_OPTIMIZER"
+    type: "PathTimeHeuristicOptimizer"
+  }
+  task {
+    name: "SPEED_DECIDER"
+    type: "SpeedDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_FINAL_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_SPEED"
+    type: "PiecewiseJerkSpeedOptimizer"
+  }
+}
+stage: {
+  name: "TRAFFIC_LIGHT_UNPROTECTED_LEFT_TURN_CREEP"
+  type: "TrafficLightUnprotectedLeftTurnStageCreep"
+  enabled: true
+  task {
+    name: "PATH_LANE_BORROW_DECIDER"
+    type: "PathLaneBorrowDecider"
+  }
+  task {
+    name: "PATH_BOUNDS_DECIDER"
+    type: "PathBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
+    type: "PiecewiseJerkPathOptimizer"
+  }
+  task {
+    name: "PATH_ASSESSMENT_DECIDER"
+    type: "PathAssessmentDecider"
+  }
+  task {
+    name: "PATH_DECIDER"
+    type: "PathDecider"
+  }
+  task {
+    name: "RULE_BASED_STOP_DECIDER"
+    type: "RuleBasedStopDecider"
+  }
+  task {
+    name: "ST_BOUNDS_DECIDER"
+    type: "STBoundsDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_PRIORI_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "SPEED_HEURISTIC_OPTIMIZER"
+    type: "PathTimeHeuristicOptimizer"
+  }
+  task {
+    name: "SPEED_DECIDER"
+    type: "SpeedDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_FINAL_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_SPEED"
+    type: "PiecewiseJerkSpeedOptimizer"
+  }
+}
+stage: {
+  name: "TRAFFIC_LIGHT_UNPROTECTED_LEFT_TURN_INTERSECTION_CRUISE"
+  type: "TrafficLightUnprotectedLeftTurnStageIntersectionCruise"
+  enabled: true
+  task {
+    name: "PATH_LANE_BORROW_DECIDER"
+    type: "PathLaneBorrowDecider"
+  }
+  task {
+    name: "PATH_BOUNDS_DECIDER"
+    type: "PathBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
+    type: "PiecewiseJerkPathOptimizer"
+  }
+  task {
+    name: "PATH_ASSESSMENT_DECIDER"
+    type: "PathAssessmentDecider"
+  }
+  task {
+    name: "PATH_DECIDER"
+    type: "PathDecider"
+  }
+  task {
+    name: "RULE_BASED_STOP_DECIDER"
+    type: "RuleBasedStopDecider"
+  }
+  task {
+    name: "ST_BOUNDS_DECIDER"
+    type: "STBoundsDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_PRIORI_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "SPEED_HEURISTIC_OPTIMIZER"
+    type: "PathTimeHeuristicOptimizer"
+  }
+  task {
+    name: "SPEED_DECIDER"
+    type: "SpeedDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_FINAL_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_SPEED"
+    type: "PiecewiseJerkSpeedOptimizer"
+  }
+}

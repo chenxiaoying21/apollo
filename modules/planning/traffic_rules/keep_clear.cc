@@ -163,10 +163,10 @@ bool KeepClear::IsCreeping(const double pnc_junction_start_s,
   // while creeping, no need create keep clear obstacle
   const auto& stage_type =
       injector_->planning_context()->planning_status().scenario().stage_type();
-  if (stage_type != StageType::STOP_SIGN_UNPROTECTED_CREEP &&
+  if (stage_type != "STOP_SIGN_UNPROTECTED_CREEP" &&
       stage_type !=
-          StageType::TRAFFIC_LIGHT_UNPROTECTED_RIGHT_TURN_CREEP &&
-      stage_type != StageType::TRAFFIC_LIGHT_UNPROTECTED_LEFT_TURN_CREEP) {
+          "TRAFFIC_LIGHT_UNPROTECTED_RIGHT_TURN_CREEP" &&
+      stage_type != "TRAFFIC_LIGHT_UNPROTECTED_LEFT_TURN_CREEP") {
     return false;
   }
 

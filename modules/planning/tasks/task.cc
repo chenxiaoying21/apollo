@@ -20,23 +20,39 @@
 
 #include "modules/planning/tasks/task.h"
 
-#include <memory>
-
-#include "modules/planning/proto/planning_config.pb.h"
+#include "cyber/class_loader/class_loader_manager.h"
+#include "cyber/plugin_manager/plugin_manager.h"
 
 namespace apollo {
 namespace planning {
 
 using apollo::common::Status;
 
-Task::Task(const TaskConfig& config) : config_(config) {
-  name_ = TaskConfig::TaskType_Name(config_.task_type());
-}
+Task::Task()
+    : frame_(nullptr),
+      reference_line_info_(nullptr),
+      injector_(nullptr),
+      config_path_(""),
+      default_config_path_(""),
+      name_("") {}
 
-Task::Task(const TaskConfig& config,
-           const std::shared_ptr<DependencyInjector>& injector)
-    : config_(config), injector_(injector) {
-  name_ = TaskConfig::TaskType_Name(config_.task_type());
+bool Task::Init(const std::string& config_dir, const std::string& name,
+                const std::shared_ptr<DependencyInjector>& injector) {
+  injector_ = injector;
+  name_ = name;
+  config_path_ =
+      config_dir + "/" + ConfigUtil::TransformToPathName(name) + ".pb.txt";
+
+  // Get the name of this class.
+  int status;
+  std::string class_name =
+      abi::__cxa_demangle(typeid(*this).name(), 0, 0, &status);
+  // Generate the default task config path from PluginManager.
+  default_config_path_ =
+      apollo::cyber::plugin_manager::PluginManager::Instance()
+          ->GetPluginClassHomePath<Task>(class_name) +
+      "/conf/" + "default_conf.pb.txt";
+  return true;
 }
 
 const std::string& Task::Name() const { return name_; }
