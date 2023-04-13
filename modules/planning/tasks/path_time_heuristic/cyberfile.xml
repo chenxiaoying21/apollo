@@ -1,0 +1,16 @@
+<package>
+    <name>planning-task-path-time-heuristic</name>
+    <version>1.0.0</version>
+    <description>
+      path time heuristic optimizer
+    </description>
+    <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
+    <type>module</type>
+    <src_path>//path_time_heuristic</src_path>
+    <license>BSD</license>
+    <author>Apollo</author>
+    <depend>bazel-extend-tools-dev</depend>
+    <depend type="binary" repo_name="planning">planning-dev</depend>
+    
+    <builder>bazel</builder>
+  </package>

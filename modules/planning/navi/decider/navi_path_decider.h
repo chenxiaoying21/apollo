@@ -32,7 +32,6 @@
 #include "modules/planning/navi/decider/navi_obstacle_decider.h"
 #include "modules/planning/navi/decider/navi_task.h"
 #include "modules/planning/proto/planning_config.pb.h"
-#include "modules/planning/proto/task_config.pb.h"
 #include "modules/planning/reference_line/reference_line.h"
 
 /**

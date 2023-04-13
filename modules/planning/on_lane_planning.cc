@@ -44,7 +44,6 @@
 #include "modules/planning/learning_based/img_feature_renderer/birdview_img_feature_renderer.h"
 #include "modules/planning/planner/rtk/rtk_replay_planner.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
-#include "modules/planning/tasks/task_factory.h"
 #include "modules/planning/traffic_rules/traffic_decider.h"
 
 namespace apollo {
@@ -294,7 +293,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     vehicle_state = AlignTimeStamp(vehicle_state, start_timestamp);
   }
 
-  // Update reference line provider and reset pull over if necessary
+  // Update reference line provider and reset scenario if new routing
   reference_line_provider_->UpdateVehicleState(vehicle_state);
   if (util::IsDifferentRouting(last_routing_, *local_view_.routing)) {
     last_routing_ = *local_view_.routing;
@@ -302,7 +301,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
     reference_line_provider_->UpdateRoutingResponse(*local_view_.routing);
-    planner_->Init(config_);
+    planner_->Reset(frame_.get());
   }
 
   failed_to_update_reference_line =
@@ -338,7 +337,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
   injector_->ego_info()->Update(stitching_trajectory.back(), vehicle_state);
   const uint32_t frame_num = static_cast<uint32_t>(seq_num_++);
   status = InitFrame(frame_num, stitching_trajectory.back(), vehicle_state);
-  AINFO<<"Planning start frame sequence id = ["<<frame_num<<"]";
+  AINFO << "Planning start frame sequence id = [" << frame_num << "]";
   if (status.ok()) {
     injector_->ego_info()->CalculateFrontObstacleClearDistance(
         frame_->obstacles());
@@ -450,7 +449,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
   }
 
   const uint32_t n = frame_->SequenceNum();
-  AINFO<<"Planning end frame sequence id = ["<<n<<"]";
+  AINFO << "Planning end frame sequence id = [" << n << "]";
   injector_->frame_history()->Add(n, std::move(frame_));
 }
 
@@ -673,11 +672,12 @@ Status OnLanePlanning::Plan(
     PrintCurves debug_traj;
     for (size_t i = 0; i < last_publishable_trajectory_->size(); i++) {
         auto& traj_pt = last_publishable_trajectory_->at(i);
-        debug_traj.AddPoint("traj_sv",traj_pt.path_point().s(), traj_pt.v());
-        debug_traj.AddPoint("traj_sa",traj_pt.path_point().s(), traj_pt.a());
-        debug_traj.AddPoint("traj_sk",traj_pt.path_point().s(), traj_pt.path_point().kappa());
+        debug_traj.AddPoint("traj_sv", traj_pt.path_point().s(), traj_pt.v());
+        debug_traj.AddPoint("traj_sa", traj_pt.path_point().s(), traj_pt.a());
+        debug_traj.AddPoint("traj_sk", traj_pt.path_point().s(),
+            traj_pt.path_point().kappa());
     }
-    //debug_traj.PrintToLog();
+    // debug_traj.PrintToLog();
     ADEBUG << "current_time_stamp: " << current_time_stamp;
 
     last_publishable_trajectory_->PrependTrajectoryPoints(

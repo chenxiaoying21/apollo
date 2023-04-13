@@ -1,0 +1,94 @@
+stage: {
+  name: "EMERGENCY_STOP_APPROACH"
+  type: "EmergencyStopStageApproach"
+  enabled: true
+  task {
+    name: "PATH_BOUNDS_DECIDER"
+    type: "PathBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
+    type: "PiecewiseJerkPathOptimizer"
+  }
+  task {
+    name: "PATH_ASSESSMENT_DECIDER"
+    type: "PathAssessmentDecider"
+  }
+  task {
+    name: "PATH_DECIDER"
+    type: "PathDecider"
+  }
+  task {
+    name: "RULE_BASED_STOP_DECIDER"
+    type: "RuleBasedStopDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_PRIORI_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "SPEED_HEURISTIC_OPTIMIZER"
+    type: "PathTimeHeuristicOptimizer"
+  }
+  task {
+    name: "SPEED_DECIDER"
+    type: "SpeedDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_FINAL_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_SPEED"
+    type: "PiecewiseJerkSpeedOptimizer"
+  }
+}
+stage: {
+  name: "EMERGENCY_STOP_STANDBY"
+  type: "EmergencyStopStageStandby"
+  enabled: true
+  task {
+    name: "PATH_LANE_BORROW_DECIDER"
+    type: "PathLaneBorrowDecider"
+  }
+  task {
+    name: "PATH_BOUNDS_DECIDER"
+    type: "PathBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
+    type: "PiecewiseJerkPathOptimizer"
+  }
+  task {
+    name: "PATH_ASSESSMENT_DECIDER"
+    type: "PathAssessmentDecider"
+  }
+  task {
+    name: "PATH_DECIDER"
+    type: "PathDecider"
+  }
+  task {
+    name: "RULE_BASED_STOP_DECIDER"
+    type: "RuleBasedStopDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_PRIORI_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "SPEED_HEURISTIC_OPTIMIZER"
+    type: "PathTimeHeuristicOptimizer"
+  }
+  task {
+    name: "SPEED_DECIDER"
+    type: "SpeedDecider"
+  }
+  task {
+    name: "SPEED_BOUNDS_FINAL_DECIDER"
+    type: "SpeedBoundsDecider"
+  }
+  task {
+    name: "PIECEWISE_JERK_SPEED"
+    type: "PiecewiseJerkSpeedOptimizer"
+  }
+}

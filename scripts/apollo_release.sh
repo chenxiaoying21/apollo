@@ -5,7 +5,7 @@ TOP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 source "${TOP_DIR}/scripts/apollo.bashrc"
 
 export OPT_APOLLO="$(dirname "${APOLLO_SYSROOT_DIR}")"
-export PREFIX_DIR=/opt/apollo/neo/packages/
+export PREFIX_DIR="${PREFIX_DIR:=${APOLLO_DISTRIBUTION_HOME}}"
 
 LIST_ONLY=0
 RESOLVE_DEPS=0
@@ -220,15 +220,15 @@ function run_install() {
     local install_targets
     install_targets="$(determine_release_targets ${SHORTHAND_TARGETS})"
     bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} ${install_targets} \
-        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}"
-    
+        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
+
     # install files copy from source code.
     bazel run ${BAZEL_OPTS} ${CMDLINE_OPTIONS} //:install_src \
-        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}"
+        -- ${install_opts} ${INSTALL_OPTIONS} "${PREFIX_DIR}" --dev
 }
 
 function export_python_path() {
-    if [ `grep -c /opt/apollo/neo/packages/python-support/local ~/.bashrc` -ne 0 ]; then 
+    if [ `grep -c /opt/apollo/neo/packages/python-support/local ~/.bashrc` -ne 0 ]; then
         echo '\nexport PYTHONPATH=/opt/apollo/neo/packages/python-support/local:$PYTHONPATH' >> ~/.bashrc
     fi
 }
@@ -265,7 +265,7 @@ function main() {
         generate_apt_pkgs
         ok "Done. Packages list has been writen to ${PKGS_TXT}"
     fi
-    
+
     export_python_path
 
     # generate_py_packages

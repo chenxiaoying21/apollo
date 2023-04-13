@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package apollo.planning;
+
+import "modules/planning/proto/creep_decider.proto";
+
+message ScenarioTrafficLightUnprotectedRightTurnConfig {
+  optional double start_traffic_light_scenario_distance = 1
+      [default = 5.0];  // meter
+  optional bool enable_right_turn_on_red = 2 [default = false];
+  optional double max_valid_stop_distance = 3 [default = 3.5];  // meter
+  optional double min_pass_s_distance = 4 [default = 3.0];      // meter
+  optional float red_light_right_turn_stop_duration_sec = 5
+      [default = 3.0];                                             // sec
+  optional float creep_timeout_sec = 6 [default = 10.0];           // sec
+  optional double max_adc_speed_before_creep = 7 [default = 3.0];  // m/s
+  optional CreepDeciderConfig creep_decider_config = 8;
+}

@@ -93,7 +93,7 @@ function remove_container_if_exists() {
 
 function postrun_start_user() {
     local container="$1"
-    if [ "${USER}" != "root" ]; then
+    if [ "${CUSTOM_USER-$USER}" != "root" ]; then
         docker exec -u root "${container}" \
             bash -c '/apollo/scripts/docker_start_user.sh'
     fi
@@ -102,16 +102,19 @@ function postrun_start_user() {
 function stop_all_apollo_containers() {
     local force="$1"
     local running_containers
-    running_containers="$(docker ps -a --format '{{.Names}}')"
+    # add a special field `...` as a separator
+    running_containers=($(docker inspect \
+      $(docker ps -q) \
+      --format '{{or .Config.Labels.owner "-"}}...{{.Name}}'))
     for container in ${running_containers[*]}; do
-        if [[ "${container}" =~ apollo_.*_${USER} ]]; then
-            #printf %-*s 70 "Now stop container: ${container} ..."
-            #printf "\033[32m[DONE]\033[0m\n"
-            #printf "\033[31m[FAILED]\033[0m\n"
-            info "Now stop container ${container} ..."
-            if docker stop "${container}" >/dev/null; then
+        owner="${container%%...*}"
+        name="${container##*...}"
+        # only stop containers created by current user
+        if [[ ("${owner}" == "${USER}") && ("${name}" =~ apollo_.*) ]]; then
+            info "Now stop container ${name} ..."
+            if docker stop "${name}" >/dev/null; then
                 if [[ "${force}" == "-f" || "${force}" == "--force" ]]; then
-                    docker rm -f "${container}" 2>/dev/null
+                    docker rm -f "${name}" 2>/dev/null
                 fi
                 info "Done."
             else

@@ -54,6 +54,7 @@ cc_test(
     deps = [
         ":planner_dispatcher",
         "@com_google_googletest//:gtest_main",
+        "//modules/planning/common:dependency_injector",
     ],
     linkstatic = True,
 )
@@ -65,6 +66,7 @@ cc_test(
     linkopts = ["-lgomp"],
     deps = [
         ":planner_dispatcher",
+        "//modules/planning/common:dependency_injector",
         "@com_google_googletest//:gtest_main",
     ],
     linkstatic = True,

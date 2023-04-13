@@ -554,9 +554,9 @@ bool HMIWorker::ChangeDrivingMode(const Chassis::DrivingMode mode) {
   return false;
 }
 
-bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynamic_model) {
-  if (status_.current_map() == map_name &&
-    restart_dynamic_model == false) {
+bool HMIWorker::ChangeMap(const std::string &map_name,
+                          const bool restart_dynamic_model) {
+  if (status_.current_map() == map_name && restart_dynamic_model == false) {
     return true;
   }
   const std::string *map_dir = FindOrNull(config_.maps(), map_name);
@@ -564,7 +564,7 @@ bool HMIWorker::ChangeMap(const std::string &map_name, const bool restart_dynami
     AERROR << "Unknown map " << map_name;
     return false;
   }
-	
+
   if (map_name != status_.current_map()) {
     {
       // Update current_map status.
@@ -850,7 +850,7 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
   } else {
     cur_scenario_id = scenario_id;
   }
-  
+
   // Todo: Check sim obstacle status before closing it
   const std::string absolute_path =
       cyber::common::GetEnv("HOME") + FLAGS_sim_obstacle_path;
@@ -911,11 +911,8 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
       return false;
     }
     callback_api_("MapServiceReloadMap", {});
-  } else {
-    // Change scenario under the same map requires reset mode
-    ResetMode();
   }
-  for (const auto& module : modules_open) {
+  for (const auto &module : modules_open) {
     StartModule(module);
   }
   // After changing the map, reset the start point from the scenario by

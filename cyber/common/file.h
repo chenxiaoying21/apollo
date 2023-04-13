@@ -104,15 +104,15 @@ bool GetProtoFromFile(const std::string &file_name,
                       google::protobuf::Message *message);
 
 /**
- * @brief Parses the content of the json file specified by the file_name as ascii
- *        representation of protobufs, and merges the parsed content to the
+ * @brief Parses the content of the json file specified by the file_name as
+ * ascii representation of protobufs, and merges the parsed content to the
  *        proto.
  * @param file_name The name of the file to parse whose content.
  * @param message The proto to carry the parsed content in the specified file.
  * @return If the action is successful.
  */
 bool GetProtoFromJsonFile(const std::string &file_name,
-                           google::protobuf::Message *message);
+                          google::protobuf::Message *message);
 
 /**
  * @brief Get file content as string.
@@ -200,6 +200,26 @@ bool RemoveAllFiles(const std::string &directory_path);
  */
 std::vector<std::string> ListSubPaths(const std::string &directory_path,
                                       const unsigned char d_type = DT_DIR);
+
+/**
+ * @brief Find path with pattern
+ * @param base_path search root
+ * @param patt pattern to compare with entry->d_name for filter
+ * @param d_type entry type for filter
+ * @param recursive search directory recursively
+ * @param result_list a vector reference for storing the search result
+ * @return the result count
+ */
+size_t FindPathByPattern(const std::string &base_path, const std::string &patt,
+                         const unsigned char d_type, const bool recursive,
+                         std::vector<std::string> *result_list);
+
+/**
+ * @brief get directory name of path
+ * @param path
+ * @return dirname of path
+ */
+std::string GetDirName(const std::string &path);
 
 std::string GetFileName(const std::string &path,
                         const bool remove_extension = false);

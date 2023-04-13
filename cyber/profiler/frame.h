@@ -17,8 +17,9 @@
 #ifndef CYBER_PROFILER_FRAME_H_
 #define CYBER_PROFILER_FRAME_H_
 
-#include <stack>
 #include <list>
+#include <stack>
+#include <string>
 
 #include "cyber/profiler/block.h"
 

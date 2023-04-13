@@ -4254,61 +4254,6 @@
                 }
               }
             },
-            "StatsGroup": {
-              "fields": {
-                "max": {
-                  "type": "double",
-                  "id": 1
-                },
-                "min": {
-                  "type": "double",
-                  "id": 2,
-                  "options": {
-                    "default": 10000000000
-                  }
-                },
-                "sum": {
-                  "type": "double",
-                  "id": 3
-                },
-                "avg": {
-                  "type": "double",
-                  "id": 4
-                },
-                "num": {
-                  "type": "int32",
-                  "id": 5
-                }
-              }
-            },
-            "PlanningStats": {
-              "fields": {
-                "totalPathLength": {
-                  "type": "StatsGroup",
-                  "id": 1
-                },
-                "totalPathTime": {
-                  "type": "StatsGroup",
-                  "id": 2
-                },
-                "v": {
-                  "type": "StatsGroup",
-                  "id": 3
-                },
-                "a": {
-                  "type": "StatsGroup",
-                  "id": 4
-                },
-                "kappa": {
-                  "type": "StatsGroup",
-                  "id": 5
-                },
-                "dkappa": {
-                  "type": "StatsGroup",
-                  "id": 6
-                }
-              }
-            },
             "BareIntersectionStatus": {
               "fields": {
                 "currentPncJunctionOverlapId": {

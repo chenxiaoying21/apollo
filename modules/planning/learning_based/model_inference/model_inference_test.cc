@@ -20,7 +20,7 @@
 
 #include "modules/planning/proto/learning_data.pb.h"
 #include "modules/planning/proto/planning_semantic_map_config.pb.h"
-#include "modules/planning/proto/task_config.pb.h"
+#include "modules/planning/learning_based/model_inference/proto/learning_model_inference.pb.h"
 
 #include "cyber/common/file.h"
 #include "modules/common/configs/config_gflags.h"

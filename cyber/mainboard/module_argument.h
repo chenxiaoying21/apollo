@@ -31,6 +31,9 @@ namespace mainboard {
 static const char DEFAULT_process_group_[] = "mainboard_default";
 static const char DEFAULT_sched_name_[] = "CYBER_DEFAULT";
 
+// code for command line arguments without short parameters
+static const int ARGS_OPT_CODE_PLUGIN = 1001;
+
 class ModuleArgument {
  public:
   ModuleArgument() = default;
@@ -42,9 +45,11 @@ class ModuleArgument {
   const std::string& GetProcessGroup() const;
   const std::string& GetSchedName() const;
   const std::list<std::string>& GetDAGConfList() const;
+  const std::list<std::string>& GetPluginDescriptionList() const;
 
  private:
   std::list<std::string> dag_conf_list_;
+  std::list<std::string> plugin_description_list_;
   std::string binary_name_;
   std::string process_group_;
   std::string sched_name_;
@@ -64,6 +69,11 @@ inline const std::string& ModuleArgument::GetSchedName() const {
 
 inline const std::list<std::string>& ModuleArgument::GetDAGConfList() const {
   return dag_conf_list_;
+}
+
+inline const std::list<std::string>& ModuleArgument::GetPluginDescriptionList()
+    const {
+  return plugin_description_list_;
 }
 
 }  // namespace mainboard

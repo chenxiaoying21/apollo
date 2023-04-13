@@ -16,6 +16,8 @@
 
 #include "cyber/profiler/frame.h"
 
+#include <utility>
+
 #include "cyber/common/log.h"
 
 namespace apollo {

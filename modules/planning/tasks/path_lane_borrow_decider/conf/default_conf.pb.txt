@@ -1,0 +1,2 @@
+lane_borrow_max_speed: 5.0
+long_term_blocking_obstacle_cycle_threshold: 3

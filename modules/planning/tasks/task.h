@@ -22,28 +22,27 @@
 
 #include <memory>
 #include <string>
+#include <cxxabi.h>
 
 #include "modules/common/status/status.h"
+#include "modules/planning/common/config_util.h"
 #include "modules/planning/common/dependency_injector.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/reference_line_info.h"
-#include "modules/planning/proto/planning_config.pb.h"
 
 namespace apollo {
 namespace planning {
 
 class Task {
  public:
-  explicit Task(const TaskConfig& config);
-
-  Task(const TaskConfig& config,
-       const std::shared_ptr<DependencyInjector>& injector);
+  Task();
 
   virtual ~Task() = default;
 
   const std::string& Name() const;
 
-  const TaskConfig& Config() const { return config_; }
+  virtual bool Init(const std::string& config_dir, const std::string& name,
+                    const std::shared_ptr<DependencyInjector>& injector);
 
   virtual common::Status Execute(Frame* frame,
                                  ReferenceLineInfo* reference_line_info);
@@ -51,14 +50,23 @@ class Task {
   virtual common::Status Execute(Frame* frame);
 
  protected:
-  Frame* frame_ = nullptr;
-  ReferenceLineInfo* reference_line_info_ = nullptr;
+  template <typename T>
+  bool LoadConfig(T* config);
 
-  TaskConfig config_;
-  std::string name_;
-
+  Frame* frame_;
+  ReferenceLineInfo* reference_line_info_;
   std::shared_ptr<DependencyInjector> injector_;
+
+  std::string config_path_;
+  std::string default_config_path_;
+  std::string name_;
 };
+
+template <typename T>
+bool Task::LoadConfig(T* config) {
+  return ConfigUtil::LoadMergedConfig(default_config_path_, config_path_,
+                                      config);
+}
 
 }  // namespace planning
 }  // namespace apollo

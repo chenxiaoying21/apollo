@@ -892,7 +892,7 @@ void ReferenceLineInfo::ExportEngageAdvice(
   } else if (!is_on_reference_line_) {
     const auto& scenario_type =
         planning_context->planning_status().scenario().scenario_type();
-    if (scenario_type == ScenarioType::PARK_AND_GO || IsChangeLanePath()) {
+    if (scenario_type == "PARK_AND_GO" || IsChangeLanePath()) {
       // note: when is_on_reference_line_ is FALSE
       //   (1) always engage while in PARK_AND_GO scenario
       //   (2) engage when "ChangeLanePath" is picked as Drivable ref line
@@ -1047,6 +1047,49 @@ std::vector<common::SLPoint> ReferenceLineInfo::GetAllStopDecisionSLPoint()
   }
 
   return result;
+}
+
+hdmap::PathOverlap* ReferenceLineInfo::GetOverlapOnReferenceLine(
+    const std::string& overlap_id, const OverlapType& overlap_type) const {
+  if (overlap_type == ReferenceLineInfo::SIGNAL) {
+    // traffic_light_overlap
+    const auto& traffic_light_overlaps =
+        reference_line_.map_path().signal_overlaps();
+    for (const auto& traffic_light_overlap : traffic_light_overlaps) {
+      if (traffic_light_overlap.object_id == overlap_id) {
+        return const_cast<hdmap::PathOverlap*>(&traffic_light_overlap);
+      }
+    }
+  } else if (overlap_type == ReferenceLineInfo::STOP_SIGN) {
+    // stop_sign_overlap
+    const auto& stop_sign_overlaps =
+        reference_line_.map_path().stop_sign_overlaps();
+    for (const auto& stop_sign_overlap : stop_sign_overlaps) {
+      if (stop_sign_overlap.object_id == overlap_id) {
+        return const_cast<hdmap::PathOverlap*>(&stop_sign_overlap);
+      }
+    }
+  } else if (overlap_type == ReferenceLineInfo::PNC_JUNCTION) {
+    // pnc_junction_overlap
+    const auto& pnc_junction_overlaps =
+        reference_line_.map_path().pnc_junction_overlaps();
+    for (const auto& pnc_junction_overlap : pnc_junction_overlaps) {
+      if (pnc_junction_overlap.object_id == overlap_id) {
+        return const_cast<hdmap::PathOverlap*>(&pnc_junction_overlap);
+      }
+    }
+  } else if (overlap_type == ReferenceLineInfo::YIELD_SIGN) {
+    // yield_sign_overlap
+    const auto& yield_sign_overlaps =
+        reference_line_.map_path().yield_sign_overlaps();
+    for (const auto& yield_sign_overlap : yield_sign_overlaps) {
+      if (yield_sign_overlap.object_id == overlap_id) {
+        return const_cast<hdmap::PathOverlap*>(&yield_sign_overlap);
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace planning

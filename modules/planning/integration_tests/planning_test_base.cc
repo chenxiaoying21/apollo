@@ -51,7 +51,6 @@ DEFINE_string(test_previous_planning_file, "",
 
 void PlanningTestBase::SetUpTestCase() {
   FLAGS_use_multi_thread_to_add_obstacles = false;
-  FLAGS_enable_multi_thread_in_dp_st_graph = false;
   FLAGS_traffic_rule_config_filename =
       "/apollo/modules/planning/conf/traffic_rule_config.pb.txt";
   FLAGS_smoother_config_filename =
@@ -69,7 +68,6 @@ void PlanningTestBase::SetUpTestCase() {
   // FLAGS_enable_trajectory_check is temporarily disabled, otherwise EMPlanner
   // and LatticePlanner can't pass the unit test.
   FLAGS_enable_trajectory_check = false;
-  FLAGS_planning_test_mode = true;
 }
 
 bool PlanningTestBase::FeedTestData() {

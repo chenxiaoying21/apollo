@@ -1,0 +1,3 @@
+<library path="modules/planning/tasks/path_assessment_decider/libpath_assessment_decider.so">
+    <class type="apollo::planning::PathAssessmentDecider" base_class="apollo::planning::Task"></class>
+</library>

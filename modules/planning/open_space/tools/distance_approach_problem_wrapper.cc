@@ -450,7 +450,7 @@ bool DistancePlan(HybridAStar* hybridA_ptr, ObstacleContainer* obstacles_ptr,
     std::vector<HybridAStartResult> partition_trajectories;
     if (!hybridA_ptr->TrajectoryPartition(hybrid_astar_result,
                                           &partition_trajectories)) {
-        AERROR<<"TrajectoryPartition failed";
+        AERROR << "TrajectoryPartition failed";
         *(result_ptr->PrepareHybridAResult()) = hybrid_astar_result;
       return false;
     }
@@ -509,11 +509,6 @@ bool DistancePlan(HybridAStar* hybridA_ptr, ObstacleContainer* obstacles_ptr,
       double piece_wise_ex = partition_trajectories[i].x.back();
       double piece_wise_ey = partition_trajectories[i].y.back();
       double piece_wise_ephi = partition_trajectories[i].phi.back();
-
-      if (planner_open_space_config_.enable_check_parallel_trajectory()) {
-        AINFO << "trajectory idx: " << i;
-        AINFO << "trajectory pt number: " << partition_trajectories[i].x.size();
-      }
 
       if (!DistanceSmoothing(planner_open_space_config_, *obstacles_ptr,
                              piece_wise_sx, piece_wise_sy, piece_wise_sphi,
@@ -603,7 +598,7 @@ bool DistancePlan(HybridAStar* hybridA_ptr, ObstacleContainer* obstacles_ptr,
                            &state_result_ds, &control_result_ds,
                            &time_result_ds, &dual_l_result_ds,
                            &dual_n_result_ds, dual_total, ipopt_total)) {
-        AERROR<<"DistanceSmoothing failed";
+        AERROR << "DistanceSmoothing failed";
         *(result_ptr->PrepareHybridAResult()) = hybrid_astar_result;
       return false;
     }

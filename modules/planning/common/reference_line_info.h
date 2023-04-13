@@ -248,6 +248,8 @@ class ReferenceLineInfo {
   }
 
   bool path_reusable() const { return path_reusable_; }
+  hdmap::PathOverlap* GetOverlapOnReferenceLine(
+      const std::string& overlap_id, const OverlapType& overlap_type) const;
 
  private:
   void InitFirstOverlaps();

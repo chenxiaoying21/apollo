@@ -23,15 +23,15 @@
 #include <unordered_map>
 #include <utility>
 
+#include "cyber/plugin_manager/plugin_manager.h"
 #include "cyber/time/clock.h"
+#include "modules/planning/common/config_util.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/speed_profile_generator.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/planning/tasks/task_factory.h"
 
 namespace apollo {
 namespace planning {
-namespace scenario {
 
 using apollo::cyber::Clock;
 
@@ -41,41 +41,44 @@ constexpr double kSpeedOptimizationFallbackCost = 2e4;
 // constexpr double kStraightForwardLineCost = 10.0;
 }  // namespace
 
-Stage::Stage(const ScenarioConfig::StageConfig& config,
-             const std::shared_ptr<DependencyInjector>& injector)
-    : config_(config), injector_(injector) {
-  // set stage_type in PlanningContext
-  injector->planning_context()
+Stage::Stage()
+    : next_stage_(""), context_(nullptr), injector_(nullptr), name_("") {}
+
+bool Stage::Init(const StagePipeline& config,
+                 const std::shared_ptr<DependencyInjector>& injector,
+                 const std::string& config_dir, void* context) {
+  pipeline_config_ = config;
+  next_stage_ = config.name();
+  injector_ = injector;
+  name_ = config.name();
+  context_ = context;
+  injector_->planning_context()
       ->mutable_planning_status()
       ->mutable_scenario()
-      ->set_stage_type(stage_type());
-
-  name_ = StageType_Name(config_.stage_type());
-  next_stage_ = config_.stage_type();
-  std::unordered_map<TaskConfig::TaskType, const TaskConfig*, std::hash<int>>
-      config_map;
-  for (const auto& task_config : config_.task_config()) {
-    config_map[task_config.task_type()] = &task_config;
-  }
-  for (int i = 0; i < config_.task_type_size(); ++i) {
-    auto task_type = config_.task_type(i);
-    ACHECK(config_map.find(task_type) != config_map.end())
-        << "Task: " << TaskConfig::TaskType_Name(task_type)
-        << " used but not configured";
-    auto iter = tasks_.find(task_type);
-    if (iter == tasks_.end()) {
-      auto ptr = TaskFactory::CreateTask(*config_map[task_type], injector_);
-      task_list_.push_back(ptr.get());
-      tasks_[task_type] = std::move(ptr);
-    } else {
-      task_list_.push_back(iter->second.get());
+      ->set_stage_type(name_);
+  std::string path_name = ConfigUtil::TransformToPathName(name_);
+  // Load task plugin
+  for (int i = 0; i < pipeline_config_.task_size(); ++i) {
+    auto task = pipeline_config_.task(i);
+    auto task_type = task.type();
+    auto task_ptr = apollo::cyber::plugin_manager::PluginManager::Instance()
+                        ->CreateInstance<Task>(
+                            ConfigUtil::GetFullPlanningClassName(task_type));
+    if (nullptr == task_ptr) {
+      AERROR << "Create task " << task.name() << " of " << name_ << " failed!";
+      return false;
     }
+    std::string task_config_dir = config_dir + "/" + path_name;
+    task_ptr->Init(task_config_dir, task.name(), injector);
+    task_list_.push_back(task_ptr);
+    tasks_[task.name()] = task_ptr;
   }
+  return true;
 }
 
 const std::string& Stage::Name() const { return name_; }
 
-Task* Stage::FindTask(TaskConfig::TaskType task_type) const {
+Task* Stage::FindTask(const std::string& task_type) const {
   auto iter = tasks_.find(task_type);
   if (iter == tasks_.end()) {
     return nullptr;
@@ -92,7 +95,7 @@ bool Stage::ExecuteTaskOnReferenceLine(
       return false;
     }
 
-    for (auto* task : task_list_) {
+    for (auto task : task_list_) {
       const double start_timestamp = Clock::NowInSeconds();
 
       const auto ret = task->Execute(frame, &reference_line_info);
@@ -144,7 +147,7 @@ bool Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
   // learning model trajectory
   auto& picked_reference_line_info =
       frame->mutable_reference_line_info()->front();
-  for (auto* task : task_list_) {
+  for (auto task : task_list_) {
     const double start_timestamp = Clock::NowInSeconds();
 
     const auto ret = task->Execute(frame, &picked_reference_line_info);
@@ -177,7 +180,7 @@ bool Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
 
 bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
   auto ret = common::Status::OK();
-  for (auto* task : task_list_) {
+  for (auto task : task_list_) {
     ret = task->Execute(frame);
     if (!ret.ok()) {
       AERROR << "Failed to run tasks[" << task->Name()
@@ -189,8 +192,8 @@ bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
   if (frame->open_space_info().fallback_flag()) {
     auto& trajectory = frame->open_space_info().fallback_trajectory().first;
     auto& gear = frame->open_space_info().fallback_trajectory().second;
-    PublishableTrajectory publishable_trajectory(
-        Clock::NowInSeconds(), trajectory);
+    PublishableTrajectory publishable_trajectory(Clock::NowInSeconds(),
+                                                 trajectory);
     auto publishable_traj_and_gear =
         std::make_pair(std::move(publishable_trajectory), gear);
 
@@ -201,8 +204,8 @@ bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
         frame->open_space_info().chosen_partitioned_trajectory().first;
     auto& gear =
         frame->open_space_info().chosen_partitioned_trajectory().second;
-    PublishableTrajectory publishable_trajectory(
-        Clock::NowInSeconds(), trajectory);
+    PublishableTrajectory publishable_trajectory(Clock::NowInSeconds(),
+                                                 trajectory);
     auto publishable_traj_and_gear =
         std::make_pair(std::move(publishable_trajectory), gear);
 
@@ -213,7 +216,7 @@ bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
 }
 
 Stage::StageStatus Stage::FinishScenario() {
-  next_stage_ = StageType::NO_STAGE;
+  next_stage_ = "";
   return Stage::FINISHED;
 }
 
@@ -236,6 +239,5 @@ void Stage::RecordDebugInfo(ReferenceLineInfo* reference_line_info,
   ptr_stats->set_time_ms(time_diff_ms);
 }
 
-}  // namespace scenario
 }  // namespace planning
 }  // namespace apollo

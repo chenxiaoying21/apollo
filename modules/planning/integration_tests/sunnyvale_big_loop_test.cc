@@ -20,7 +20,7 @@
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/integration_tests/planning_test_base.h"
-#include "modules/planning/scenarios/stop_sign/unprotected/stop_sign_unprotected_scenario.h"
+#include "modules/planning/scenarios/stop_sign_unprotected/stop_sign_unprotected_scenario.h"
 
 namespace apollo {
 namespace planning {
@@ -50,9 +50,6 @@ class SunnyvaleBigLoopTest : public PlanningTestBase {
     FLAGS_test_data_dir = "modules/planning/testdata/sunnyvale_big_loop_test";
     FLAGS_planning_upper_speed_limit = 20.0;
 
-    FLAGS_enable_scenario_pull_over = false;
-    FLAGS_enable_scenario_stop_sign = false;
-    FLAGS_enable_scenario_traffic_light = false;
     FLAGS_enable_rss_info = false;
 
     ENABLE_RULE(TrafficRuleConfig::CROSSWALK, false);
@@ -69,7 +66,6 @@ class SunnyvaleBigLoopTest : public PlanningTestBase {
  *   decision: STOP
  */
 TEST_F(SunnyvaleBigLoopTest, stop_sign_01) {
-  FLAGS_enable_scenario_stop_sign = true;
 
   std::string seq_num = "1";
   FLAGS_test_routing_response_file = seq_num + "_routing.pb.txt";

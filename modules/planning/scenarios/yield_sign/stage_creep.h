@@ -21,6 +21,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "modules/planning/proto/planning_config.pb.h"
 #include "modules/planning/scenarios/stage.h"
@@ -28,33 +29,26 @@
 
 namespace apollo {
 namespace planning {
-namespace scenario {
-namespace yield_sign {
 
 struct YieldSignContext;
+class CreepDecider;
 
 class YieldSignStageCreep : public Stage {
  public:
-  YieldSignStageCreep(const ScenarioConfig::StageConfig& config,
-                      const std::shared_ptr<DependencyInjector>& injector)
-      : Stage(config, injector) {}
+  bool Init(const StagePipeline& config,
+            const std::shared_ptr<DependencyInjector>& injector,
+            const std::string& config_dir, void* context) override;
 
- private:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
-
-  YieldSignContext* GetContext() {
-    return Stage::GetContextAs<YieldSignContext>();
-  }
 
  private:
   Stage::StageStatus FinishStage();
 
  private:
   ScenarioYieldSignConfig scenario_config_;
+  std::shared_ptr<CreepDecider> creep_decider_;
 };
 
-}  // namespace yield_sign
-}  // namespace scenario
 }  // namespace planning
 }  // namespace apollo

@@ -84,7 +84,6 @@ logger.addHandler(console)
 
 def exit_handler():
     stop()
-    os.chdir(g_pwd)
     logger.info('cyber_launch exit.')
 
 
@@ -112,13 +111,14 @@ def module_monitor(mod):
 
 class ProcessWrapper(object):
 
-    def __init__(self, binary_path, dag_num, dag_list, process_name,
+    def __init__(self, binary_path, dag_num, dag_list, plugin_list, process_name,
                  process_type, sched_name, exception_handler=''):
         self.time_of_death = None
         self.started = False
         self.binary_path = binary_path
         self.dag_num = dag_num
         self.dag_list = dag_list
+        self.plugin_list = plugin_list
         self.name = process_name
         self.sched_name = sched_name
         self.process_type = process_type
@@ -142,6 +142,9 @@ class ProcessWrapper(object):
             args_list = [self.binary_path]
             for i in self.dag_list:
                 args_list.append('-d')
+                args_list.append(i)
+            for i in self.plugin_list:
+                args_list.append('--plugin')
                 args_list.append(i)
             if len(self.name) != 0:
                 args_list.append('-p')
@@ -340,6 +343,8 @@ def start(launch_file=''):
     total_dag_num = 0
     dictionary = {}
     dag_dict = {}
+    plugin_dict = {}
+    total_plugin_num = 0
     root1 = tree.getroot()
     for module in root1.findall('module'):
         process_name = module.find('process_name').text
@@ -365,6 +370,15 @@ def start(launch_file=''):
             else:
                 total_dag_num += len(dag_list)
 
+            plugin_list = []
+            for plugin in module.findall('plugin'):
+              if plugin.text is None:
+                continue
+              plugin_description = plugin.text.strip()
+              if len(plugin_description) > 0:
+                plugin_list.append(plugin_description)
+            total_plugin_num += len(plugin_list)
+
             if process_name is None:
                 process_name = 'mainboard_default_' + str(os.getpid())
             process_name = process_name.strip()
@@ -376,6 +390,10 @@ def start(launch_file=''):
                 dag_dict[str(process_name)] = dag_list
             else:
                 dag_dict[str(process_name)].extend(dag_list)
+            if str(process_name) not in plugin_dict:
+                plugin_dict[str(process_name)] = plugin_list
+            else:
+                plugin_dict[str(process_name)].extend(plugin_list)
 
     process_list = []
     root = tree.getroot()
@@ -434,13 +452,13 @@ def start(launch_file=''):
                     continue
                 pw = ProcessWrapper(
                     process_name.split()[0], 0, [
-                        ""], process_name, process_type,
+                        ""], [], process_name, process_type,
                     exception_handler)
             # Default is library
             else:
                 pw = ProcessWrapper(
                     g_binary_name, 0, dag_dict[
-                        str(process_name)], process_name,
+                        str(process_name)], plugin_dict[str(process_name)], process_name,
                     process_type, sched_name, exception_handler)
             result = pw.start()
             if result != 0:
@@ -502,7 +520,6 @@ def main():
         logger.error(
             'Error: environment variable CYBER_PATH not found, set environment first.')
         sys.exit(1)
-    os.chdir(cyber_path)
     parser = argparse.ArgumentParser(description='cyber launcher')
     subparsers = parser.add_subparsers(help='sub-command help')
 

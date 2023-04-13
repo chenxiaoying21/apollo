@@ -1,0 +1,12 @@
+is_lane_borrowing: false
+is_pull_over: false
+is_extend_lane_bounds_to_include_adc: false
+pull_over_destination_to_adc_buffer: 25.0
+pull_over_destination_to_pathend_buffer: 4.0
+pull_over_road_edge_buffer: 0.15
+pull_over_approach_lon_distance_adjust_factor: 1.5
+obstacle_lat_buffer: 0.4
+obstacle_lon_start_buffer: 0.3
+obstacle_lon_end_buffer: 2.0
+lane_change_prepare_length: 60.0
+enable_smarter_lane_change: true

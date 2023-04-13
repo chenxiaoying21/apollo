@@ -24,7 +24,7 @@
 #include <string>
 
 #include "modules/planning/proto/learning_data.pb.h"
-#include "modules/planning/proto/task_config.pb.h"
+#include "modules/planning/learning_based/model_inference/proto/learning_model_inference.pb.h"
 
 namespace apollo {
 namespace planning {

@@ -133,14 +133,21 @@ cc_library(
 
 cc_library(
     name = "planning_gflags",
-    srcs = ["planning_gflags.cc"],
+    srcs = ["libplanning_gflags.so"],
     hdrs = ["planning_gflags.h"],
+    alwayslink = True
+)
+cc_binary(
+  name = "libplanning_gflags.so",
+    srcs = ["planning_gflags.cc",
+                  "planning_gflags.h"],
     copts = PLANNING_COPTS,
+    linkshared = True,
+    linkstatic = True,
     deps = [
         "@com_github_gflags_gflags//:gflags",
     ],
 )
-
 cc_library(
     name = "reference_line_info",
     srcs = ["reference_line_info.cc"],
@@ -506,6 +513,16 @@ cc_library(
     deps = [
         "//cyber",
         "//modules/planning/proto:learning_data_cc_proto",
+    ],
+)
+
+cc_library(
+    name = "config_util",
+    srcs = ["config_util.cc"],
+    hdrs = ["config_util.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//cyber",
     ],
 )
 

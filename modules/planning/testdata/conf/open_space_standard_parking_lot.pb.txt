@@ -1,5 +1,5 @@
 delta_t : 0.5
-is_near_destination_threshold : 0.05
+near_destination_threshold : 0.05
 
 roi_config : {
   roi_longitudinal_range_start : 15.0

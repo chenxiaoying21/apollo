@@ -1,0 +1,16 @@
+<package>
+    <name>planning-scenario-traffic-light-unprotected-right-turn</name>
+    <version>1.0.0</version>
+    <description>
+      traffic light unprotected right turn scenario
+    </description>
+    <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
+    <type>module</type>
+    <src_path>//traffic_light_unprotected_right_turn</src_path>
+    <license>BSD</license>
+    <author>Apollo</author>
+    <depend>bazel-extend-tools-dev</depend>
+    <depend type="binary" repo_name="planning">planning-dev</depend>
+    
+    <builder>bazel</builder>
+  </package>

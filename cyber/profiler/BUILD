@@ -1,14 +1,8 @@
 load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
+load("//tools/platform:build_defs.bzl", "if_profiler")
 load("//tools:cpplint.bzl", "cpplint")
 
 package(default_visibility = ["//visibility:public"])
-
-config_setting(
-    name = "enable_profiler",
-    define_values = {
-        "ENABLE_PROFILER": "true",
-    },
-)
 
 cc_library(
     name = "block_manager",
@@ -44,6 +38,7 @@ cc_test(
     name = "profiler_test",
     size = "small",
     srcs = ["profiler_test.cc"],
+    copts = if_profiler(),
     deps = [
         ":profiler",
         "@com_google_googletest//:gtest_main",

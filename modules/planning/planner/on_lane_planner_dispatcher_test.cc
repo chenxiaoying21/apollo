@@ -23,6 +23,7 @@
 #include "cyber/common/file.h"
 #include "gtest/gtest.h"
 #include "modules/planning/planner/planner_dispatcher.h"
+#include "modules/planning/common/dependency_injector.h"
 
 namespace apollo {
 namespace planning {

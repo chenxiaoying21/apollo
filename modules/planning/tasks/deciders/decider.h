@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file decider.h
  **/
 
 #pragma once
@@ -31,9 +31,6 @@ namespace planning {
 
 class Decider : public Task {
  public:
-  explicit Decider(const TaskConfig& config);
-  Decider(const TaskConfig& config,
-          const std::shared_ptr<DependencyInjector>& injector);
   virtual ~Decider() = default;
 
   apollo::common::Status Execute(

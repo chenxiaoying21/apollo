@@ -107,7 +107,7 @@ class ReferenceLineProvider {
 
   void GenerateThread();
   void IsValidReferenceLine();
-  void PrioritzeChangeLane(std::list<hdmap::RouteSegments>* route_segments);
+  void PrioritizeChangeLane(std::list<hdmap::RouteSegments>* route_segments);
 
   bool CreateRouteSegments(const common::VehicleState& vehicle_state,
                            std::list<hdmap::RouteSegments>* segments);

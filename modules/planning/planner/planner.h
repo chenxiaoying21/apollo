@@ -20,9 +20,9 @@
 #include <string>
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
+#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/planning/common/frame.h"
-#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/planning/scenarios/scenario.h"
 #include "modules/planning/scenarios/scenario_manager.h"
 
@@ -69,10 +69,12 @@ class Planner {
 
   virtual void Stop() = 0;
 
+  virtual void Reset(Frame* frame) { scenario_manager_.Reset(frame); }
+
  protected:
   PlanningConfig config_;
-  scenario::ScenarioManager scenario_manager_;
-  scenario::Scenario* scenario_ = nullptr;
+  ScenarioManager scenario_manager_;
+  Scenario* scenario_ = nullptr;
 };
 
 class PlannerWithReferenceLine : public Planner {

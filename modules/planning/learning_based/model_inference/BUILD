@@ -11,7 +11,7 @@ cc_library(
     copts = PLANNING_COPTS,
     deps = [
         "//modules/planning/proto:learning_data_cc_proto",
-        "//modules/planning/proto:task_config_cc_proto",
+        "//modules/planning/learning_based/model_inference/proto:learning_model_inference_cc_proto",
     ],
 )
 

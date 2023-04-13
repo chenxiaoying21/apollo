@@ -29,8 +29,6 @@ namespace planning {
 using apollo::common::Status;
 using apollo::planning_internal::STGraphDebug;
 
-SpeedOptimizer::SpeedOptimizer(const TaskConfig& config) : Task(config) {}
-
 Status SpeedOptimizer::Execute(Frame* frame,
                                ReferenceLineInfo* reference_line_info) {
   Task::Execute(frame, reference_line_info);

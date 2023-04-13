@@ -21,6 +21,7 @@
 #include "cyber/common/environment.h"
 #include "cyber/common/file.h"
 #include "cyber/component/component_base.h"
+#include "cyber/plugin_manager/plugin_manager.h"
 
 namespace apollo {
 namespace cyber {
@@ -39,6 +40,12 @@ bool ModuleController::LoadAll() {
   const std::string current_path = common::GetCurrentPath();
   const std::string dag_root_path = common::GetAbsolutePath(work_root, "dag");
   std::vector<std::string> paths;
+  apollo::cyber::plugin_manager::PluginManager::Instance()
+      ->LoadInstalledPlugins();
+  for (auto& plugin_description : args_.GetPluginDescriptionList()) {
+    apollo::cyber::plugin_manager::PluginManager::Instance()->LoadPlugin(
+        plugin_description);
+  }
   for (auto& dag_conf : args_.GetDAGConfList()) {
     std::string module_path = "";
     if (dag_conf == common::GetFileName(dag_conf)) {

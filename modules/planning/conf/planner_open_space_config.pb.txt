@@ -141,6 +141,5 @@ iterative_anchoring_smoother_config {
   }
 }
 delta_t: 0.5
-is_near_destination_threshold: 0.05
-enable_check_parallel_trajectory: false
+near_destination_threshold: 0.05
 enable_linear_interpolation: false
