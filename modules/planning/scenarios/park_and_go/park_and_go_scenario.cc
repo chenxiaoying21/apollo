@@ -55,10 +55,6 @@ bool ParkAndGoScenario::IsTransferable(const Scenario* const other_scenario,
   if (other_scenario == nullptr) {
     return false;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
-    return false;
-  }
   bool park_and_go = false;
   const auto& scenario_config = context_.scenario_config;
   const auto vehicle_state_provider = injector_->vehicle_state();

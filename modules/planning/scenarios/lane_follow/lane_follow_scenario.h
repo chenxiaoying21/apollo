@@ -46,8 +46,6 @@ class LaneFollowScenario : public Scenario {
 
   bool IsTransferable(const Scenario* other_scenario,
                       const Frame& frame) override;
-  // The scenario can be interrupted by other scenario
-  bool IsSwitchable() const { return true; }
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::LaneFollowScenario,

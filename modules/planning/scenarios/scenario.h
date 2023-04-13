@@ -70,8 +70,6 @@ class Scenario {
                               const Frame& frame) {
     return false;
   }
-  // The scenario can be interrupted by other scenario
-  virtual bool IsSwitchable() const { return false; }
 
   virtual ScenarioStatus Process(
       const common::TrajectoryPoint& planning_init_point, Frame* frame);

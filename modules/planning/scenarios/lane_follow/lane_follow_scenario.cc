@@ -31,10 +31,6 @@ bool LaneFollowScenario::IsTransferable(const Scenario* other_scenario,
   if (other_scenario == nullptr) {
     return true;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
-    return false;
-  }
   return true;
 }
 

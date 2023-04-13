@@ -59,10 +59,6 @@ bool YieldSignScenario::IsTransferable(const Scenario* other_scenario,
   if (other_scenario == nullptr) {
     return false;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
-    return false;
-  }
   const auto& reference_line_info = frame.reference_line_info().front();
   const auto& first_encountered_overlaps =
       reference_line_info.FirstEncounteredOverlaps();
