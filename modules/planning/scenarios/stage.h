@@ -70,7 +70,7 @@ class Stage {
   const std::string& Name() const;
 
   template <typename T>
-  T* GetContextAs() {
+  T* GetContextAs() const {
     return static_cast<T*>(context_);
   }
 

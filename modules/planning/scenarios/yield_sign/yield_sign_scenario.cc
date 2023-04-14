@@ -62,16 +62,21 @@ bool YieldSignScenario::IsTransferable(const Scenario* other_scenario,
   const auto& reference_line_info = frame.reference_line_info().front();
   const auto& first_encountered_overlaps =
       reference_line_info.FirstEncounteredOverlaps();
-  if (first_encountered_overlaps.empty()) {
+  hdmap::PathOverlap* yield_sign_overlap = nullptr;
+  for (const auto& overlap : first_encountered_overlaps) {
+    if (overlap.first == ReferenceLineInfo::SIGNAL ||
+        overlap.first == ReferenceLineInfo::STOP_SIGN) {
+        return false;
+    } else if (overlap.first == ReferenceLineInfo::YIELD_SIGN) {
+      yield_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
+    }
+  }
+  if (yield_sign_overlap == nullptr) {
     return false;
   }
-  if (first_encountered_overlaps[0].first != ReferenceLineInfo::YIELD_SIGN) {
-    return false;
-  }
-  auto yield_sign_overlap = first_encountered_overlaps[0].second;
   const double adc_front_edge_s = reference_line_info.AdcSlBoundary().end_s();
   const double adc_distance_to_yield_sign =
-      yield_sign_overlap.start_s - adc_front_edge_s;
+      yield_sign_overlap->start_s - adc_front_edge_s;
   const bool yield_sign_scenario =
       (adc_distance_to_yield_sign > 0.0 &&
        adc_distance_to_yield_sign <=
