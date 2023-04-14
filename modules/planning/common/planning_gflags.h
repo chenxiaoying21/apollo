@@ -201,3 +201,4 @@ DECLARE_int32(min_past_history_points_len);
 // Parameter for scenario or task process.
 DECLARE_double(path_bounds_decider_resolution);
 DECLARE_double(num_extra_tail_bound_point);
+DECLARE_bool(enable_pull_over_at_destination);

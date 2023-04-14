@@ -374,3 +374,4 @@ DEFINE_int32(min_past_history_points_len, 0,
 DEFINE_double(path_bounds_decider_resolution, 0.5,
               "The distance along s direction.");
 DEFINE_double(num_extra_tail_bound_point, 20, "The extra tail point number.");
+DEFINE_bool(enable_pull_over_at_destination, false, "Whether to pull over at destination");
