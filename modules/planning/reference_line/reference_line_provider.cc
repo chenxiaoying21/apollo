@@ -192,7 +192,7 @@ void ReferenceLineProvider::GenerateThread() {
     cyber::SleepFor(std::chrono::milliseconds(kSleepTime));
     const double start_time = Clock::NowInSeconds();
     if (!has_routing_) {
-      AERROR << "Routing is not ready.";
+      AINFO << "Routing is not ready.";
       continue;
     }
     std::list<ReferenceLine> reference_lines;
