@@ -27,7 +27,6 @@
 #include "modules/planning/proto/scenario_pipeline.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/common/util/factory.h"
-#include "modules/planning/common/config_util.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/planning_context.h"
 

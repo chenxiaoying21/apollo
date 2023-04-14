@@ -1,5 +1,5 @@
 stage: {
-  name: "LANE_FOLLOW_DEFAULT_STAGE"
+  name: "LANE_FOLLOW_STAGE"
   type: "LaneFollowStage"
   enabled: true
   task {
