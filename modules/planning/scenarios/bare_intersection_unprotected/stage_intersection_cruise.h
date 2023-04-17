@@ -23,6 +23,7 @@
 #include <memory>
 #include <string>
 
+#include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/scenarios/bare_intersection_unprotected/bare_intersection_unprotected_scenario.h"
 #include "modules/planning/scenarios/stage_intersection_cruise.h"
 

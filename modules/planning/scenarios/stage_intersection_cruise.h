@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/scenarios/stage.h"
 
 namespace apollo {

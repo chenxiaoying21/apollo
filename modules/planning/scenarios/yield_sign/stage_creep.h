@@ -50,5 +50,8 @@ class YieldSignStageCreep : public Stage {
   std::shared_ptr<CreepDecider> creep_decider_;
 };
 
+CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::YieldSignStageCreep,
+                                     Stage)
+
 }  // namespace planning
 }  // namespace apollo
