@@ -31,9 +31,9 @@ class PullOverStageRetryParking : public Stage {
   StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                       Frame* frame) override;
 
+ private:
   Stage::StageStatus FinishStage();
 
- private:
   bool CheckADCPullOverOpenSpace();
 };
 

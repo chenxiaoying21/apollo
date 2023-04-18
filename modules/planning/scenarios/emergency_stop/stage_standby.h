@@ -40,7 +40,6 @@ class EmergencyStopStageStandby : public Stage {
  private:
   Stage::StageStatus FinishStage();
 
- private:
   ScenarioEmergencyStopConfig scenario_config_;
 };
 

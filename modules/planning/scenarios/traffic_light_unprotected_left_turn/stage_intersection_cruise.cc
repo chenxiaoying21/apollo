@@ -21,6 +21,7 @@
 #include "modules/planning/scenarios/traffic_light_unprotected_left_turn/stage_intersection_cruise.h"
 
 #include "cyber/common/log.h"
+#include "modules/planning/common/planning_context.h"
 #include "modules/planning/scenarios/traffic_light_unprotected_left_turn/context.h"
 
 namespace apollo {
@@ -48,21 +49,6 @@ TrafficLightUnprotectedLeftTurnStageIntersectionCruise::Process(
 Stage::StageStatus
 TrafficLightUnprotectedLeftTurnStageIntersectionCruise::FinishStage() {
   return FinishScenario();
-}
-
-hdmap::PathOverlap*
-TrafficLightUnprotectedLeftTurnStageIntersectionCruise::GetTrafficSignOverlap(
-    const ReferenceLineInfo& reference_line_info,
-    const PlanningContext* context) const {
-  // traffic_light scenarios
-  const auto& traffic_light_status = context->planning_status().traffic_light();
-  const std::string traffic_sign_overlap_id =
-      traffic_light_status.current_traffic_light_overlap_id_size() > 0
-          ? traffic_light_status.current_traffic_light_overlap_id(0)
-          : "";
-  auto traffic_sign_overlap = reference_line_info.GetOverlapOnReferenceLine(
-      traffic_sign_overlap_id, ReferenceLineInfo::SIGNAL);
-  return traffic_sign_overlap;
 }
 
 }  // namespace planning

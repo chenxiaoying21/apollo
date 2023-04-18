@@ -40,7 +40,6 @@ class EmergencyPullOverStageStandby : public Stage {
  private:
   Stage::StageStatus FinishStage();
 
- private:
   ScenarioEmergencyPullOverConfig scenario_config_;
 };
 

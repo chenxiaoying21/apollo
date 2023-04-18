@@ -135,7 +135,7 @@ bool TrafficLightProtectedScenario::Enter(Frame* frame) {
       ->mutable_traffic_light()
       ->Clear();
   if (context_.current_traffic_light_overlap_ids.empty()) {
-    AERROR << "Can not find yield sign overlap in refline";
+    AERROR << "Can not find traffic light overlap in reference line!";
     return false;
   }
   for (const auto& overlap_id : context_.current_traffic_light_overlap_ids) {

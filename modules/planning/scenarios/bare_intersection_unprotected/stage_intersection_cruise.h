@@ -25,7 +25,7 @@
 
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/scenarios/bare_intersection_unprotected/bare_intersection_unprotected_scenario.h"
-#include "modules/planning/scenarios/stage_intersection_cruise.h"
+#include "modules/planning/scenarios/base_stage_cruise.h"
 
 namespace apollo {
 namespace planning {
@@ -33,12 +33,21 @@ namespace planning {
 struct BareIntersectionUnprotectedContext;
 
 class BareIntersectionUnprotectedStageIntersectionCruise
-    : public StageIntersectionCruise {
- private:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+    : public BaseStageCruise {
+ public:
+  StageStatus Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
+ private:
   Stage::StageStatus FinishStage();
+
+  /**
+   * @brief Get the traffic sign overlap of the stage.
+   *
+   * @param reference_line_info current reference line information
+   * @param context planning context containt realtime planning information.
+   * @return traffic sign overlap of the stage
+   */
   hdmap::PathOverlap* GetTrafficSignOverlap(
       const ReferenceLineInfo& reference_line_info,
       const PlanningContext* context) const;

@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file stage_pre_stop.h
  **/
 
 #pragma once
@@ -31,17 +31,17 @@ namespace apollo {
 namespace planning {
 
 class StopSignUnprotectedStagePreStop : public Stage {
- private:
+ public:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
+ private:
   int AddWatchVehicle(const Obstacle& obstacle,
                       std::unordered_map<std::string, std::vector<std::string>>*
                           watch_vehicles);
 
   bool CheckADCStop(const double adc_front_edge_s, const double stop_line_s);
 
- private:
   Stage::StageStatus FinishStage();
 };
 

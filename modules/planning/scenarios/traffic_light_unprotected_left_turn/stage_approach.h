@@ -27,7 +27,7 @@ namespace apollo {
 namespace planning {
 
 class TrafficLightUnprotectedLeftTurnStageApproach : public Stage {
- private:
+ public:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 

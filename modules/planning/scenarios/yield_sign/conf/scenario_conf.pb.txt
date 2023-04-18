@@ -2,7 +2,7 @@
   max_valid_stop_distance: 4.5
   min_pass_s_distance: 3.0
   creep_timeout_sec: 10.0
-  creep_decider_config {
+  creep_stage_config {
     stop_distance: 0.3
     speed_limit: 1.0
     max_valid_stop_distance: 0.4

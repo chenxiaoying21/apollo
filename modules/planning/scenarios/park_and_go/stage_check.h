@@ -34,10 +34,11 @@ class ParkAndGoStageCheck : public Stage {
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
+ private:
   Stage::StageStatus FinishStage(const bool success);
 
- private:
   bool CheckObstacle(const ReferenceLineInfo& reference_line_info);
+
   void ADCInitStatus();
 };
 

@@ -15,32 +15,41 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file base_stage_cruise.h
  **/
 
 #pragma once
 
-#include <string>
+#include "modules/planning/scenarios/stage.h"
 
-#include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/scenarios/traffic_light_base/base_stage_traffic_light_cruise.h"
+namespace apollo {
+namespace hdmap {
+class PathOverlap;
+}  // namespace hdmap
+}  // namespace apollo
 
 namespace apollo {
 namespace planning {
 
-class TrafficLightUnprotectedLeftTurnStageIntersectionCruise
-    : public BaseStageTrafficLightCruise {
+class PlanningContext;
+
+class BaseStageCruise : public Stage {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  bool CheckDone(const Frame& frame, const PlanningContext* context,
+                 const bool right_of_way_status);
 
  private:
-  Stage::StageStatus FinishStage();
+  /**
+   * @brief Get the traffic sign overlap of the stage.
+   *
+   * @param reference_line_info current reference line information
+   * @param context planning context containt realtime planning information.
+   * @return traffic sign overlap of the stage
+   */
+  virtual hdmap::PathOverlap* GetTrafficSignOverlap(
+      const ReferenceLineInfo& reference_line_info,
+      const PlanningContext* context) const = 0;
 };
-
-CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(
-    apollo::planning::TrafficLightUnprotectedLeftTurnStageIntersectionCruise,
-    Stage)
 
 }  // namespace planning
 }  // namespace apollo

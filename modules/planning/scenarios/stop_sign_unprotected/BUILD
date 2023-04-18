@@ -66,7 +66,6 @@ cc_library(
         "//modules/planning/common/util:util_lib",
         "//modules/planning/scenarios:scenario",
         "//modules/planning/scenarios/stop_sign_unprotected/proto:stop_sign_unprotected_cc_proto",
-        "//modules/planning/scenarios/common/creep_util:creep_decider",
         "@com_github_gflags_gflags//:gflags",
         "@eigen",
     ],

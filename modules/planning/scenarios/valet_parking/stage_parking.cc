@@ -18,6 +18,7 @@
  * @file
  **/
 #include "modules/planning/scenarios/valet_parking/stage_parking.h"
+#include "modules/planning/common/frame.h"
 
 namespace apollo {
 namespace planning {

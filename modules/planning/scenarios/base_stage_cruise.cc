@@ -15,24 +15,25 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file base_stage_cruise.cc
  **/
 
-#include "modules/planning/scenarios/stage_intersection_cruise.h"
+#include "modules/planning/scenarios/base_stage_cruise.h"
 
 #include <string>
 
 #include "cyber/common/log.h"
 #include "modules/map/pnc_map/path.h"
+#include "modules/planning/common/frame.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/util/util.h"
 
 namespace apollo {
 namespace planning {
 
-bool StageIntersectionCruise::CheckDone(const Frame& frame,
-                                        const PlanningContext* context,
-                                        const bool right_of_way_status) {
+bool BaseStageCruise::CheckDone(const Frame& frame,
+                                const PlanningContext* context,
+                                const bool right_of_way_status) {
   const auto& reference_line_info = frame.reference_line_info().front();
 
   const auto& junction_overlaps =

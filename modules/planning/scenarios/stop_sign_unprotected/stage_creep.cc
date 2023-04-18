@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file stage_creep.cc
  **/
 #include "modules/planning/scenarios/stop_sign_unprotected/stage_creep.h"
 
@@ -30,7 +30,6 @@
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/speed_profile_generator.h"
 #include "modules/planning/common/util/util.h"
-#include "modules/planning/scenarios/common/creep_util/creep_decider.h"
 #include "modules/planning/scenarios/stop_sign_unprotected/context.h"
 
 namespace apollo {
@@ -50,10 +49,6 @@ bool StopSignUnprotectedStageCreep::Init(
     AERROR << Name() << "init failed!";
     return false;
   }
-  creep_decider_ = std::make_shared<CreepDecider>(
-      GetContextAs<StopSignUnprotectedContext>()
-          ->scenario_config.creep_decider_config(),
-      injector);
   return ret;
 }
 
@@ -78,7 +73,7 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
       break;
     }
 
-    const auto ret = creep_decider_->Process(frame, &reference_line_info);
+    const auto ret = ProcessCreep(frame, &reference_line_info);
     if (!ret.ok()) {
       AERROR << "Failed to run CreepDecider ], Error message: "
              << ret.error_message();
@@ -111,8 +106,8 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
   const double wait_time = Clock::NowInSeconds() - context->creep_start_time;
   const double timeout_sec = scenario_config.creep_timeout_sec();
 
-  double creep_stop_s = stop_sign_end_s + creep_decider_->FindCreepDistance(
-                                              *frame, reference_line_info);
+  double creep_stop_s =
+      stop_sign_end_s + FindCreepDistance(*frame, reference_line_info);
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
   if (distance <= 0.0) {
@@ -121,12 +116,39 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
         SpeedProfileGenerator::GenerateFixedDistanceCreepProfile(0.0, 0);
   }
 
-  if (creep_decider_->CheckCreepDone(*frame, reference_line_info,
-                                     stop_sign_end_s, wait_time, timeout_sec)) {
+  if (CheckCreepDone(*frame, reference_line_info, stop_sign_end_s, wait_time,
+                     timeout_sec)) {
     return FinishStage();
   }
 
   return Stage::RUNNING;
+}
+
+const CreepStageConfig& StopSignUnprotectedStageCreep::GetCreepStageConfig()
+    const {
+  return GetContextAs<StopSignUnprotectedContext>()
+      ->scenario_config.creep_stage_config();
+}
+
+void StopSignUnprotectedStageCreep::GetOverlapStopInfo(
+    Frame* frame, ReferenceLineInfo* reference_line_info, double* stop_line_s,
+    std::string* overlap_id) const {
+  const std::string stop_sign_overlap_id = injector_->planning_context()
+                                               ->planning_status()
+                                               .stop_sign()
+                                               .current_stop_sign_overlap_id();
+
+  if (!stop_sign_overlap_id.empty()) {
+    // get overlap along reference line
+    PathOverlap* current_stop_sign_overlap =
+        reference_line_info->GetOverlapOnReferenceLine(
+            stop_sign_overlap_id, ReferenceLineInfo::STOP_SIGN);
+    if (current_stop_sign_overlap) {
+      *stop_line_s = current_stop_sign_overlap->end_s +
+                     FindCreepDistance(*frame, *reference_line_info);
+      *overlap_id = current_stop_sign_overlap->object_id;
+    }
+  }
 }
 
 Stage::StageStatus StopSignUnprotectedStageCreep::FinishStage() {

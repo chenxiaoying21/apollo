@@ -24,22 +24,19 @@
 #include <string>
 
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/scenarios/stage_intersection_cruise.h"
+#include "modules/planning/scenarios/traffic_light_base/base_stage_traffic_light_cruise.h"
 
 namespace apollo {
 namespace planning {
 
 class TrafficLightProtectedStageIntersectionCruise
-    : public StageIntersectionCruise {
- private:
+    : public BaseStageTrafficLightCruise {
+ public:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
+ private:
   Stage::StageStatus FinishStage();
-
-  hdmap::PathOverlap* GetTrafficSignOverlap(
-      const ReferenceLineInfo& reference_line_info,
-      const PlanningContext* context) const override;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

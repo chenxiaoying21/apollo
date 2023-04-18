@@ -14,33 +14,27 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/scenarios/emergency_pull_over/stage_standby.h"
-#include "gtest/gtest.h"
-#include "cyber/common/file.h"
-#include "cyber/common/log.h"
+/**
+ * @file base_stage_traffic_light_cruise.cc
+ **/
+
+#include "modules/planning/scenarios/traffic_light_base/base_stage_traffic_light_cruise.h"
 
 namespace apollo {
 namespace planning {
 
-class StageStandbyTest : public ::testing::Test {
- public:
-  virtual void SetUp() {
-    config_.set_name("EMERGENCY_PULL_OVER_STANDBY");
-    injector_ = std::make_shared<DependencyInjector>();
-  }
-
- protected:
-  StagePipeline config_;
-  std::shared_ptr<DependencyInjector> injector_;
-  EmergencyPullOverContext context_;
-};
-
-TEST_F(StageStandbyTest, Init) {
-  EmergencyPullOverStageStandby emergency_pull_over_stage_standby;
-  emergency_pull_over_stage_standby.Init(
-      config_, injector_, "scenarios/emergency_pull_over/conf", &context_);
-  EXPECT_EQ(emergency_pull_over_stage_standby.Name(),
-            "EMERGENCY_PULL_OVER_STANDBY");
+hdmap::PathOverlap* BaseStageTrafficLightCruise::GetTrafficSignOverlap(
+    const ReferenceLineInfo& reference_line_info,
+    const PlanningContext* context) const {
+  // traffic_light scenarios
+  const auto& traffic_light_status = context->planning_status().traffic_light();
+  const std::string traffic_sign_overlap_id =
+      traffic_light_status.current_traffic_light_overlap_id_size() > 0
+          ? traffic_light_status.current_traffic_light_overlap_id(0)
+          : "";
+  auto traffic_sign_overlap = reference_line_info.GetOverlapOnReferenceLine(
+      traffic_sign_overlap_id, ReferenceLineInfo::SIGNAL);
+  return traffic_sign_overlap;
 }
 
 }  // namespace planning

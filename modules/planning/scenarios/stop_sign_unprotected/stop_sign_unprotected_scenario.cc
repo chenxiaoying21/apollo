@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file stop_sign_unprotected_scenario.cc
  **/
 
 #include "modules/planning/scenarios/stop_sign_unprotected/stop_sign_unprotected_scenario.h"

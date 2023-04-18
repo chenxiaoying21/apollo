@@ -31,10 +31,11 @@ namespace planning {
 struct TrafficLightUnprotectedRightTurnContext;
 
 class TrafficLightUnprotectedRightTurnStageStop : public Stage {
- private:
+ public:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
+ private:
   bool CheckTrafficLightNoRightTurnOnRed(const std::string& traffic_light_id);
 
   Stage::StageStatus FinishStage(const bool protected_mode);

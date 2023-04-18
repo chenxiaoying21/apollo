@@ -66,7 +66,7 @@ bool YieldSignScenario::IsTransferable(const Scenario* other_scenario,
   for (const auto& overlap : first_encountered_overlaps) {
     if (overlap.first == ReferenceLineInfo::SIGNAL ||
         overlap.first == ReferenceLineInfo::STOP_SIGN) {
-        return false;
+      return false;
     } else if (overlap.first == ReferenceLineInfo::YIELD_SIGN) {
       yield_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
     }
@@ -109,7 +109,7 @@ bool YieldSignScenario::Enter(Frame* frame) {
         ->mutable_planning_status()
         ->mutable_yield_sign()
         ->Clear();
-    AERROR << "Can not find yield sign overlap in refline";
+    AERROR << "Can not find yield sign overlap in reference line!";
     return false;
   }
 

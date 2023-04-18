@@ -24,28 +24,33 @@
 #include <string>
 
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/scenarios/common/creep_util/creep_decider.h"
-#include "modules/planning/scenarios/stage.h"
+#include "modules/planning/scenarios/traffic_light_base/base_stage_traffic_light_creep.h"
 
 namespace apollo {
 namespace planning {
 
 class CreepDecider;
 
-class TrafficLightUnprotectedRightTurnStageCreep : public Stage {
+class TrafficLightUnprotectedRightTurnStageCreep
+    : public BaseStageTrafficLightCreep {
  public:
   bool Init(const StagePipeline& config,
             const std::shared_ptr<DependencyInjector>& injector,
             const std::string& config_dir, void* context) override;
 
- private:
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
  private:
-  Stage::StageStatus FinishStage();
+  /**
+   * @brief Get the config of creep stage from ScenarioContext, to be overwrited
+   * by the sub classes.
+   *
+   * @return config of creep stage
+   */
+  const CreepStageConfig& GetCreepStageConfig() const override;
 
-  std::shared_ptr<CreepDecider> creep_decider_;
+  Stage::StageStatus FinishStage();
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

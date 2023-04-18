@@ -154,7 +154,7 @@ bool TrafficLightUnprotectedRightTurnScenario::Enter(Frame* frame) {
         ->mutable_planning_status()
         ->mutable_traffic_light()
         ->Clear();
-    AERROR << "Can not find yield sign overlap in refline";
+    AERROR << "Can not find traffic light overlap in reference line!";
     return false;
   }
 

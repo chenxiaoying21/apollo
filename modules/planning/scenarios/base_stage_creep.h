@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file stage_creep.h
+ * @file base_stage_creep.h
  **/
 
 #pragma once
@@ -23,22 +23,33 @@
 #include <memory>
 #include <string>
 
-#include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/scenarios/base_stage_creep.h"
+#include "modules/planning/scenarios/stage.h"
+
+namespace apollo {
+namespace common {
+class Status;
+}  // namespace common
+}  // namespace apollo
 
 namespace apollo {
 namespace planning {
 
-class CreepDecider;
+class Frame;
+class ReferenceLineInfo;
+class CreepStageConfig;
 
-class StopSignUnprotectedStageCreep : public BaseStageCreep {
+class BaseStageCreep : public Stage {
  public:
-  bool Init(const StagePipeline& config,
-            const std::shared_ptr<DependencyInjector>& injector,
-            const std::string& config_dir, void* context) override;
+  common::Status ProcessCreep(Frame* frame,
+                              ReferenceLineInfo* reference_line_info) const;
 
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  bool CheckCreepDone(const Frame& frame,
+                      const ReferenceLineInfo& reference_line_info,
+                      const double stop_sign_overlap_end_s,
+                      const double wait_time_sec, const double timeout_sec);
+
+  double FindCreepDistance(const Frame& frame,
+                           const ReferenceLineInfo& reference_line_info) const;
 
  private:
   /**
@@ -47,7 +58,7 @@ class StopSignUnprotectedStageCreep : public BaseStageCreep {
    *
    * @return config of creep stage
    */
-  const CreepStageConfig& GetCreepStageConfig() const override;
+  virtual const CreepStageConfig& GetCreepStageConfig() const = 0;
 
   /**
    * @brief Get the overlap id of stage and the stop line distance according to
@@ -58,15 +69,13 @@ class StopSignUnprotectedStageCreep : public BaseStageCreep {
    * @param stop_line_s stop distance of the creep stage
    * @param overlap_id overlap id of current stage
    */
-  void GetOverlapStopInfo(Frame* frame, ReferenceLineInfo* reference_line_info,
-                          double* stop_line_s,
-                          std::string* overlap_id) const override;
+  virtual void GetOverlapStopInfo(Frame* frame,
+                                  ReferenceLineInfo* reference_line_info,
+                                  double* stop_line_s,
+                                  std::string* overlap_id) const = 0;
 
-  Stage::StageStatus FinishStage();
+  static constexpr const char* CREEP_VO_ID_PREFIX_ = "CREEP_";
 };
-
-CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(
-    apollo::planning::StopSignUnprotectedStageCreep, Stage)
 
 }  // namespace planning
 }  // namespace apollo
