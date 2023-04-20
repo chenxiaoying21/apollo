@@ -47,11 +47,33 @@ class BaseStageCreep : public Stage {
                       const ReferenceLineInfo& reference_line_info,
                       const double stop_sign_overlap_end_s,
                       const double wait_time_sec, const double timeout_sec);
-
-  double FindCreepDistance(const Frame& frame,
-                           const ReferenceLineInfo& reference_line_info) const;
+  /**
+   * @brief Get the postion where creeping stage finishes. When the front edge
+   * of vehicle reaches the position, the creeping stage finishes.
+   *
+   * @param overlap_end_s The end s mapped to reference line of the overlap.
+   * @param frame The frame information for current planning cycle.
+   * @param reference_line_info  The reference line information of current
+   * planning cycle.
+   * @return The distance where creeping stage finishes.
+   */
+  double GetCreepFinishS(double overlap_end_s, const Frame& frame,
+                         const ReferenceLineInfo& reference_line_info) const;
 
  private:
+  /**
+   * @brief Get the target stop position for creeping stage. This position is
+   * just for slowing down the vehicle speed and creep stage will end before it.
+   *
+   * @param overlap_end_s The end s mapped to reference line of the overlap.
+   * @param frame The frame information for current planning cycle.
+   * @param reference_line_info  The reference line information of current
+   * planning cycle.
+   * @return Target stop position for creeping stage.
+   */
+  double GetCreepTargetS(double overlap_end_s, const Frame& frame,
+                         const ReferenceLineInfo& reference_line_info) const;
+
   /**
    * @brief Get the config of creep stage from ScenarioContext, to be overwrited
    * by the sub classes.
@@ -66,12 +88,13 @@ class BaseStageCreep : public Stage {
    *
    * @param frame current frame information
    * @param reference_line_info current reference line information
-   * @param stop_line_s stop distance of the creep stage
+   * @param overlap_end_s end distance mapped to reference line of the overlap
    * @param overlap_id overlap id of current stage
+   * @return return true if find a valid overlap
    */
-  virtual void GetOverlapStopInfo(Frame* frame,
+  virtual bool GetOverlapStopInfo(Frame* frame,
                                   ReferenceLineInfo* reference_line_info,
-                                  double* stop_line_s,
+                                  double* overlap_end_s,
                                   std::string* overlap_id) const = 0;
 
   static constexpr const char* CREEP_VO_ID_PREFIX_ = "CREEP_";

@@ -42,18 +42,17 @@ Status BaseStageCreep::ProcessCreep(
   CHECK_NOTNULL(frame);
   CHECK_NOTNULL(reference_line_info);
 
-  double stop_line_s = 0.0;
+  double overlap_end_s = 0.0;
   std::string current_overlap_id;
-  GetOverlapStopInfo(frame, reference_line_info, &stop_line_s,
-                     &current_overlap_id);
+  bool is_get_overlap_info = GetOverlapStopInfo(
+      frame, reference_line_info, &overlap_end_s, &current_overlap_id);
 
-  if (stop_line_s > 0.0) {
+  if (is_get_overlap_info) {
     std::string virtual_obstacle_id = CREEP_VO_ID_PREFIX_ + current_overlap_id;
     const double creep_stop_s =
-        stop_line_s + FindCreepDistance(*frame, *reference_line_info);
+        GetCreepTargetS(overlap_end_s, *frame, *reference_line_info);
     const std::vector<std::string> wait_for_obstacles;
-    util::BuildStopDecision(virtual_obstacle_id, creep_stop_s,
-                            GetCreepStageConfig().stop_distance(),
+    util::BuildStopDecision(virtual_obstacle_id, creep_stop_s, 0.0,
                             StopReasonCode::STOP_REASON_CREEPER,
                             wait_for_obstacles, "CreepDecider", frame,
                             reference_line_info);
@@ -62,10 +61,18 @@ Status BaseStageCreep::ProcessCreep(
   return Status::OK();
 }
 
-double BaseStageCreep::FindCreepDistance(
-    const Frame& frame, const ReferenceLineInfo& reference_line_info) const {
-  // more delicate design of creep distance
-  return 2.0;
+double BaseStageCreep::GetCreepTargetS(
+    double overlap_end_s, const Frame& frame,
+    const ReferenceLineInfo& reference_line_info) const {
+  // todo: more delicate design of creep target distance
+  return overlap_end_s + 4.0;
+}
+
+double BaseStageCreep::GetCreepFinishS(
+    double overlap_end_s, const Frame& frame,
+    const ReferenceLineInfo& reference_line_info) const {
+  // todo: more delicate design of creep finish distance
+  return GetCreepTargetS(overlap_end_s, frame, reference_line_info) - 2.0;
 }
 
 bool BaseStageCreep::CheckCreepDone(
@@ -74,13 +81,12 @@ bool BaseStageCreep::CheckCreepDone(
     const double timeout_sec) {
   const auto& creep_config = GetCreepStageConfig();
   bool creep_done = false;
-  double creep_stop_s = traffic_sign_overlap_end_s +
-                        FindCreepDistance(frame, reference_line_info);
+  double creep_stop_s =
+      GetCreepFinishS(traffic_sign_overlap_end_s, frame, reference_line_info);
 
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
-  if (distance < creep_config.max_valid_stop_distance() ||
-      wait_time_sec >= timeout_sec) {
+  if (distance < 0.0 || wait_time_sec >= timeout_sec) {
     bool all_far_away = true;
     for (auto* obstacle :
          reference_line_info.path_decision().obstacles().Items()) {
@@ -112,7 +118,6 @@ bool BaseStageCreep::CheckCreepDone(
         break;
       }
     }
-
     auto* creep_decider_status = injector_->planning_context()
                                      ->mutable_planning_status()
                                      ->mutable_creep_decider();

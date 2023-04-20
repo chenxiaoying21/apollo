@@ -107,8 +107,8 @@ Stage::StageStatus TrafficLightUnprotectedLeftTurnStageCreep::Process(
   const double wait_time = Clock::NowInSeconds() - context->creep_start_time;
   const double timeout_sec = scenario_config.creep_timeout_sec();
 
-  double creep_stop_s = current_traffic_light_overlap->end_s +
-                        FindCreepDistance(*frame, reference_line_info);
+  double creep_stop_s = GetCreepFinishS(current_traffic_light_overlap->end_s,
+                                        *frame, reference_line_info);
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
   if (distance <= 0.0) {

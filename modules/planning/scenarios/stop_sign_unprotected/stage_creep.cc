@@ -107,7 +107,7 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
   const double timeout_sec = scenario_config.creep_timeout_sec();
 
   double creep_stop_s =
-      stop_sign_end_s + FindCreepDistance(*frame, reference_line_info);
+      GetCreepFinishS(stop_sign_end_s, *frame, reference_line_info);
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
   if (distance <= 0.0) {
@@ -130,8 +130,8 @@ const CreepStageConfig& StopSignUnprotectedStageCreep::GetCreepStageConfig()
       ->scenario_config.creep_stage_config();
 }
 
-void StopSignUnprotectedStageCreep::GetOverlapStopInfo(
-    Frame* frame, ReferenceLineInfo* reference_line_info, double* stop_line_s,
+bool StopSignUnprotectedStageCreep::GetOverlapStopInfo(
+    Frame* frame, ReferenceLineInfo* reference_line_info, double* overlap_end_s,
     std::string* overlap_id) const {
   const std::string stop_sign_overlap_id = injector_->planning_context()
                                                ->planning_status()
@@ -144,11 +144,12 @@ void StopSignUnprotectedStageCreep::GetOverlapStopInfo(
         reference_line_info->GetOverlapOnReferenceLine(
             stop_sign_overlap_id, ReferenceLineInfo::STOP_SIGN);
     if (current_stop_sign_overlap) {
-      *stop_line_s = current_stop_sign_overlap->end_s +
-                     FindCreepDistance(*frame, *reference_line_info);
+      *overlap_end_s = current_stop_sign_overlap->end_s;
       *overlap_id = current_stop_sign_overlap->object_id;
+      return true;
     }
   }
+  return false;
 }
 
 Stage::StageStatus StopSignUnprotectedStageCreep::FinishStage() {

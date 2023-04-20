@@ -55,11 +55,12 @@ class StopSignUnprotectedStageCreep : public BaseStageCreep {
    *
    * @param frame current frame information
    * @param reference_line_info current reference line information
-   * @param stop_line_s stop distance of the creep stage
+   * @param overlap_end_s end distance mapped to reference line of the overlap
    * @param overlap_id overlap id of current stage
+   * @return return true if find a valid overlap
    */
-  void GetOverlapStopInfo(Frame* frame, ReferenceLineInfo* reference_line_info,
-                          double* stop_line_s,
+  bool GetOverlapStopInfo(Frame* frame, ReferenceLineInfo* reference_line_info,
+                          double* overlap_end_s,
                           std::string* overlap_id) const override;
 
   Stage::StageStatus FinishStage();

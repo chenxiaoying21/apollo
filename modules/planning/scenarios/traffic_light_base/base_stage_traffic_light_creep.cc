@@ -25,8 +25,8 @@
 namespace apollo {
 namespace planning {
 
-void BaseStageTrafficLightCreep::GetOverlapStopInfo(
-    Frame* frame, ReferenceLineInfo* reference_line_info, double* stop_line_s,
+bool BaseStageTrafficLightCreep::GetOverlapStopInfo(
+    Frame* frame, ReferenceLineInfo* reference_line_info, double* overlap_end_s,
     std::string* overlap_id) const {
   std::string current_traffic_light_overlap_id;
   if (injector_->planning_context()
@@ -45,11 +45,12 @@ void BaseStageTrafficLightCreep::GetOverlapStopInfo(
         reference_line_info->GetOverlapOnReferenceLine(
             current_traffic_light_overlap_id, ReferenceLineInfo::SIGNAL);
     if (current_traffic_light_overlap) {
-      *stop_line_s = current_traffic_light_overlap->end_s +
-                     FindCreepDistance(*frame, *reference_line_info);
+      *overlap_end_s = current_traffic_light_overlap->end_s;
       *overlap_id = current_traffic_light_overlap_id;
+      return true;
     }
   }
+  return false;
 }
 
 }  // namespace planning

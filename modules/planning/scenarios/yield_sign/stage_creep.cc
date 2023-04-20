@@ -109,7 +109,7 @@ Stage::StageStatus YieldSignStageCreep::Process(
   const double timeout_sec = scenario_config_.creep_timeout_sec();
 
   double creep_stop_s =
-      yield_sign_end_s + FindCreepDistance(*frame, reference_line_info);
+      GetCreepFinishS(yield_sign_end_s, *frame, reference_line_info);
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
   if (distance <= 0.0) {
@@ -130,8 +130,8 @@ const CreepStageConfig& YieldSignStageCreep::GetCreepStageConfig() const {
   return GetContextAs<YieldSignContext>()->scenario_config.creep_stage_config();
 }
 
-void YieldSignStageCreep::GetOverlapStopInfo(
-    Frame* frame, ReferenceLineInfo* reference_line_info, double* stop_line_s,
+bool YieldSignStageCreep::GetOverlapStopInfo(
+    Frame* frame, ReferenceLineInfo* reference_line_info, double* overlap_end_s,
     std::string* overlap_id) const {
   std::string yield_sign_overlap_id;
   if (injector_->planning_context()
@@ -150,11 +150,12 @@ void YieldSignStageCreep::GetOverlapStopInfo(
         reference_line_info->GetOverlapOnReferenceLine(
             yield_sign_overlap_id, ReferenceLineInfo::YIELD_SIGN);
     if (current_yield_sign_overlap) {
-      *stop_line_s = current_yield_sign_overlap->end_s +
-                     FindCreepDistance(*frame, *reference_line_info);
+      *overlap_end_s = current_yield_sign_overlap->end_s;
       *overlap_id = yield_sign_overlap_id;
+      return true;
     }
   }
+  return false;
 }
 
 Stage::StageStatus YieldSignStageCreep::FinishStage() {
