@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package apollo.planning;
 
-import "modules/planning/proto/creep_stage.proto";
+import "modules/planning/scenarios/proto/creep_stage.proto";
 
 message ScenarioTrafficLightUnprotectedLeftTurnConfig {
   optional double start_traffic_light_scenario_distance = 1

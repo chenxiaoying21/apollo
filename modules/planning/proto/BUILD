@@ -27,10 +27,8 @@ install_files(
         "//modules/planning/proto/math:fem_pos_deviation_smoother_config_py_pb2",
         ":planner_open_space_config_py_pb2",
         ":planning_config_py_pb2",
-        ":scenario_pipeline_py_pb2",
         ":plugin_declare_info_py_pb2",
         ":navi_task_config_py_pb2",
-        ":creep_stage_py_pb2",
     ]
 )
 
@@ -55,11 +53,8 @@ install_files(
         "//modules/planning/proto/math:cos_theta_smoother_config_cc_proto",
         "//modules/planning/proto/math:qp_problem_cc_proto",
         ":planner_open_space_config_cc_proto",
-        ":planning_config_cc_proto", 
-        ":scenario_pipeline_cc_proto",
         ":plugin_declare_info_cc_proto",
         ":navi_task_config_cc_proto",
-        ":creep_stage_cc_proto",
     ]
 )
 
@@ -356,28 +351,6 @@ py_proto_library(
 )
 
 cc_proto_library(
-    name = "scenario_pipeline_cc_proto",
-    deps = [
-        ":scenario_pipeline_proto",
-    ],
-)
-
-proto_library(
-    name = "scenario_pipeline_proto",
-    srcs = ["scenario_pipeline.proto"],
-    deps = [
-        ":plugin_declare_info_proto",
-    ]
-)
-
-py_proto_library(
-    name = "scenario_pipeline_py_pb2",
-    deps = [
-        ":scenario_pipeline_proto",
-    ],
-)
-
-cc_proto_library(
     name = "navi_task_config_cc_proto",
     deps = [
         ":navi_task_config_proto",
@@ -393,32 +366,5 @@ py_proto_library(
     name = "navi_task_config_py_pb2",
     deps = [
         ":navi_task_config_proto",
-    ],
-)
-
-cc_proto_library(
-    name = "creep_stage_cc_proto",
-    deps = [
-        ":creep_stage_proto",
-    ],
-)
-
-proto_library(
-    name = "creep_stage_proto",
-    srcs = ["creep_stage.proto"],
-    deps = [
-        "//modules/common_msgs/basic_msgs:geometry_proto",
-        ":planning_config_proto",
-        "//modules/common_msgs/routing_msgs:routing_proto",
-    ],
-)
-
-py_proto_library(
-    name = "creep_stage_py_pb2",
-    deps = [
-        ":creep_stage_proto",
-        "//modules/common_msgs/basic_msgs:geometry_py_pb2",
-        ":planning_config_py_pb2",
-        "//modules/common_msgs/routing_msgs:routing_py_pb2",
     ],
 )

@@ -225,7 +225,6 @@ install_files(
         "//modules/planning/proto:traffic_rule_config_py_pb2",
         "//modules/planning/proto/math:cos_theta_smoother_config_py_pb2",
         "//modules/planning/proto/math:qp_problem_py_pb2",
-        "//modules/planning/proto:creep_stage_py_pb2",
     ],
 )
 
@@ -275,9 +274,7 @@ install(
         "//modules/planning/proto:planner_open_space_config_py_pb2",
         "//modules/planning/proto:navi_task_config_py_pb2",
         "//modules/planning/proto:planning_config_py_pb2",
-        "//modules/planning/proto:scenario_pipeline_py_pb2",
         "//modules/planning/proto:plugin_declare_info_py_pb2",
-        "//modules/planning/proto:creep_stage_py_pb2",
     ],
 )
 

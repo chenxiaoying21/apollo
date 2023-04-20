@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-#include "modules/planning/proto/scenario_pipeline.pb.h"
+#include "modules/planning/scenarios/proto/scenario_pipeline.pb.h"
 #include "modules/planning/common/dependency_injector.h"
 
 namespace apollo {

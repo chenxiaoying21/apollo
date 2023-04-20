@@ -22,7 +22,7 @@
 
 #include <vector>
 
-#include "modules/planning/proto/creep_stage.pb.h"
+#include "modules/planning/scenarios/proto/creep_stage.pb.h"
 #include "cyber/common/log.h"
 #include "modules/common/status/status.h"
 #include "modules/map/pnc_map/path.h"

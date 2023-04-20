@@ -24,7 +24,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "modules/planning/proto/scenario_pipeline.pb.h"
+#include "modules/planning/scenarios/proto/scenario_pipeline.pb.h"
 #include "cyber/common/file.h"
 #include "modules/planning/common/dependency_injector.h"
 
