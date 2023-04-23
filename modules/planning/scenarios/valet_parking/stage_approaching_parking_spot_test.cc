@@ -20,7 +20,6 @@
 #include "modules/planning/scenarios/valet_parking/stage_approaching_parking_spot.h"
 #include "gtest/gtest.h"
 #include "modules/planning/proto/planning_config.pb.h"
-#include "modules/planning/common/dependency_injector.h"
 
 namespace apollo {
 namespace planning {

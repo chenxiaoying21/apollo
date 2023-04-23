@@ -45,7 +45,6 @@ class PullOverScenario : public Scenario {
 
   bool IsTransferable(const Scenario* other_scenario,
                       const Frame& frame) override;
-  bool IsSwitchable() const { return true; }
 
   bool Exit(Frame* frame) override;
 

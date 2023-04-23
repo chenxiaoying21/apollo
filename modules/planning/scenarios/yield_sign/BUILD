@@ -62,7 +62,6 @@ cc_library(
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
         "//modules/planning/scenarios:scenario",
         "//modules/planning/scenarios/yield_sign/proto:yield_sign_cc_proto",
-        "//modules/planning/scenarios/common/creep_util:creep_decider",
         "@com_github_gflags_gflags//:gflags",
         "@eigen",
     ],

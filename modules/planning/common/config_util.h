@@ -83,8 +83,9 @@ bool ConfigUtil::LoadMergedConfig(const std::string& default_config_path,
   }
   // Get the user defined "spcific_config".
   T spcific_config;
-  if (!apollo::cyber::common::GetProtoFromFile(config_path, &spcific_config)) {
-    AINFO << "User defined config doesn't exit and the default will be used:"
+  if (!apollo::cyber::common::PathExists(config_path) ||
+      !apollo::cyber::common::GetProtoFromFile(config_path, &spcific_config)) {
+    AINFO << "Loading user defined config failed and the default will be used:"
           << config_path;
     return true;
   }

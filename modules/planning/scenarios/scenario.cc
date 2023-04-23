@@ -23,8 +23,8 @@
 #include <cxxabi.h>
 
 #include "cyber/class_loader/class_loader_manager.h"
-#include "cyber/common/file.h"
 #include "cyber/plugin_manager/plugin_manager.h"
+#include "modules/planning/common/config_util.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/scenarios/stage.h"
 

@@ -32,7 +32,7 @@ proto_library(
     name = "yield_sign_proto",
     srcs = ["yield_sign.proto"],
     deps = [
-        "//modules/planning/proto:creep_decider_proto",
+        "//modules/planning/scenarios/proto:creep_stage_proto",
     ],
 )
 

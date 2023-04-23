@@ -24,15 +24,20 @@
 #include <string>
 #include <unordered_map>
 
-#include "modules/planning/proto/scenario_pipeline.pb.h"
-#include "modules/common/status/status.h"
-#include "modules/common/util/factory.h"
-#include "modules/planning/common/config_util.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/scenarios/proto/scenario_pipeline.pb.h"
+#include "cyber/common/file.h"
+#include "modules/planning/common/dependency_injector.h"
+
+namespace apollo {
+namespace common {
+class TrajectoryPoint;
+}  // namespace common
+}  // namespace apollo
 
 namespace apollo {
 namespace planning {
+
+class Frame;
 
 struct ScenarioContext {
  public:
@@ -70,8 +75,6 @@ class Scenario {
                               const Frame& frame) {
     return false;
   }
-  // The scenario can be interrupted by other scenario
-  virtual bool IsSwitchable() const { return false; }
 
   virtual ScenarioStatus Process(
       const common::TrajectoryPoint& planning_init_point, Frame* frame);

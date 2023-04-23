@@ -30,7 +30,6 @@
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/speed_profile_generator.h"
 #include "modules/planning/common/util/util.h"
-#include "modules/planning/scenarios/common/creep_util/creep_decider.h"
 
 namespace apollo {
 namespace planning {
@@ -49,9 +48,6 @@ bool YieldSignStageCreep::Init(
     AERROR << Name() << "init failed!";
     return false;
   }
-  creep_decider_ = std::make_shared<CreepDecider>(
-      GetContextAs<YieldSignContext>()->scenario_config.creep_decider_config(),
-      injector);
   return ret;
 }
 
@@ -74,7 +70,7 @@ Stage::StageStatus YieldSignStageCreep::Process(
       break;
     }
 
-    const auto ret = creep_decider_->Process(frame, &reference_line_info);
+    const auto ret = ProcessCreep(frame, &reference_line_info);
     if (!ret.ok()) {
       AERROR << "Failed to run CreepDecider ], Error message: "
              << ret.error_message();
@@ -112,8 +108,8 @@ Stage::StageStatus YieldSignStageCreep::Process(
       Clock::NowInSeconds() - scenario_context->creep_start_time;
   const double timeout_sec = scenario_config_.creep_timeout_sec();
 
-  double creep_stop_s = yield_sign_end_s + creep_decider_->FindCreepDistance(
-                                               *frame, reference_line_info);
+  double creep_stop_s =
+      GetCreepFinishS(yield_sign_end_s, *frame, reference_line_info);
   const double distance =
       creep_stop_s - reference_line_info.AdcSlBoundary().end_s();
   if (distance <= 0.0) {
@@ -122,13 +118,44 @@ Stage::StageStatus YieldSignStageCreep::Process(
         SpeedProfileGenerator::GenerateFixedDistanceCreepProfile(0.0, 0);
   }
 
-  if (creep_decider_->CheckCreepDone(*frame, reference_line_info,
-                                     yield_sign_end_s, wait_time,
-                                     timeout_sec)) {
+  if (CheckCreepDone(*frame, reference_line_info, yield_sign_end_s, wait_time,
+                     timeout_sec)) {
     return FinishStage();
   }
 
   return Stage::RUNNING;
+}
+
+const CreepStageConfig& YieldSignStageCreep::GetCreepStageConfig() const {
+  return GetContextAs<YieldSignContext>()->scenario_config.creep_stage_config();
+}
+
+bool YieldSignStageCreep::GetOverlapStopInfo(
+    Frame* frame, ReferenceLineInfo* reference_line_info, double* overlap_end_s,
+    std::string* overlap_id) const {
+  std::string yield_sign_overlap_id;
+  if (injector_->planning_context()
+          ->planning_status()
+          .yield_sign()
+          .current_yield_sign_overlap_id_size() > 0) {
+    yield_sign_overlap_id = injector_->planning_context()
+                                ->planning_status()
+                                .yield_sign()
+                                .current_yield_sign_overlap_id(0);
+  }
+
+  if (!yield_sign_overlap_id.empty()) {
+    // get overlap along reference line
+    PathOverlap* current_yield_sign_overlap =
+        reference_line_info->GetOverlapOnReferenceLine(
+            yield_sign_overlap_id, ReferenceLineInfo::YIELD_SIGN);
+    if (current_yield_sign_overlap) {
+      *overlap_end_s = current_yield_sign_overlap->end_s;
+      *overlap_id = yield_sign_overlap_id;
+      return true;
+    }
+  }
+  return false;
 }
 
 Stage::StageStatus YieldSignStageCreep::FinishStage() {

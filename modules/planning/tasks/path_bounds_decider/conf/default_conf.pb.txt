@@ -1,5 +1,3 @@
-is_lane_borrowing: false
-is_pull_over: false
 is_extend_lane_bounds_to_include_adc: false
 pull_over_destination_to_adc_buffer: 25.0
 pull_over_destination_to_pathend_buffer: 4.0

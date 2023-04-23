@@ -34,9 +34,9 @@ class StageApproachingParkingSpot : public Stage {
   Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
                              Frame* frame) override;
 
+ private:
   bool CheckADCStop(const Frame& frame);
 
- private:
   ScenarioValetParkingConfig scenario_config_;
 };
 

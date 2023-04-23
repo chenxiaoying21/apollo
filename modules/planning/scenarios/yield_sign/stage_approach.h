@@ -40,7 +40,6 @@ class YieldSignStageApproach : public Stage {
  private:
   Stage::StageStatus FinishStage();
 
- private:
   ScenarioYieldSignConfig scenario_config_;
 };
 

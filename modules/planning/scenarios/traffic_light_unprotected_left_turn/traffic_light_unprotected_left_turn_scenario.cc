@@ -62,30 +62,22 @@ bool TrafficLightUnprotectedLeftTurnScenario::IsTransferable(
   if (other_scenario == nullptr) {
     return false;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
-    return false;
-  }
   const auto& reference_line_info = frame.reference_line_info().front();
   const auto& first_encountered_overlaps =
       reference_line_info.FirstEncounteredOverlaps();
   if (first_encountered_overlaps.empty()) {
     return false;
   }
-  if (first_encountered_overlaps.front().first ==
-          ReferenceLineInfo::STOP_SIGN ||
-      first_encountered_overlaps.front().first ==
-          ReferenceLineInfo::YIELD_SIGN) {
-    return false;
-  }
   hdmap::PathOverlap* traffic_sign_overlap = nullptr;
   for (const auto& overlap : first_encountered_overlaps) {
-    if (overlap.first == ReferenceLineInfo::SIGNAL) {
+    if (overlap.first == ReferenceLineInfo::STOP_SIGN ||
+        overlap.first == ReferenceLineInfo::YIELD_SIGN) {
+      return false;
+    } else if (overlap.first == ReferenceLineInfo::SIGNAL) {
       traffic_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
-      break;
     }
   }
-  if (!traffic_sign_overlap) {
+  if (traffic_sign_overlap == nullptr) {
     return false;
   }
   const std::vector<hdmap::PathOverlap>& traffic_light_overlaps =
@@ -168,7 +160,7 @@ bool TrafficLightUnprotectedLeftTurnScenario::Enter(Frame* frame) {
         ->mutable_planning_status()
         ->mutable_traffic_light()
         ->Clear();
-    AERROR << "Can not find yield sign overlap in refline";
+    AERROR << "Can not find traffic light overlap in reference line!";
     return false;
   }
 

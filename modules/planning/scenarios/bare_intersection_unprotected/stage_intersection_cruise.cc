@@ -49,12 +49,12 @@ BareIntersectionUnprotectedStageIntersectionCruise::GetTrafficSignOverlap(
     const ReferenceLineInfo& reference_line_info,
     const PlanningContext* context) const {
   // stop_sign scenarios
-  const auto& stop_sign_status = context->planning_status().stop_sign();
-  const std::string traffic_sign_overlap_id =
-      stop_sign_status.current_stop_sign_overlap_id();
+  const std::string pnc_junction_overlap_id =
+      GetContextAs<BareIntersectionUnprotectedContext>()
+          ->current_pnc_junction_overlap_id;
   hdmap::PathOverlap* traffic_sign_overlap =
       reference_line_info.GetOverlapOnReferenceLine(
-          traffic_sign_overlap_id, ReferenceLineInfo::STOP_SIGN);
+          pnc_junction_overlap_id, ReferenceLineInfo::PNC_JUNCTION);
   return traffic_sign_overlap;
 }
 

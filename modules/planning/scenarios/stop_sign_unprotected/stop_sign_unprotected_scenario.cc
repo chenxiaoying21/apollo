@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file stop_sign_unprotected_scenario.cc
  **/
 
 #include "modules/planning/scenarios/stop_sign_unprotected/stop_sign_unprotected_scenario.h"
@@ -100,27 +100,28 @@ bool StopSignUnprotectedScenario::IsTransferable(
   if (other_scenario == nullptr) {
     return false;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
-    return false;
-  }
   const auto& reference_line_info = frame.reference_line_info().front();
   const auto& first_encountered_overlaps =
       reference_line_info.FirstEncounteredOverlaps();
   // note: first_encountered_overlaps already sorted
-  if (first_encountered_overlaps.empty()) {
+  hdmap::PathOverlap* stop_sign_overlap = nullptr;
+  for (const auto& overlap : first_encountered_overlaps) {
+    if (overlap.first == ReferenceLineInfo::SIGNAL ||
+        overlap.first == ReferenceLineInfo::YIELD_SIGN) {
+      return false;
+    } else if (overlap.first == ReferenceLineInfo::STOP_SIGN) {
+      stop_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
+    }
+  }
+  if (stop_sign_overlap == nullptr) {
     return false;
   }
-  if (first_encountered_overlaps[0].first != ReferenceLineInfo::STOP_SIGN) {
-    return false;
-  }
-  auto stop_sign_overlap = first_encountered_overlaps[0].second;
   const double adc_front_edge_s = reference_line_info.AdcSlBoundary().end_s();
   const double adc_distance_to_stop_sign =
-      stop_sign_overlap.start_s - adc_front_edge_s;
+      stop_sign_overlap->start_s - adc_front_edge_s;
   ADEBUG << "adc_distance_to_stop_sign[" << adc_distance_to_stop_sign
-         << "] stop_sign[" << stop_sign_overlap.object_id
-         << "] stop_sign_overlap_start_s[" << stop_sign_overlap.start_s << "]";
+         << "] stop_sign[" << stop_sign_overlap->object_id
+         << "] stop_sign_overlap_start_s[" << stop_sign_overlap->start_s << "]";
   const bool stop_sign_scenario =
       (adc_distance_to_stop_sign > 0.0 &&
        adc_distance_to_stop_sign <=

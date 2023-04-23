@@ -47,20 +47,5 @@ Stage::StageStatus TrafficLightProtectedStageIntersectionCruise::FinishStage() {
   return FinishScenario();
 }
 
-hdmap::PathOverlap*
-TrafficLightProtectedStageIntersectionCruise::GetTrafficSignOverlap(
-    const ReferenceLineInfo& reference_line_info,
-    const PlanningContext* context) const {
-  // traffic_light scenarios
-  const auto& traffic_light_status = context->planning_status().traffic_light();
-  const std::string traffic_sign_overlap_id =
-      traffic_light_status.current_traffic_light_overlap_id_size() > 0
-          ? traffic_light_status.current_traffic_light_overlap_id(0)
-          : "";
-  auto traffic_sign_overlap = reference_line_info.GetOverlapOnReferenceLine(
-      traffic_sign_overlap_id, ReferenceLineInfo::SIGNAL);
-  return traffic_sign_overlap;
-}
-
 }  // namespace planning
 }  // namespace apollo

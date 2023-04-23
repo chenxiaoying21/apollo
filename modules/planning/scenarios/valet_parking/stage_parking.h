@@ -37,7 +37,6 @@ class StageParking : public Stage {
  private:
   Stage::StageStatus FinishStage();
 
- private:
   ScenarioValetParkingConfig scenario_config_;
 };
 

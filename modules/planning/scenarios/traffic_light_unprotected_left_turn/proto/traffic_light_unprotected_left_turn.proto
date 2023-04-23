@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package apollo.planning;
 
-import "modules/planning/proto/creep_decider.proto";
+import "modules/planning/scenarios/proto/creep_stage.proto";
 
 message ScenarioTrafficLightUnprotectedLeftTurnConfig {
   optional double start_traffic_light_scenario_distance = 1
@@ -13,5 +13,5 @@ message ScenarioTrafficLightUnprotectedLeftTurnConfig {
   optional float creep_timeout_sec = 5 [default = 10.0];        // sec
   optional double max_adc_speed_before_creep = 6
       [default = 5.56];  // m/s (20m/h)
-  optional CreepDeciderConfig creep_decider_config = 7;
+  optional CreepStageConfig creep_stage_config = 7;
 }

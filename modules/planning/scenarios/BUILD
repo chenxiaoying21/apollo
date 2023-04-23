@@ -14,9 +14,8 @@ cc_library(
         "//modules/planning/common:planning_common",
         "//modules/planning/common:config_util",
         "//modules/planning/common/util:util_lib",
-        "//modules/planning/tasks:task",
         "//cyber/plugin_manager:plugin_manager",
-        "//modules/planning/proto:scenario_pipeline_cc_proto",
+        "//modules/planning/scenarios/proto:scenario_pipeline_cc_proto",
     ],
 )
 
@@ -24,21 +23,26 @@ cc_library(
     name = "stage",
     srcs = [
         "stage.cc",
-        "stage_intersection_cruise.cc",
+        "base_stage_creep.cc",
+        "base_stage_cruise.cc",
     ],
     hdrs = [
         "stage.h",
-        "stage_intersection_cruise.h",
+        "base_stage_creep.h",
+        "base_stage_cruise.h",
     ],
     copts = PLANNING_COPTS,
     deps = [
+        "//modules/planning/common/util:common_lib",
         "//modules/planning/common:planning_common",
         "//modules/planning/common:config_util",
         "//modules/planning/common/util:util_lib",
-        "//modules/planning/tasks:task",
         "//cyber/plugin_manager:plugin_manager",
-        "//modules/planning/proto:scenario_pipeline_cc_proto",
+        "//modules/planning/scenarios/proto:scenario_pipeline_cc_proto",
         "//modules/planning/common:speed_profile_generator",
+        "//modules/planning/common:dependency_injector",
+        "//modules/planning/tasks:task",
+        "//modules/planning/scenarios/proto:creep_stage_cc_proto",
     ],
 )
 

@@ -26,9 +26,11 @@
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "cyber/time/clock.h"
 #include "modules/planning/common/config_util.h"
+#include "modules/planning/common/frame.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/speed_profile_generator.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
+#include "modules/planning/tasks/task.h"
 
 namespace apollo {
 namespace planning {
@@ -36,9 +38,7 @@ namespace planning {
 using apollo::cyber::Clock;
 
 namespace {
-// constexpr double kPathOptimizationFallbackCost = 2e4;
 constexpr double kSpeedOptimizationFallbackCost = 2e4;
-// constexpr double kStraightForwardLineCost = 10.0;
 }  // namespace
 
 Stage::Stage()

@@ -27,10 +27,7 @@ namespace planning {
 
 class PathBoundsDeciderTest : public ::testing::Test {
  public:
-  virtual void SetUp() {
-    config_.set_is_lane_borrowing(false);
-    injector_ = std::make_shared<DependencyInjector>();
-  }
+  virtual void SetUp() { injector_ = std::make_shared<DependencyInjector>(); }
 
   virtual void TearDown() {}
 

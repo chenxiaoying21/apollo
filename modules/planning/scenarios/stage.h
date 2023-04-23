@@ -25,14 +25,21 @@
 #include <string>
 #include <vector>
 
-#include "modules/planning/proto/scenario_pipeline.pb.h"
-#include "modules/common/status/status.h"
-#include "modules/common/util/factory.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/tasks/task.h"
+#include "modules/planning/scenarios/proto/scenario_pipeline.pb.h"
+#include "modules/planning/common/dependency_injector.h"
+
+namespace apollo {
+namespace common {
+class TrajectoryPoint;
+}  // namespace common
+}  // namespace apollo
 
 namespace apollo {
 namespace planning {
+
+class Task;
+class Frame;
+class ReferenceLineInfo;
 
 class Stage {
  public:
@@ -70,7 +77,7 @@ class Stage {
   const std::string& Name() const;
 
   template <typename T>
-  T* GetContextAs() {
+  T* GetContextAs() const {
     return static_cast<T*>(context_);
   }
 
@@ -92,7 +99,6 @@ class Stage {
   void RecordDebugInfo(ReferenceLineInfo* reference_line_info,
                        const std::string& name, const double time_diff_ms);
 
- protected:
   std::map<std::string, std::shared_ptr<Task>> tasks_;
   std::vector<std::shared_ptr<Task>> task_list_;
   std::string next_stage_;

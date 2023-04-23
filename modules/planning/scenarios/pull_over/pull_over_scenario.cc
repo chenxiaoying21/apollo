@@ -57,8 +57,7 @@ bool PullOverScenario::IsTransferable(const Scenario* const other_scenario,
   if (other_scenario == nullptr) {
     return false;
   }
-  if (other_scenario->GetStatus() != Scenario::ScenarioStatus::STATUS_DONE &&
-      !other_scenario->IsSwitchable()) {
+  if (!FLAGS_enable_pull_over_at_destination) {
     return false;
   }
   const auto& routing = frame.local_view().routing;

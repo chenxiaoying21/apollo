@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file
+ * @file stage_stop.cc
  **/
 
 #include "modules/planning/scenarios/stop_sign_unprotected/stage_stop.h"

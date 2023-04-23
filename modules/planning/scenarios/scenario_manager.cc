@@ -22,7 +22,6 @@
 
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/common/config_util.h"
-#include "modules/planning/common/dependency_injector.h"
 #include "modules/planning/scenarios/scenario.h"
 
 namespace apollo {

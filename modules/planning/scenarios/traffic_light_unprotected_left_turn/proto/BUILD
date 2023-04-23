@@ -32,7 +32,7 @@ proto_library(
     name = "traffic_light_unprotected_left_turn_proto",
     srcs = ["traffic_light_unprotected_left_turn.proto"],
     deps = [
-        "//modules/planning/proto:creep_decider_proto",
+        "//modules/planning/scenarios/proto:creep_stage_proto",
     ],
 )
 
