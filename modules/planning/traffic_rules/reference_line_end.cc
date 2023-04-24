@@ -52,7 +52,7 @@ Status ReferenceLineEnd::ApplyRule(
     return Status::OK();
   }
 
-  // create avirtual stop wall at the end of reference line to stop the adc
+  // create a virtual stop wall at the end of reference line to stop the adc
   std::string virtual_obstacle_id =
       REF_LINE_END_VO_ID_PREFIX + reference_line_info->Lanes().Id();
   double obstacle_start_s =
