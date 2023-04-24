@@ -24,21 +24,21 @@
 #include <vector>
 
 #include "Eigen/Dense"
-#include "cyber/common/log.h"
+#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 #include "modules/common_msgs/chassis_msgs/chassis.pb.h"
+#include "modules/common_msgs/map_msgs/map_id.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
+#include "cyber/common/log.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/vec2d.h"
-#include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
 #include "modules/map/pnc_map/pnc_map.h"
-#include "modules/common_msgs/map_msgs/map_id.pb.h"
 #include "modules/planning/common/indexed_queue.h"
 #include "modules/planning/common/obstacle.h"
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -250,10 +250,6 @@ class OpenSpaceInfo {
 
   const TrajGearPair &fallback_trajectory() const {
     return fallback_trajectory_;
-  }
-
-  void set_fallback_trajectory(const TrajGearPair &traj_gear_pair) {
-    fallback_trajectory_ = traj_gear_pair;
   }
 
   std::pair<PublishableTrajectory, canbus::Chassis::GearPosition>

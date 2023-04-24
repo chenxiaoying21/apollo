@@ -671,11 +671,11 @@ Status OnLanePlanning::Plan(
         current_time_stamp, best_ref_info->trajectory()));
     PrintCurves debug_traj;
     for (size_t i = 0; i < last_publishable_trajectory_->size(); i++) {
-        auto& traj_pt = last_publishable_trajectory_->at(i);
-        debug_traj.AddPoint("traj_sv", traj_pt.path_point().s(), traj_pt.v());
-        debug_traj.AddPoint("traj_sa", traj_pt.path_point().s(), traj_pt.a());
-        debug_traj.AddPoint("traj_sk", traj_pt.path_point().s(),
-            traj_pt.path_point().kappa());
+      auto& traj_pt = last_publishable_trajectory_->at(i);
+      debug_traj.AddPoint("traj_sv", traj_pt.path_point().s(), traj_pt.v());
+      debug_traj.AddPoint("traj_sa", traj_pt.path_point().s(), traj_pt.a());
+      debug_traj.AddPoint("traj_sk", traj_pt.path_point().s(),
+                          traj_pt.path_point().kappa());
     }
     // debug_traj.PrintToLog();
     ADEBUG << "current_time_stamp: " << current_time_stamp;

@@ -27,15 +27,15 @@
 #include <vector>
 
 #include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
-#include "modules/common/math/box2d.h"
-#include "modules/common/math/vec2d.h"
 #include "modules/common_msgs/perception_msgs/perception_obstacle.pb.h"
-#include "modules/planning/common/indexed_list.h"
-#include "modules/planning/common/speed/st_boundary.h"
 #include "modules/common_msgs/planning_msgs/decision.pb.h"
 #include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
-#include "modules/planning/reference_line/reference_line.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
+#include "modules/common/math/box2d.h"
+#include "modules/common/math/vec2d.h"
+#include "modules/planning/common/indexed_list.h"
+#include "modules/planning/common/speed/st_boundary.h"
+#include "modules/planning/reference_line/reference_line.h"
 
 namespace apollo {
 namespace planning {
@@ -92,9 +92,7 @@ class Obstacle {
     return perception_polygon_;
   }
   const prediction::Trajectory& Trajectory() const { return trajectory_; }
-  common::TrajectoryPoint* AddTrajectoryPoint() {
-    return trajectory_.add_trajectory_point();
-  }
+
   bool HasTrajectory() const {
     return !(trajectory_.trajectory_point().empty());
   }

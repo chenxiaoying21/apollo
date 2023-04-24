@@ -28,6 +28,8 @@
 #include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
+#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/proto/traffic_rule_config.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap.h"
@@ -35,10 +37,8 @@
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/local_view.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/planning/planner/planner_dispatcher.h"
 #include "modules/planning/planner/planner.h"
-#include "modules/planning/proto/planning_config.pb.h"
-#include "modules/planning/proto/traffic_rule_config.pb.h"
+#include "modules/planning/planner/planner_dispatcher.h"
 
 /**
  * @namespace apollo::planning

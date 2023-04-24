@@ -66,14 +66,6 @@ class Stage {
   virtual StageStatus Process(
       const common::TrajectoryPoint& planning_init_point, Frame* frame) = 0;
 
-  /**
-   * @brief The sequence of tasks inside the stage. These tasks usually will be
-   * executed in order.
-   */
-  const std::vector<std::shared_ptr<Task>>& TaskList() const {
-    return task_list_;
-  }
-
   const std::string& Name() const;
 
   template <typename T>

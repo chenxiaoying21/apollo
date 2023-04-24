@@ -49,14 +49,6 @@ class DpRoadGraph {
                       const std::vector<const Obstacle *> &obstacles,
                       PathData *const path_data);
 
-  void SetDebugLogger(apollo::planning_internal::Debug *debug) {
-    planning_debug_ = debug;
-  }
-
-  void SetWaypointSampler(WaypointSampler *waypoint_sampler) {
-    waypoint_sampler_.reset(waypoint_sampler);
-  }
-
  private:
   /**
    * an private inner struct for the dp algorithm

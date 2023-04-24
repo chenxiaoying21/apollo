@@ -32,14 +32,14 @@
 #include "modules/common_msgs/chassis_msgs/chassis.pb.h"
 #include "modules/common_msgs/dreamview_msgs/hmi_status.pb.h"
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
-#include "modules/map/hdmap/hdmap_common.h"
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
-#include "modules/planning/common/dependency_injector.h"
-#include "modules/planning/proto/learning_data.pb.h"
-#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/common_msgs/storytelling_msgs/story.pb.h"
+#include "modules/planning/proto/learning_data.pb.h"
+#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/map/hdmap/hdmap_common.h"
+#include "modules/planning/common/dependency_injector.h"
 
 namespace apollo {
 namespace planning {
@@ -97,15 +97,14 @@ class MessageProcess {
 
   void GenerateObstacleFeature(LearningDataFrame* learning_data_frame);
 
-  bool GenerateLocalRouting(
-      const int frame_num,
-      RoutingResponseFeature* local_routing,
-      std::vector<std::string>* local_routing_lane_ids);
+  bool GenerateLocalRouting(const int frame_num,
+                            RoutingResponseFeature* local_routing,
+                            std::vector<std::string>* local_routing_lane_ids);
 
   void GenerateRoutingFeature(
-    const RoutingResponseFeature& local_routing,
-    const std::vector<std::string>& local_routing_lane_ids,
-    LearningDataFrame* learning_data_frame);
+      const RoutingResponseFeature& local_routing,
+      const std::vector<std::string>& local_routing_lane_ids,
+      LearningDataFrame* learning_data_frame);
 
   void GenerateTrafficLightDetectionFeature(
       LearningDataFrame* learning_data_frame);

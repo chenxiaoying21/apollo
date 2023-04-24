@@ -20,8 +20,8 @@
 #include <string>
 
 #include "absl/strings/str_cat.h"
-#include "cyber/common/log.h"
 #include "modules/common_msgs/basic_msgs/error_code.pb.h"
+#include "cyber/common/log.h"
 
 using apollo::common::ErrorCode;
 using apollo::common::Status;
@@ -41,9 +41,9 @@ Status AutotuningSpeedFeatureBuilder::BuildFeature(
   // number of input trajectory point
   int n = input_feature->point_feature_size();
   if (n != raw_feature.point_feature_size()) {
-    const std::string msg = absl::StrCat(
-        "raw and input feature size mismatch. raw: ",
-        raw_feature.point_feature_size(), "; input: ", n);
+    const std::string msg =
+        absl::StrCat("raw and input feature size mismatch. raw: ",
+                     raw_feature.point_feature_size(), "; input: ", n);
     AERROR << msg;
     return Status(ErrorCode::PLANNING_ERROR, msg);
   }

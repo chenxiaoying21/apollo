@@ -82,8 +82,7 @@ int Destination::MakeDecisions(Frame* frame,
 
   const auto& pull_over_status =
       injector_->planning_context()->planning_status().pull_over();
-  if (pull_over_status.has_position() &&
-      pull_over_status.position().has_x() &&
+  if (pull_over_status.has_position() && pull_over_status.position().has_x() &&
       pull_over_status.position().has_y()) {
     // build stop decision based on pull-over position
     ADEBUG << "BuildStopDecision: pull-over position";
@@ -91,10 +90,10 @@ int Destination::MakeDecisions(Frame* frame,
     reference_line.XYToSL(pull_over_status.position(), &pull_over_sl);
 
     const double stop_line_s = pull_over_sl.s() +
-                                VehicleConfigHelper::GetConfig()
-                                    .vehicle_param()
-                                    .front_edge_to_center() +
-                                config_.destination().stop_distance();
+                               VehicleConfigHelper::GetConfig()
+                                   .vehicle_param()
+                                   .front_edge_to_center() +
+                               config_.destination().stop_distance();
     util::BuildStopDecision(
         stop_wall_id, stop_line_s, config_.destination().stop_distance(),
         StopReasonCode::STOP_REASON_PULL_OVER, wait_for_obstacle_ids,
@@ -102,7 +101,6 @@ int Destination::MakeDecisions(Frame* frame,
         reference_line_info);
     return 0;
   }
-
 
   // build stop decision
   ADEBUG << "BuildStopDecision: destination";

@@ -20,8 +20,8 @@
 
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
 
-#include "cyber/common/file.h"
 #include "gtest/gtest.h"
+#include "cyber/common/file.h"
 #include "modules/common/util/util.h"
 
 namespace apollo {

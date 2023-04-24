@@ -32,8 +32,8 @@
 #include "Eigen/Dense"
 
 #include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
-#include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/proto/planner_open_space_config.pb.h"
+#include "modules/common/configs/vehicle_config_helper.h"
 
 // #define tag_f 1
 // #define tag_g 2

@@ -24,13 +24,13 @@
 #include <limits>
 #include <random>
 
+#include "modules/planning/proto/planner_open_space_config.pb.h"
 #include "cyber/common/log.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/math_utils.h"
 #include "modules/planning/math/discrete_points_math.h"
 #include "modules/planning/math/discretized_points_smoothing/fem_pos_deviation_smoother.h"
 #include "modules/planning/math/piecewise_jerk/piecewise_jerk_speed_problem.h"
-#include "modules/planning/proto/planner_open_space_config.pb.h"
 
 namespace apollo {
 namespace planning {

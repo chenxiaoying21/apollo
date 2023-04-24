@@ -23,11 +23,11 @@
 #include <algorithm>
 #include <limits>
 
+#include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/linear_interpolation.h"
 #include "modules/common/math/path_matcher.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/common_msgs/planning_msgs/sl_boundary.pb.h"
 
 namespace apollo {
 namespace planning {

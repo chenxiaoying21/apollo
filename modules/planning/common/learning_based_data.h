@@ -37,13 +37,8 @@ class LearningBasedData {
 
   LearningDataFrame* GetLatestLearningDataFrame();
 
-  void set_learning_data_adc_future_trajectory_points(
-      const std::vector<common::TrajectoryPoint> &trajectory_points) {
-    learning_data_adc_future_trajectory_points_ = trajectory_points;
-  }
-
-  const std::vector<common::TrajectoryPoint>
-      &learning_data_adc_future_trajectory_points() const {
+  const std::vector<common::TrajectoryPoint>&
+  learning_data_adc_future_trajectory_points() const {
     return learning_data_adc_future_trajectory_points_;
   }
 

@@ -16,15 +16,15 @@
 
 #include "modules/planning/integration_tests/planning_test_base.h"
 
-#include "cyber/common/file.h"
-#include "cyber/common/log.h"
 #include "modules/common_msgs/chassis_msgs/chassis.pb.h"
-#include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
-#include "modules/planning/common/planning_gflags.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
+#include "cyber/common/file.h"
+#include "cyber/common/log.h"
+#include "modules/common/adapters/adapter_gflags.h"
+#include "modules/planning/common/planning_gflags.h"
 
 namespace apollo {
 namespace planning {

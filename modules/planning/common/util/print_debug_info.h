@@ -28,46 +28,42 @@ namespace planning {
 
 class PrintPoints {
  public:
-    PrintPoints() {}
-    explicit PrintPoints(std::string id) : id_(id) {}
-    void set_id(std::string id) {
-        id_ = id;
-    }
-    void AddPoint(double x, double y) {
-        points.emplace_back(x, y);
-    }
+  PrintPoints() {}
+  explicit PrintPoints(std::string id) : id_(id) {}
+  void set_id(std::string id) { id_ = id; }
+  void AddPoint(double x, double y) { points.emplace_back(x, y); }
 
-    void PrintToLog() {
-        std::stringstream ssm;
-        ssm << "print_" << id_ << ":";
-        for (size_t i = 0; i < points.size(); i++) {
-            ssm << std::fixed << "(" << points[i].first << ", "
-                << points[i].second << ");";
-        }
-        AINFO << ssm.str();
+  void PrintToLog() {
+    std::stringstream ssm;
+    ssm << "print_" << id_ << ":";
+    for (size_t i = 0; i < points.size(); i++) {
+      ssm << std::fixed << "(" << points[i].first << ", " << points[i].second
+          << ");";
     }
+    AINFO << ssm.str();
+  }
 
  private:
-    std::string id_;
-    std::vector<std::pair<double, double>> points;
+  std::string id_;
+  std::vector<std::pair<double, double>> points;
 };
 
 class PrintCurves {
  public:
-    void AddPoint(std::string key, double x, double y) {
-        if (curve_map_.count(key) == 0) {
-            curve_map_[key] = PrintPoints(key);
-        }
-        curve_map_[key].AddPoint(x, y);
+  void AddPoint(std::string key, double x, double y) {
+    if (curve_map_.count(key) == 0) {
+      curve_map_[key] = PrintPoints(key);
     }
-     void PrintToLog() {
-        for (auto iter = curve_map_.begin(); iter != curve_map_.end();
-             iter++ ) {
-            iter->second.PrintToLog();
-        }
+    curve_map_[key].AddPoint(x, y);
+  }
+  void PrintToLog() {
+    for (auto iter = curve_map_.begin(); iter != curve_map_.end(); iter++) {
+      iter->second.PrintToLog();
     }
+  }
+
  private:
-    std::map<std::string, PrintPoints> curve_map_;
+  std::map<std::string, PrintPoints> curve_map_;
 };
 
 }  // namespace planning

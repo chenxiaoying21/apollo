@@ -22,11 +22,11 @@
 #include <algorithm>
 
 #include "Eigen/Dense"
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/planning/open_space/trajectory_smoother/dual_variable_warm_start_ipopt_interface.h"
 #include "modules/planning/open_space/trajectory_smoother/dual_variable_warm_start_ipopt_qp_interface.h"
 #include "modules/planning/open_space/trajectory_smoother/dual_variable_warm_start_osqp_interface.h"
 #include "modules/planning/open_space/trajectory_smoother/dual_variable_warm_start_slack_osqp_interface.h"
-#include "modules/common_msgs/planning_msgs/planning.pb.h"
 
 namespace apollo {
 namespace planning {

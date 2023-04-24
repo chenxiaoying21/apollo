@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
 #include "modules/common/util/util.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/pnc_map/path.h"
@@ -31,7 +32,6 @@
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/util/common.h"
 #include "modules/planning/common/util/util.h"
-#include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
 
 namespace apollo {
 namespace planning {

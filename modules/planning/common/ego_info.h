@@ -22,9 +22,9 @@
 
 #include <vector>
 
-#include "cyber/common/macros.h"
-#include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
 #include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+#include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
+#include "cyber/common/macros.h"
 #include "modules/planning/common/obstacle.h"
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/reference_line/reference_line.h"

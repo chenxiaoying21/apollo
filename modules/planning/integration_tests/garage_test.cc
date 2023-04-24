@@ -46,7 +46,6 @@ class GarageTest : public PlanningTestBase {
     FLAGS_test_localization_file = "";
     FLAGS_test_chassis_file = "";
     FLAGS_enable_rss_info = false;
-
   }
 };
 

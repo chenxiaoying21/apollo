@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include "cyber/common/macros.h"
 #include "modules/planning/proto/planning_status.pb.h"
+#include "cyber/common/macros.h"
 
 /**
  * @brief PlanningContext is the runtime context in planning. It is

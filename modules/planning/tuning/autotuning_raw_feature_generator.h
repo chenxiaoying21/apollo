@@ -19,11 +19,11 @@
 #include <vector>
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
+#include "modules/planning/proto/auto_tuning_raw_feature.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/reference_line_info.h"
 #include "modules/planning/common/speed_limit.h"
-#include "modules/planning/proto/auto_tuning_raw_feature.pb.h"
 
 namespace apollo {
 namespace planning {

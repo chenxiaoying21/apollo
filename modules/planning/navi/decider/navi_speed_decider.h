@@ -25,12 +25,12 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "modules/planning/proto/planning_config.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/planning/common/speed/speed_data.h"
 #include "modules/planning/navi/decider/navi_obstacle_decider.h"
 #include "modules/planning/navi/decider/navi_speed_ts_graph.h"
 #include "modules/planning/navi/decider/navi_task.h"
-#include "modules/planning/proto/planning_config.pb.h"
 
 /**
  * @namespace apollo::planning

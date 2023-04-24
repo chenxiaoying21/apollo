@@ -20,9 +20,9 @@
 #include <list>
 #include <map>
 
+#include "google/protobuf/repeated_field.h"
 #include "cyber/common/file.h"
 #include "cyber/time/clock.h"
-#include "google/protobuf/repeated_field.h"
 #include "modules/common/math/quaternion.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap_util.h"
@@ -274,8 +274,7 @@ void NaviPlanning::RunOnce(const LocalView& local_view,
 
   status = Plan(start_timestamp, stitching_trajectory, trajectory_pb);
 
-  const auto time_diff_ms =
-      (Clock::NowInSeconds() - start_timestamp) * 1000;
+  const auto time_diff_ms = (Clock::NowInSeconds() - start_timestamp) * 1000;
   ADEBUG << "total planning time spend: " << time_diff_ms << " ms.";
 
   trajectory_pb->mutable_latency_stats()->set_total_time_ms(time_diff_ms);
