@@ -23,9 +23,9 @@
 #include <limits>
 #include <string>
 
+#include "modules/common_msgs/planning_msgs/decision.pb.h"
 #include "modules/planning/common/indexed_list.h"
 #include "modules/planning/common/obstacle.h"
-#include "modules/common_msgs/planning_msgs/decision.pb.h"
 
 namespace apollo {
 namespace planning {

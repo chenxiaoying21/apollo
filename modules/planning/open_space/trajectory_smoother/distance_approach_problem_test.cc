@@ -19,8 +19,8 @@
  **/
 #include "modules/planning/open_space/trajectory_smoother/distance_approach_problem.h"
 
-#include "cyber/common/file.h"
 #include "gtest/gtest.h"
+#include "cyber/common/file.h"
 #include "modules/planning/common/planning_gflags.h"
 
 namespace apollo {

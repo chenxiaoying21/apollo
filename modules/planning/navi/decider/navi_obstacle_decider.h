@@ -26,9 +26,9 @@
 #include <tuple>
 #include <vector>
 
+#include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/vec2d.h"
-#include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/obstacle.h"
 #include "modules/planning/navi/decider/navi_task.h"

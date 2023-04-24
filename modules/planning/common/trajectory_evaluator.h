@@ -57,8 +57,7 @@ class TrajectoryEvaluator {
   void Convert(const CommonTrajectoryPointFeature& tp,
                const double relative_time,
                common::TrajectoryPoint* trajectory_point);
-  void Convert(const common::TrajectoryPoint& tp,
-               const double timestamp_sec,
+  void Convert(const common::TrajectoryPoint& tp, const double timestamp_sec,
                TrajectoryPointFeature* trajectory_point);
 
   void WriteLog(const std::string& msg);

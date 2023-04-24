@@ -20,8 +20,8 @@
 
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
 
-#include "cyber/common/file.h"
 #include "gtest/gtest.h"
+#include "cyber/common/file.h"
 
 namespace apollo {
 namespace planning {

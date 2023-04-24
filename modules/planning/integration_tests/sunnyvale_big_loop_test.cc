@@ -66,7 +66,6 @@ class SunnyvaleBigLoopTest : public PlanningTestBase {
  *   decision: STOP
  */
 TEST_F(SunnyvaleBigLoopTest, stop_sign_01) {
-
   std::string seq_num = "1";
   FLAGS_test_routing_response_file = seq_num + "_routing.pb.txt";
   FLAGS_test_prediction_file = seq_num + "_prediction.pb.txt";
@@ -264,8 +263,7 @@ TEST_F(SunnyvaleBigLoopTest, crosswalk_02) {
   double wait_time = stop_timeout + 0.5;
   for (auto& stop_time : *crosswalk_status->mutable_stop_time()) {
     if (stop_time.obstacle_id() == "11652") {
-      stop_time.set_stop_timestamp_sec(Clock::NowInSeconds() -
-                                       wait_time);
+      stop_time.set_stop_timestamp_sec(Clock::NowInSeconds() - wait_time);
     }
   }
 

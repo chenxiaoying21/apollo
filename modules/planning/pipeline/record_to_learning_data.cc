@@ -17,14 +17,14 @@
 #include <boost/filesystem.hpp>
 
 #include "absl/strings/str_split.h"
+#include "modules/planning/proto/planning_config.pb.h"
 #include "cyber/common/file.h"
 #include "modules/common/configs/config_gflags.h"
+#include "modules/common/util/data_extraction.h"
 #include "modules/planning/common/feature_output.h"
 #include "modules/planning/common/message_process.h"
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/common/util/util.h"
-#include "modules/planning/proto/planning_config.pb.h"
-#include "modules/common/util/data_extraction.h"
 
 namespace apollo {
 namespace planning {

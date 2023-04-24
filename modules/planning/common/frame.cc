@@ -39,7 +39,6 @@
 #include "modules/planning/common/util/util.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
 
-
 namespace apollo {
 namespace planning {
 

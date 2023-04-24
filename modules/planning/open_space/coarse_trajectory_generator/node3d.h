@@ -24,9 +24,9 @@
 #include <string>
 #include <vector>
 
+#include "modules/planning/proto/planner_open_space_config.pb.h"
 #include "modules/common/math/box2d.h"
 #include "modules/planning/constraint_checker/collision_checker.h"
-#include "modules/planning/proto/planner_open_space_config.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -51,7 +51,6 @@ class Node3d {
   double GetHeuCost() const { return heuristic_cost_; }
   int GetGridX() const { return x_grid_; }
   int GetGridY() const { return y_grid_; }
-  int GetGridPhi() const { return phi_grid_; }
   double GetX() const { return x_; }
   double GetY() const { return y_; }
   double GetPhi() const { return phi_; }

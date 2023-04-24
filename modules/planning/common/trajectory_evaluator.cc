@@ -78,12 +78,10 @@ void TrajectoryEvaluator::EvaluateTrajectoryByTime(
     }
   }
 
-  const int low_bound =
-      std::max(-150.0,
-               ceil(updated_trajectory.front().relative_time() / delta_time));
-  const int high_bound =
-      std::min(150.0,
-               floor(updated_trajectory.back().relative_time() / delta_time));
+  const int low_bound = std::max(
+      -150.0, ceil(updated_trajectory.front().relative_time() / delta_time));
+  const int high_bound = std::min(
+      150.0, floor(updated_trajectory.back().relative_time() / delta_time));
   ADEBUG << "frame_num[" << frame_num << "] obstacle_id[" << obstacle_id
          << "] low[" << low_bound << "] high[" << high_bound << "]";
   for (int i = low_bound; i <= high_bound; ++i) {
@@ -272,10 +270,10 @@ void TrajectoryEvaluator::EvaluateObstacleTrajectory(
 
     std::vector<TrajectoryPointFeature> evaluated_trajectory;
     if (trajectory.size() == 1 ||
-        fabs(trajectory.front().first - start_point_timestamp_sec)
-            <= delta_time ||
-        fabs(trajectory.front().first - trajectory.back().first)
-            <= delta_time) {
+        fabs(trajectory.front().first - start_point_timestamp_sec) <=
+            delta_time ||
+        fabs(trajectory.front().first - trajectory.back().first) <=
+            delta_time) {
       ADEBUG << "too short obstacle_trajectory. frame_num["
              << learning_data_frame->frame_num() << "] obstacle_id["
              << obstacle_id << "] size[" << trajectory.size()
@@ -298,10 +296,9 @@ void TrajectoryEvaluator::EvaluateObstacleTrajectory(
                                &evaluated_trajectory);
 
       ADEBUG << "frame_num[" << learning_data_frame->frame_num()
-             << "] obstacle_id[" << obstacle_id
-             << "] orig obstacle_trajectory[" << trajectory.size()
-             << "] evaluated_trajectory_size[" << evaluated_trajectory.size()
-             << "]";
+             << "] obstacle_id[" << obstacle_id << "] orig obstacle_trajectory["
+             << trajectory.size() << "] evaluated_trajectory_size["
+             << evaluated_trajectory.size() << "]";
     }
 
     // update learning_data

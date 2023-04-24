@@ -20,9 +20,9 @@
 
 #include "modules/planning/common/path_decision.h"
 
+#include "modules/common_msgs/perception_msgs/perception_obstacle.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/util/util.h"
-#include "modules/common_msgs/perception_msgs/perception_obstacle.pb.h"
 
 namespace apollo {
 namespace planning {

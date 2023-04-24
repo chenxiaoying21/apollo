@@ -14,6 +14,8 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
+#include "modules/planning/proto/planning_config.pb.h"
 #include "cyber/common/log.h"
 #include "cyber/common/macros.h"
 #include "cyber/cyber.h"
@@ -22,8 +24,6 @@
 #include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common/util/message_util.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
-#include "modules/planning/proto/planning_config.pb.h"
 
 namespace {
 

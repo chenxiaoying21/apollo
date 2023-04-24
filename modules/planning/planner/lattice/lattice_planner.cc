@@ -181,8 +181,7 @@ Status LatticePlanner::PlanOnReferenceLine(
            << "Current ego s: " << init_s[0];
   }
 
-  ADEBUG << "Decision_Time = "
-         << (Clock::NowInSeconds() - current_time) * 1000;
+  ADEBUG << "Decision_Time = " << (Clock::NowInSeconds() - current_time) * 1000;
   current_time = Clock::NowInSeconds();
 
   // 5. generate 1d trajectory bundle for longitudinal and lateral respectively.

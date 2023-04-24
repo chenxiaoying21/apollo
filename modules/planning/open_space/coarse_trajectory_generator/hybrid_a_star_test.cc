@@ -20,8 +20,8 @@
 
 #include "modules/planning/open_space/coarse_trajectory_generator/hybrid_a_star.h"
 
-#include "cyber/common/file.h"
 #include "gtest/gtest.h"
+#include "cyber/common/file.h"
 #include "modules/common/math/box2d.h"
 #include "modules/common/math/vec2d.h"
 #include "modules/planning/common/obstacle.h"

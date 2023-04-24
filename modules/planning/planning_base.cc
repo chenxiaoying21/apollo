@@ -16,8 +16,8 @@
 
 #include "modules/planning/planning_base.h"
 
-#include "cyber/time/clock.h"
 #include "modules/common_msgs/planning_msgs/planning_internal.pb.h"
+#include "cyber/time/clock.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/planning/common/planning_context.h"
 #include "modules/planning/common/planning_gflags.h"

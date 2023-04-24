@@ -25,8 +25,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "cyber/common/macros.h"
 #include "modules/common_msgs/planning_msgs/planning.pb.h"
+#include "cyber/common/macros.h"
 
 namespace apollo {
 namespace planning {

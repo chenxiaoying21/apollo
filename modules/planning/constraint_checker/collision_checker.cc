@@ -22,12 +22,12 @@
 
 #include <utility>
 
+#include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "cyber/common/log.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/path_matcher.h"
 #include "modules/common/math/vec2d.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 
 namespace apollo {
 namespace planning {

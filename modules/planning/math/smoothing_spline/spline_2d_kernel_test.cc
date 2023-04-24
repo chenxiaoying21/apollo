@@ -19,8 +19,8 @@
  **/
 #include "modules/planning/math/smoothing_spline/spline_2d_kernel.h"
 
-#include "cyber/common/log.h"
 #include "gtest/gtest.h"
+#include "cyber/common/log.h"
 
 namespace apollo {
 namespace planning {

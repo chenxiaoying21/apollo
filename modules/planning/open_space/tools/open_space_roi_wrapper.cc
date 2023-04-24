@@ -19,6 +19,7 @@
  **/
 
 #include "Eigen/Dense"
+#include "modules/planning/proto/planner_open_space_config.pb.h"
 #include "cyber/common/file.h"
 #include "modules/common/math/box2d.h"
 #include "modules/common/math/vec2d.h"
@@ -26,7 +27,6 @@
 #include "modules/map/pnc_map/path.h"
 #include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/proto/planner_open_space_config.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -55,8 +55,8 @@ class OpenSpaceROITest {
     double right_top_l = 0.0;
     if (!(nearby_path_->GetProjection(left_top, &left_top_s, &left_top_l) &&
           nearby_path_->GetProjection(right_top, &right_top_s, &right_top_l))) {
-      AERROR <<  "fail to get parking spot points' projections "
-                 "on reference line";
+      AERROR << "fail to get parking spot points' projections "
+                "on reference line";
       return false;
     }
     // start or end, left or right is decided by the vehicle's heading
@@ -229,8 +229,8 @@ class OpenSpaceROITest {
     double right_top_l = 0.0;
     if (!(nearby_path_->GetProjection(left_top, &left_top_s, &left_top_l) &&
           nearby_path_->GetProjection(right_top, &right_top_s, &right_top_l))) {
-      AERROR <<  "fail to get parking spot points' projections "
-                 "on reference line";
+      AERROR << "fail to get parking spot points' projections "
+                "on reference line";
       return false;
     }
     // start or end, left or right is decided by the vehicle's heading
@@ -384,8 +384,6 @@ class OpenSpaceROITest {
     obstacles_edges_num_ << parking_boundaries_obstacles_edges_num;
     return true;
   }
-
-  bool LoadPathBoundary() { return true; }
 
   bool LoadMap(const std::string& lane_id, const std::string& parking_id) {
     std::cout << lane_id << std::endl;

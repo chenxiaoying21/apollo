@@ -20,10 +20,10 @@
 
 #include "modules/planning/planner/on_lane_planner_dispatcher.h"
 
-#include "cyber/common/file.h"
 #include "gtest/gtest.h"
-#include "modules/planning/planner/planner_dispatcher.h"
+#include "cyber/common/file.h"
 #include "modules/planning/common/dependency_injector.h"
+#include "modules/planning/planner/planner_dispatcher.h"
 
 namespace apollo {
 namespace planning {

@@ -21,9 +21,6 @@
 namespace apollo {
 namespace planning {
 
-#define BLOCK_WIDTH 16
-#define BLOCK_HEIGHT 16
-
 #define BLOCK_1 256
 
 #define TEMPLATE_ROUTINE_INSTANCE(ret, routine) template ret routine

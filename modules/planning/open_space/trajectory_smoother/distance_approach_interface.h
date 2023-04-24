@@ -20,24 +20,24 @@
 
 #pragma once
 
+#include <omp.h>
 #include <adolc/adolc.h>
 #include <adolc/adolc_openmp.h>
 #include <adolc/adolc_sparse.h>
 #include <adolc/adouble.h>
-#include <omp.h>
 
 #include <coin/IpTNLP.hpp>
 #include <coin/IpTypes.hpp>
 
 #include "Eigen/Dense"
+#include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
+#include "modules/planning/proto/planner_open_space_config.pb.h"
 #include "cyber/common/log.h"
 #include "cyber/common/macros.h"
-#include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/math_utils.h"
 #include "modules/common/util/util.h"
 #include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/proto/planner_open_space_config.pb.h"
 
 #define tag_f 1
 #define tag_g 2

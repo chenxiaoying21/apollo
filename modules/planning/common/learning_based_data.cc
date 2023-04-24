@@ -21,9 +21,7 @@
 namespace apollo {
 namespace planning {
 
-void LearningBasedData::Clear() {
-  learning_data_.Clear();
-}
+void LearningBasedData::Clear() { learning_data_.Clear(); }
 
 void LearningBasedData::InsertLearningDataFrame(
     const LearningDataFrame& learning_data_frame) {
