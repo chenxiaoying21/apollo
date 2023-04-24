@@ -13,7 +13,6 @@ config: {
     stop_distance: 1.0
     max_stop_deceleration: 6.0
     min_pass_s_distance: 1.0
-    max_valid_stop_distance: 3.5
     expand_s_distance: 2.0
     stop_strict_l_distance: 6.0
     stop_loose_l_distance: 8.0
@@ -80,6 +79,5 @@ config: {
   enabled: true
   yield_sign: {
     stop_distance: 1.0
-    start_watch_distance: 2.0
   }
 }
