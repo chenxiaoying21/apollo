@@ -35,6 +35,12 @@ filegroup(
 )
 
 install(
+    name = "dist",
+    data = [":frontend"],
+    data_dest = "dreamview/addition_data"
+)
+
+install(
     name = "install",
     library_dest = "dreamview/lib",
     data_dest = "dreamview",
@@ -49,6 +55,7 @@ install(
     deps = [
         ":pb_dreamview",
         ":pb_hdrs", 
+        ":dist",
         "//modules/dreamview/backend/common:install",
         "//modules/dreamview/backend/hmi:install",
         "//modules/dreamview/backend/map:install",

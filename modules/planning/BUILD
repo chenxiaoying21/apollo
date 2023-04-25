@@ -198,6 +198,9 @@ install(
         ":pb_planning",
         ":planning_testdata_install",
         "//modules/planning/proto:py_pb_planning",
+        "//modules/planning/scenarios:install",
+        "//modules/planning/common:install", 
+        "//modules/planning/tasks:install",
         "//modules/planning/proto:pb_hdrs_planning",
     ],
 )

@@ -8,7 +8,7 @@ package(default_visibility = ["//visibility:public"])
 
 install_files(
     name = "py_pb_task_manager",
-    dest = "task_manager/python/modules/task_manager/proto",
+    dest = "task-manager/python/modules/task_manager/proto",
     files = [
         ":task_manager_config_py_pb2",
     ]

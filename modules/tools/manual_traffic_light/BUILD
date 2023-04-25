@@ -6,8 +6,8 @@ package(default_visibility = ["//visibility:public"])
 
 install(
     name = "install",
-    library_dest = "tools/lib",
-    data_dest = "tools/manual_traffic_light",
+    library_dest = "tools/lib/manual_traffic_light",
+    data_dest = "tools/addition_data/manual_traffic_light",
     data = [":conf_files"],
     targets = [":libmanual_traffic_light_component.so"],
     visibility = ["//visibility:public"],

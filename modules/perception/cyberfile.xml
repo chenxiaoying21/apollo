@@ -47,5 +47,10 @@
 
   <depend expose="False">3rd-gpus-dev</depend>
 
+  <depend>libtinyxml2-dev</depend>
+  <depend>libleveldb-dev</depend>
+  <depend>libnuma-dev</depend>
+  <depend>3rd-magma-dev</depend>
+
 </package>
 
