@@ -7,6 +7,7 @@ cc_library(
     name = "path_decider_obstacle_utils",
     srcs = ["path_decider_obstacle_utils.cc"],
     hdrs = ["path_decider_obstacle_utils.h"],
+    copts = ["-DMODULE_NAME=\\\"planning\\\""],
     deps = [
         "//modules/planning/common:frame",
     ],
