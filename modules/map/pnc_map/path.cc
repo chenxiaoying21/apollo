@@ -372,14 +372,19 @@ void Path::InitPoints() {
     Vec2d heading;
     if (i + 1 >= num_points_) {
       heading = path_points_[i] - path_points_[i - 1];
+      heading.Normalize();
     } else {
       segments_.emplace_back(path_points_[i], path_points_[i + 1]);
       heading = path_points_[i + 1] - path_points_[i];
+      float heading_length = heading.Length();
       // TODO(All): use heading.length when all adjacent lanes are guarantee to
       // be connected.
-      s += heading.Length();
+      s += heading_length;
+      // Normalize "heading".
+      if (heading_length > 0.0) {
+        heading /= heading_length;
+      }
     }
-    heading.Normalize();
     unit_directions_.push_back(heading);
   }
   length_ = s;
