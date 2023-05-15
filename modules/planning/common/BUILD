@@ -118,6 +118,10 @@ cc_library(
     name = "path_boundary",
     srcs = ["path_boundary.cc"],
     hdrs = ["path_boundary.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//cyber/common:log",
+    ],
 )
 
 cc_library(
