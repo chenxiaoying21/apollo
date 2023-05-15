@@ -3,28 +3,20 @@ stage: {
   type: "LaneFollowStage"
   enabled: true
   task {
-    name: "LANE_CHANGE_DECIDER"
-    type: "LaneChangeDecider"
+    name: "LANE_CHANGE_PATH"
+    type: "LaneChangePath"
   }
   task {
-    name: "PATH_REUSE_DECIDER"
-    type: "PathReuseDecider"
+    name: "LANE_FOLLOW_PATH"
+    type: "LaneFollowPath"
   }
   task {
-    name: "PATH_LANE_BORROW_DECIDER"
-    type: "PathLaneBorrowDecider"
+    name: "LANE_BORROW_PATH"
+    type: "LaneBorrowPath"
   }
   task {
-    name: "PATH_BOUNDS_DECIDER"
-    type: "PathBoundsDecider"
-  }
-  task {
-    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
-    type: "PiecewiseJerkPathOptimizer"
-  }
-  task {
-    name: "PATH_ASSESSMENT_DECIDER"
-    type: "PathAssessmentDecider"
+    name: "FALLBACK_PATH"
+    type: "FallbackPath"
   }
   task {
     name: "PATH_DECIDER"
