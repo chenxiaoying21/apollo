@@ -5,22 +5,6 @@ package(default_visibility = ["//visibility:public"])
 PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\""]
 
 cc_library(
-    name = "path_optimizer",
-    srcs = ["path_optimizer.cc"],
-    hdrs = ["path_optimizer.h"],
-    copts = PLANNING_COPTS,
-    deps = [
-        "//modules/common/status",
-        "//modules/planning/common:path_decision",
-        "//modules/planning/common:reference_line_info",
-        "//modules/planning/common/path:path_data",
-        "//modules/planning/common/speed:speed_data",
-        "//modules/planning/tasks:task",
-        "@eigen",
-    ],
-)
-
-cc_library(
     name = "speed_optimizer",
     srcs = ["speed_optimizer.cc"],
     hdrs = ["speed_optimizer.h"],
