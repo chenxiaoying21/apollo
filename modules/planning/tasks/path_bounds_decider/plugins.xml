@@ -1,3 +1,0 @@
-<library path="modules/planning/tasks/path_bounds_decider/libpath_bounds_decider.so">
-    <class type="apollo::planning::PathBoundsDecider" base_class="apollo::planning::Task"></class>
-</library>
