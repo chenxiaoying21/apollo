@@ -7,7 +7,7 @@ message ScenarioPullOverConfig {
       [default = 50.0];                                                // meter
   optional double pull_over_min_distance_buffer = 2 [default = 10.0];  // meter
   // keep the same value as pull_over_destination_to_adc_buffer in
-  // PathBoundsDeciderConfig
+  // PullOverPathConfig
   optional double max_distance_stop_search = 3 [default = 25.0];  // meter
   optional double max_s_error_to_end_point = 4 [default = 0.2];
   optional double max_l_error_to_end_point = 5 [default = 0.5];
