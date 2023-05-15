@@ -1,0 +1,60 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("//tools:cpplint.bzl", "cpplint")
+load("//tools/install:install.bzl", "install", "install_files", "install_plugin", "install_src_files")
+load("//tools:apollo.bzl", "cyber_plugin_description")
+
+package(default_visibility = ["//visibility:public"])
+
+install(
+    name = "install",
+    data_dest = "planning-task-fallback-path",
+    data = [
+        ":cyberfile.xml",
+        ":planning-task-fallback-path.BUILD",
+    ],
+    deps = [
+        "install_plugin_fallback_path",
+    ],
+)
+
+install_plugin(
+    name = "install_plugin_fallback_path",
+    data = [
+    ] + glob(["conf/**"]),
+    description = ":plugins.xml",
+    plugin = ":libfallback_path.so",
+)
+
+cyber_plugin_description(
+    name = "plugin_fallback_path_description",
+    description = ":plugins.xml",
+    plugin = ":libfallback_path.so",
+)
+
+cc_binary(
+    name = "libfallback_path.so",
+    linkshared = True,
+    linkstatic = True,
+    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    deps = [":fallback_path_lib"],
+)
+
+cc_library(
+    name = "fallback_path_lib",
+    srcs = ["fallback_path.cc"],
+    hdrs = ["fallback_path.h"],
+    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    deps = [
+        "//modules/map/pnc_map",
+        "//modules/planning/common:planning_context",
+        "//modules/planning/common:planning_gflags",
+        "//modules/planning/common:reference_line_info",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
+        "//modules/planning/tasks/common:path_generation",
+        "//modules/planning/tasks/fallback_path/proto:fallback_path_cc_proto",
+        "//modules/planning/tasks/common/path_util:path_util"
+    ],
+    alwayslink = True,
+)
+
+cpplint()
