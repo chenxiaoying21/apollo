@@ -18,16 +18,31 @@
  * @file
  **/
 
+#include <tuple>
+
 #include "modules/planning/common/path_boundary.h"
+#include "cyber/common/log.h"
 
 namespace apollo {
 namespace planning {
 
 PathBoundary::PathBoundary(const double start_s, const double delta_s,
-                           std::vector<std::pair<double, double>> path_boundary)
+    std::vector<std::pair<double, double>> path_boundary)
     : start_s_(start_s),
       delta_s_(delta_s),
       boundary_(std::move(path_boundary)) {}
+
+PathBoundary::PathBoundary(const double delta_s,
+    std::vector<std::tuple<double, double, double>>& path_bound) {
+  CHECK(!path_bound.empty());
+  std::tuple<double, double, double> tt;
+  start_s_ = std::get<0>(path_bound[0]);
+  delta_s_ = delta_s;
+  for (size_t i = 0; i<path_bound.size(); i++) {
+    boundary_.emplace_back(
+        std::get<1>(path_bound[i]), std::get<2>(path_bound[i]));
+  }
+}
 
 double PathBoundary::start_s() const { return start_s_; }
 

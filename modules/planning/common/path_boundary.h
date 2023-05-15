@@ -30,7 +30,8 @@ class PathBoundary {
  public:
   PathBoundary(const double start_s, const double delta_s,
                std::vector<std::pair<double, double>> path_boundary);
-
+  PathBoundary(const double delta_s,
+      std::vector<std::tuple<double, double, double>>& path_bound);
   virtual ~PathBoundary() = default;
 
   double start_s() const;
