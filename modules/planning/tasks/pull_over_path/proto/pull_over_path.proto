@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+import "modules/planning/proto/piecewise_jerk_path_config.proto";
+
+package apollo.planning;
+
+message PullOverPathConfig {
+  optional PiecewiseJerkPathConfig path_optimizer_config = 1;
+  optional double pull_over_road_edge_buffer = 2 [default = 0.15];
+  optional double pull_over_weight = 3 [default = 10];
+  optional double emergency_pull_over_weight = 4 [default = 200];
+  optional double pull_over_approach_lon_distance_adjust_factor = 5 [default = 1.5];
+  optional double pull_over_destination_to_adc_buffer = 6 [default = 25.0];
+  optional double pull_over_destination_to_pathend_buffer = 7 [default = 10.0];
+}
