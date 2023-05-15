@@ -296,7 +296,7 @@ class ReferenceLineInfo {
 
   PathDecision path_decision_;
 
-  Obstacle* blocking_obstacle_;
+  Obstacle* blocking_obstacle_ = nullptr;
 
   std::vector<PathBoundary> candidate_path_boundaries_;
   std::vector<PathData> candidate_path_data_;
