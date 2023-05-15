@@ -202,3 +202,7 @@ DECLARE_int32(min_past_history_points_len);
 DECLARE_double(path_bounds_decider_resolution);
 DECLARE_double(num_extra_tail_bound_point);
 DECLARE_bool(enable_pull_over_at_destination);
+
+DECLARE_double(obstacle_lat_buffer);
+DECLARE_double(obstacle_lon_start_buffer);
+DECLARE_double(obstacle_lon_end_buffer);
