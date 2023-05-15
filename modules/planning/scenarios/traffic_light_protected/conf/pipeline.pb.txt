@@ -3,20 +3,16 @@ stage: {
   type: "TrafficLightProtectedStageApproach"
   enabled: true
   task {
-    name: "PATH_LANE_BORROW_DECIDER"
-    type: "PathLaneBorrowDecider"
+    name: "LANE_FOLLOW_PATH"
+    type: "LaneFollowPath"
   }
   task {
-    name: "PATH_BOUNDS_DECIDER"
-    type: "PathBoundsDecider"
+    name: "LANE_BORROW_PATH"
+    type: "LaneBorrowPath"
   }
   task {
-    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
-    type: "PiecewiseJerkPathOptimizer"
-  }
-  task {
-    name: "PATH_ASSESSMENT_DECIDER"
-    type: "PathAssessmentDecider"
+    name: "FALLBACK_PATH"
+    type: "FallbackPath"
   }
   task {
     name: "PATH_DECIDER"
@@ -56,20 +52,16 @@ stage: {
   type: "TrafficLightProtectedStageIntersectionCruise"
   enabled: true
   task {
-    name: "PATH_LANE_BORROW_DECIDER"
-    type: "PathLaneBorrowDecider"
+    name: "LANE_FOLLOW_PATH"
+    type: "LaneFollowPath"
   }
   task {
-    name: "PATH_BOUNDS_DECIDER"
-    type: "PathBoundsDecider"
+    name: "LANE_BORROW_PATH"
+    type: "LaneBorrowPath"
   }
   task {
-    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
-    type: "PiecewiseJerkPathOptimizer"
-  }
-  task {
-    name: "PATH_ASSESSMENT_DECIDER"
-    type: "PathAssessmentDecider"
+    name: "FALLBACK_PATH"
+    type: "FallbackPath"
   }
   task {
     name: "PATH_DECIDER"

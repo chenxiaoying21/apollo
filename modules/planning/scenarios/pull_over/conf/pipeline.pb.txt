@@ -3,16 +3,16 @@ stage: {
   type: "PullOverStageApproach"
   enabled: true
   task {
-    name: "PATH_BOUNDS_DECIDER"
-    type: "PathBoundsDecider"
+    name: "PULL_OVER_PATH"
+    type: "PullOverPath"
   }
   task {
-    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
-    type: "PiecewiseJerkPathOptimizer"
+    name: "LANE_FOLLOW_PATH"
+    type: "LaneFollowPath"
   }
   task {
-    name: "PATH_ASSESSMENT_DECIDER"
-    type: "PathAssessmentDecider"
+    name: "FALLBACK_PATH"
+    type: "FallbackPath"
   }
   task {
     name: "PATH_DECIDER"
@@ -56,20 +56,12 @@ stage: {
     type: "OpenSpacePreStopDecider"
   }
   task {
-    name: "PATH_LANE_BORROW_DECIDER"
-    type: "PathLaneBorrowDecider"
+    name: "PULL_OVER_PATH"
+    type: "PullOverPath"
   }
   task {
-    name: "PATH_BOUNDS_DECIDER"
-    type: "PathBoundsDecider"
-  }
-  task {
-    name: "PIECEWISE_JERK_PATH_OPTIMIZER"
-    type: "PiecewiseJerkPathOptimizer"
-  }
-  task {
-    name: "PATH_ASSESSMENT_DECIDER"
-    type: "PathAssessmentDecider"
+    name: "LANE_FOLLOW_PATH"
+    type: "LaneFollowPath"
   }
   task {
     name: "PATH_DECIDER"
