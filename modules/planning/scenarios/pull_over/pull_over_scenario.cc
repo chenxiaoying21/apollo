@@ -82,11 +82,8 @@ bool PullOverScenario::IsTransferable(const Scenario* const other_scenario,
            context_.scenario_config.start_pull_over_scenario_distance());
   // too close to destination + not found pull-over position
   if (pull_over_scenario) {
-    const auto& pull_over_status =
-        injector_->planning_context()->planning_status().pull_over();
     if (adc_distance_to_dest <
-            context_.scenario_config.max_distance_stop_search() &&
-        !pull_over_status.has_position()) {
+            context_.scenario_config.max_distance_stop_search()) {
       pull_over_scenario = false;
     }
   }
