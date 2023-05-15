@@ -55,9 +55,9 @@ apollo::common::Status FallbackPath::Process(
   if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
     return Status::OK();
   }
-  if (PathAssessmentDecider(candidate_path_data,
+  if (!PathAssessmentDecider(candidate_path_data,
                             reference_line_info->mutable_path_data())) {
-    AINFO << "fallback path success";
+    AERROR << "Path assessment failed";
   }
 
   return Status::OK();
