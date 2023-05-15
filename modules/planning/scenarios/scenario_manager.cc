@@ -53,7 +53,8 @@ bool ScenarioManager::Init(const PlanningConfig& planning_config) {
     auto scenario = PluginManager::Instance()->CreateInstance<Scenario>(
         ConfigUtil::GetFullPlanningClassName(
             public_road_config.scenario(i).type()));
-    scenario->Init(injector_, public_road_config.scenario(i).name());
+    ACHECK(scenario->Init(injector_, public_road_config.scenario(i).name()))
+        << "Can not init scenario" << public_road_config.scenario(i).name();
     scenario_list_.push_back(scenario);
     if (public_road_config.scenario(i).name() == "LANE_FOLLOW") {
       default_scenario_type_ = scenario;
