@@ -29,6 +29,7 @@ install_files(
         ":planning_config_py_pb2",
         ":plugin_declare_info_py_pb2",
         ":navi_task_config_py_pb2",
+        ":piecewise_jerk_path_config_py_pb2",
     ]
 )
 
@@ -55,6 +56,7 @@ install_files(
         ":planner_open_space_config_cc_proto",
         ":plugin_declare_info_cc_proto",
         ":navi_task_config_cc_proto",
+        ":piecewise_jerk_path_config_cc_proto",
     ]
 )
 
@@ -366,5 +368,24 @@ py_proto_library(
     name = "navi_task_config_py_pb2",
     deps = [
         ":navi_task_config_proto",
+    ],
+)
+
+cc_proto_library(
+    name = "piecewise_jerk_path_config_cc_proto",
+    deps = [
+        ":piecewise_jerk_path_config_proto",
+    ],
+)
+
+proto_library(
+    name = "piecewise_jerk_path_config_proto",
+    srcs = ["piecewise_jerk_path_config.proto"],
+)
+
+py_proto_library(
+    name = "piecewise_jerk_path_config_py_pb2",
+    deps = [
+        ":piecewise_jerk_path_config_proto",
     ],
 )
