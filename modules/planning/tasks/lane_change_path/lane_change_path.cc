@@ -60,7 +60,7 @@ apollo::common::Status LaneChangePath::Process(
     return Status::OK();
   }
   if (status != ChangeLaneStatus::IN_CHANGE_LANE) {
-    AERROR << injector_->planning_context()
+    ADEBUG << injector_->planning_context()
                   ->mutable_planning_status()
                   ->mutable_change_lane()
                   ->DebugString();
@@ -246,7 +246,7 @@ void LaneChangePath::UpdateLaneChangeStatus() {
     }
     is_clear_to_change_lane_ = IsClearToChangeLane(reference_line_info_);
     change_lane_id = reference_line_info_->Lanes().Id();
-    AINFO << "change_lane_id" << change_lane_id;
+    ADEBUG << "change_lane_id" << change_lane_id;
     if (prev_status->status() == ChangeLaneStatus::CHANGE_LANE_FAILED) {
       // TODO(SHU): add an optimization_failure counter to enter
       // change_lane_failed status
