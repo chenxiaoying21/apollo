@@ -52,10 +52,6 @@ class PathAssessmentDeciderUtil {
   static void InitPathPointDecision(
       const PathData& path_data, const PathData::PathPointType type,
       std::vector<PathPointDecision>* const path_point_decision);
-  static void SetPathPointType(
-      const ReferenceLineInfo& reference_line_info, const PathData& path_data,
-      const bool is_lane_change_path,
-      std::vector<PathPointDecision>* const path_point_decision);
   /**
    * @brief Trim the points at tail of path which away from lane
    * @param path_data is input generated path

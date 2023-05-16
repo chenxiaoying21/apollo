@@ -31,6 +31,9 @@ namespace planning {
 using apollo::common::ErrorCode;
 using apollo::common::Status;
 using apollo::common::VehicleConfigHelper;
+using apollo::common::math::Box2d;
+using apollo::common::math::Polygon2d;
+using apollo::common::math::Vec2d;
 using apollo::cyber::Clock;
 
 constexpr double kIntersectionClearanceDist = 20.0;
@@ -479,8 +482,61 @@ void LaneChangePath::SetPathInfo(PathData* const path_data) {
   std::vector<PathPointDecision> path_decision;
   PathAssessmentDeciderUtil::InitPathPointDecision(
       *path_data, PathData::PathPointType::IN_LANE, &path_decision);
-  PathAssessmentDeciderUtil::SetPathPointType(*reference_line_info_, *path_data,
-                                              true, &path_decision);
+  // Go through every path_point, and add in-lane/out-of-lane info.
+  const auto& discrete_path = path_data->discretized_path();
+  const auto& vehicle_config =
+      common::VehicleConfigHelper::Instance()->GetConfig();
+  const double ego_length = vehicle_config.vehicle_param().length();
+  const double ego_width = vehicle_config.vehicle_param().width();
+  const double ego_back_to_center =
+      vehicle_config.vehicle_param().back_edge_to_center();
+  const double ego_center_shift_distance =
+      ego_length / 2.0 - ego_back_to_center;
+
+  for (size_t i = 0; i < discrete_path.size(); ++i) {
+    const auto& rear_center_path_point = discrete_path[i];
+    const double ego_theta = rear_center_path_point.theta();
+    Box2d ego_box({rear_center_path_point.x(), rear_center_path_point.y()},
+                  ego_theta, ego_length, ego_width);
+    Vec2d shift_vec{ego_center_shift_distance * std::cos(ego_theta),
+                    ego_center_shift_distance * std::sin(ego_theta)};
+    ego_box.Shift(shift_vec);
+    SLBoundary ego_sl_boundary;
+    if (!reference_line_info_->reference_line().GetSLBoundary(
+            ego_box, &ego_sl_boundary)) {
+      ADEBUG << "Unable to get SL-boundary of ego-vehicle.";
+      continue;
+    }
+    double lane_left_width = 0.0;
+    double lane_right_width = 0.0;
+    double middle_s =
+        (ego_sl_boundary.start_s() + ego_sl_boundary.end_s()) / 2.0;
+    if (reference_line_info_->reference_line().GetLaneWidth(
+            middle_s, &lane_left_width, &lane_right_width)) {
+      // Rough sl boundary estimate using single point lane width
+      double back_to_inlane_extra_buffer = 0.2;
+      // For lane-change path, only transitioning part is labeled as
+      // out-of-lane.
+      if (ego_sl_boundary.start_l() > lane_left_width ||
+          ego_sl_boundary.end_l() < -lane_right_width) {
+        // This means that ADC hasn't started lane-change yet.
+        std::get<1>((path_decision)[i]) = PathData::PathPointType::IN_LANE;
+      } else if (ego_sl_boundary.start_l() >
+                     -lane_right_width + back_to_inlane_extra_buffer &&
+                 ego_sl_boundary.end_l() <
+                     lane_left_width - back_to_inlane_extra_buffer) {
+        // This means that ADC has safely completed lane-change with margin.
+        std::get<1>((path_decision)[i]) = PathData::PathPointType::IN_LANE;
+      } else {
+        // ADC is right across two lanes.
+        std::get<1>((path_decision)[i]) =
+            PathData::PathPointType::OUT_ON_FORWARD_LANE;
+      }
+    } else {
+      AERROR << "reference line not ready when setting path point guide";
+      return;
+    }
+  }
   path_data->SetPathPointDecisionGuide(std::move(path_decision));
 }
 
