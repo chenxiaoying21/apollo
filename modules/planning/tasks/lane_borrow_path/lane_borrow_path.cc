@@ -31,6 +31,10 @@ namespace planning {
 
 using apollo::common::Status;
 using apollo::common::VehicleConfigHelper;
+using apollo::common::math::Box2d;
+using apollo::common::math::Polygon2d;
+using apollo::common::math::Vec2d;
+
 constexpr double kIntersectionClearanceDist = 20.0;
 constexpr double kJunctionClearanceDist = 15.0;
 
@@ -617,8 +621,80 @@ void LaneBorrowPath::SetPathInfo(PathData* const path_data) {
   std::vector<PathPointDecision> path_decision;
   PathAssessmentDeciderUtil::InitPathPointDecision(
       *path_data, PathData::PathPointType::IN_LANE, &path_decision);
-  PathAssessmentDeciderUtil::SetPathPointType(*reference_line_info_, *path_data,
-                                              false, &path_decision);
+  // Go through every path_point, and add in-lane/out-of-lane info.
+  const auto& discrete_path = path_data->discretized_path();
+  const auto& vehicle_config =
+      common::VehicleConfigHelper::Instance()->GetConfig();
+  const double ego_length = vehicle_config.vehicle_param().length();
+  const double ego_width = vehicle_config.vehicle_param().width();
+  const double ego_back_to_center =
+      vehicle_config.vehicle_param().back_edge_to_center();
+  const double ego_center_shift_distance =
+      ego_length / 2.0 - ego_back_to_center;
+
+  bool is_prev_point_out_lane = false;
+  for (size_t i = 0; i < discrete_path.size(); ++i) {
+    const auto& rear_center_path_point = discrete_path[i];
+    const double ego_theta = rear_center_path_point.theta();
+    Box2d ego_box({rear_center_path_point.x(), rear_center_path_point.y()},
+                  ego_theta, ego_length, ego_width);
+    Vec2d shift_vec{ego_center_shift_distance * std::cos(ego_theta),
+                    ego_center_shift_distance * std::sin(ego_theta)};
+    ego_box.Shift(shift_vec);
+    SLBoundary ego_sl_boundary;
+    if (!reference_line_info_->reference_line().GetSLBoundary(
+            ego_box, &ego_sl_boundary)) {
+      ADEBUG << "Unable to get SL-boundary of ego-vehicle.";
+      continue;
+    }
+    double lane_left_width = 0.0;
+    double lane_right_width = 0.0;
+    double middle_s =
+        (ego_sl_boundary.start_s() + ego_sl_boundary.end_s()) / 2.0;
+    if (reference_line_info_->reference_line().GetLaneWidth(
+            middle_s, &lane_left_width, &lane_right_width)) {
+      // Rough sl boundary estimate using single point lane width
+      double back_to_inlane_extra_buffer = 0.2;
+      double in_and_out_lane_hysteresis_buffer =
+          is_prev_point_out_lane ? back_to_inlane_extra_buffer : 0.0;
+      // For lane-borrow path, as long as ADC is not on the lane of
+      // reference-line, it is out on other lanes. It might even be
+      // on reverse lane!
+      if (ego_sl_boundary.end_l() >
+              lane_left_width + in_and_out_lane_hysteresis_buffer ||
+          ego_sl_boundary.start_l() <
+              -lane_right_width - in_and_out_lane_hysteresis_buffer) {
+        if (path_data->path_label().find("reverse") != std::string::npos) {
+          std::get<1>((path_decision)[i]) =
+              PathData::PathPointType::OUT_ON_REVERSE_LANE;
+        } else if (path_data->path_label().find("forward") !=
+                   std::string::npos) {
+          std::get<1>((path_decision)[i]) =
+              PathData::PathPointType::OUT_ON_FORWARD_LANE;
+        } else {
+          std::get<1>((path_decision)[i]) = PathData::PathPointType::UNKNOWN;
+        }
+        if (!is_prev_point_out_lane) {
+          if (ego_sl_boundary.end_l() >
+                  lane_left_width + back_to_inlane_extra_buffer ||
+              ego_sl_boundary.start_l() <
+                  -lane_right_width - back_to_inlane_extra_buffer) {
+            is_prev_point_out_lane = true;
+          }
+        }
+      } else {
+        // The path point is within the reference_line's lane.
+        std::get<1>((path_decision)[i]) = PathData::PathPointType::IN_LANE;
+        if (is_prev_point_out_lane) {
+          is_prev_point_out_lane = false;
+        }
+      }
+
+    } else {
+      AERROR << "reference line not ready when setting path point guide";
+      return;
+    }
+  }
   path_data->SetPathPointDecisionGuide(std::move(path_decision));
 }
 
