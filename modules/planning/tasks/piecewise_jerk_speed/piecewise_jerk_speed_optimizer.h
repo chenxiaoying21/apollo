@@ -25,7 +25,7 @@
 
 #include "modules/planning/tasks/piecewise_jerk_speed/proto/piecewise_jerk_speed.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/tasks/optimizers/speed_optimizer.h"
+#include "modules/planning/tasks/common/speed_optimizer.h"
 
 namespace apollo {
 namespace planning {

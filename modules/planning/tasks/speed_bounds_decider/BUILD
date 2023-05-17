@@ -52,7 +52,7 @@ cc_library(
         "//modules/planning/common:st_graph_data",
         "//modules/planning/common/util:common_lib",
         "//modules/planning/tasks:task",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/speed_bounds_decider/proto:speed_bounds_decider_cc_proto",
     ],
     alwayslink = True,

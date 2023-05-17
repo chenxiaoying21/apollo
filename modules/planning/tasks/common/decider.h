@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2019 The Apollo Authors. All Rights Reserved.
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,38 @@
  *****************************************************************************/
 
 /**
- * @file trajectory_optimizer.h
+ * @file decider.h
  **/
 
 #pragma once
 
 #include <memory>
 
-#include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/common/status/status.h"
-#include "modules/planning/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/common/frame.h"
 #include "modules/planning/tasks/task.h"
 
 namespace apollo {
 namespace planning {
 
-class TrajectoryOptimizer : public Task {
+class Decider : public Task {
  public:
-  virtual ~TrajectoryOptimizer() = default;
+  virtual ~Decider() = default;
 
-  apollo::common::Status Execute(Frame *frame) override;
+  apollo::common::Status Execute(
+      Frame* frame, ReferenceLineInfo* reference_line_info) override;
+
+  apollo::common::Status Execute(Frame* frame) override;
 
  protected:
-  virtual apollo::common::Status Process() = 0;
+  virtual apollo::common::Status Process(
+      Frame* frame, ReferenceLineInfo* reference_line_info) {
+    return apollo::common::Status::OK();
+  }
+
+  virtual apollo::common::Status Process(Frame* frame) {
+    return apollo::common::Status::OK();
+  }
 };
 
 }  // namespace planning

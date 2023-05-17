@@ -28,7 +28,7 @@
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/reference_line_info.h"
-#include "modules/planning/tasks/deciders/decider.h"
+#include "modules/planning/tasks/common/decider.h"
 
 namespace apollo {
 namespace planning {

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2017 The Apollo Authors. All Rights Reserved.
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * @file
  **/
 
-#include "modules/planning/tasks/optimizers/speed_optimizer.h"
+#include "modules/planning/tasks/common/speed_optimizer.h"
 
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/common/speed_limit.h"

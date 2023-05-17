@@ -48,7 +48,7 @@ cc_library(
     deps = [
         "//modules/planning/common:reference_line_info",
         "//modules/planning/common/util:common_lib",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/open_space_pre_stop_decider/proto:open_space_pre_stop_decider_cc_proto"
     ],
     alwayslink = True,

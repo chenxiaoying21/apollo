@@ -51,7 +51,7 @@ cc_library(
         "//modules/common/status",
         "//modules/planning/proto:planning_config_cc_proto",
         "//modules/planning/tasks:task",
-        "//modules/planning/tasks/optimizers:trajectory_optimizer",
+        "//modules/planning/tasks/common:trajectory_optimizer",
         "//modules/planning/tasks/open_space_trajectory_partition/proto:open_space_trajectory_partition_cc_proto"
     ],
     alwayslink = True,

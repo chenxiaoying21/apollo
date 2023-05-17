@@ -51,7 +51,7 @@ cc_library(
         "//modules/planning/common:speed_profile_generator",
         "//modules/planning/common:st_graph_data",
         "//modules/planning/math/piecewise_jerk:piecewise_jerk_speed_problem",
-        "//modules/planning/tasks/optimizers:speed_optimizer",
+        "//modules/planning/tasks/common:speed_optimizer",
         "//modules/planning/tasks/piecewise_jerk_speed/proto:piecewise_jerk_speed_cc_proto",
     ],
     alwayslink = True,

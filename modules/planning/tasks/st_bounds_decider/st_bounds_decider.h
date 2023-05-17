@@ -30,7 +30,7 @@
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/st_graph_data.h"
-#include "modules/planning/tasks/deciders/decider.h"
+#include "modules/planning/tasks/common/decider.h"
 #include "modules/planning/tasks/st_bounds_decider/st_driving_limits.h"
 #include "modules/planning/tasks/st_bounds_decider/st_guide_line.h"
 #include "modules/planning/tasks/st_bounds_decider/st_obstacles_processor.h"

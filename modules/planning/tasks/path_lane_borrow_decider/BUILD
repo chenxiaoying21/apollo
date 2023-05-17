@@ -50,7 +50,7 @@ cc_library(
         "//modules/planning/common:planning_context",
         "//modules/planning/common:planning_gflags",
         "//modules/planning/common:reference_line_info",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/path_lane_borrow_decider/proto:path_lane_borrow_decider_cc_proto",
     ],
     alwayslink = True,

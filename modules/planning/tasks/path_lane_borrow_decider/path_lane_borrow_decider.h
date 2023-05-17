@@ -25,7 +25,7 @@
 
 #include "modules/planning/tasks/path_lane_borrow_decider/proto/path_lane_borrow_decider.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/tasks/deciders/decider.h"
+#include "modules/planning/tasks/common/decider.h"
 
 namespace apollo {
 namespace planning {

@@ -38,7 +38,7 @@
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
 #include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/planning/tasks/deciders/decider.h"
+#include "modules/planning/tasks/common/decider.h"
 
 namespace apollo {
 namespace planning {

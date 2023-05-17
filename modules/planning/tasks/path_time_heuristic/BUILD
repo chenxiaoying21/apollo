@@ -103,7 +103,7 @@ cc_library(
         "//modules/planning/common:st_graph_data",
         "//modules/common_msgs/planning_msgs:planning_internal_cc_proto",
         "//modules/planning/tasks/speed_bounds_decider:st_boundary_mapper",
-        "//modules/planning/tasks/optimizers:speed_optimizer",
+        "//modules/planning/tasks/common:speed_optimizer",
         "//modules/planning/tasks/path_time_heuristic/proto:path_time_heuristic_cc_proto",
     ],
     alwayslink = True,

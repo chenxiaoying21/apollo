@@ -57,7 +57,7 @@ cc_library(
         "//modules/planning/common:trajectory_stitcher",
         "//modules/planning/common/trajectory:discretized_trajectory",
         "//modules/planning/tasks:task",
-        "//modules/planning/tasks/optimizers:trajectory_optimizer",
+        "//modules/planning/tasks/common:trajectory_optimizer",
         "//modules/planning/tasks/open_space_trajectory_provider/proto:open_space_trajectory_provider_cc_proto",
     ],
     alwayslink = True,
