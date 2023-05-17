@@ -48,7 +48,7 @@ cc_library(
     deps = [
         "//modules/planning/common:planning_context",
         "//modules/planning/common:planning_gflags",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/open_space_roi_decider/proto:open_space_roi_decider_cc_proto"
     ],
     alwayslink = True,

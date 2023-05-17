@@ -30,7 +30,7 @@
 #include "modules/planning/common/history.h"
 #include "modules/planning/common/indexed_list.h"
 #include "modules/planning/common/obstacle_blocking_analyzer.h"
-#include "modules/planning/tasks/deciders/decider.h"
+#include "modules/planning/tasks/common/decider.h"
 
 namespace apollo {
 namespace planning {

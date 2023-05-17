@@ -49,7 +49,7 @@ cc_library(
         "//modules/planning/common:dependency_injector",
         "//modules/planning/common:planning_context",
         "//modules/planning/common:planning_gflags",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/open_space_fallback_decider/proto:open_space_fallback_decider_cc_proto"
     ],
     alwayslink = True,

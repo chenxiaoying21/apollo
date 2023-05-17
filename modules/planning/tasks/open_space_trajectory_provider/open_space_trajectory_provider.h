@@ -32,7 +32,7 @@
 #include "modules/common/status/status.h"
 #include "modules/planning/common/trajectory/discretized_trajectory.h"
 #include "modules/planning/tasks/open_space_trajectory_provider/open_space_trajectory_optimizer.h"
-#include "modules/planning/tasks/optimizers/trajectory_optimizer.h"
+#include "modules/planning/tasks/common/trajectory_optimizer.h"
 #include "modules/planning/tasks/task.h"
 
 namespace apollo {

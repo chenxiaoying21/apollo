@@ -52,7 +52,7 @@ cc_library(
         "//modules/planning/common/util:common_lib",
         "//modules/planning/tasks:task",
         "//modules/planning/tasks/common/lane_change_util:lane_change_util",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/rule_based_stop_decider/proto:rule_based_stop_decider_cc_proto",
     ],
     alwayslink = True,

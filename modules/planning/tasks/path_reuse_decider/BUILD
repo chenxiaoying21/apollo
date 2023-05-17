@@ -50,7 +50,7 @@ cc_library(
         "//modules/planning/common:planning_context",
         "//modules/planning/common:reference_line_info",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/tasks/deciders:decider_base",
+        "//modules/planning/tasks/common:decider_base",
         "//modules/planning/tasks/path_reuse_decider/proto:path_reuse_decider_cc_proto",
     ],
     alwayslink = True,

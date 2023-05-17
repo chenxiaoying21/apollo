@@ -57,7 +57,7 @@ cc_library(
         "//modules/planning/math/piecewise_jerk:piecewise_jerk_path_problem",
         "//modules/planning/math/piecewise_jerk:piecewise_jerk_speed_problem",
         "//modules/planning/proto:ipopt_return_status_cc_proto",
-        "//modules/planning/tasks/optimizers:speed_optimizer",
+        "//modules/planning/tasks/common:speed_optimizer",
         "//modules/planning/tasks/piecewise_jerk_speed_nonlinear/proto:piecewise_jerk_speed_nonlinear_cc_proto",
     ],
     alwayslink = True,
