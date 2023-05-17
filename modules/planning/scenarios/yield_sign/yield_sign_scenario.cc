@@ -69,6 +69,7 @@ bool YieldSignScenario::IsTransferable(const Scenario* other_scenario,
       return false;
     } else if (overlap.first == ReferenceLineInfo::YIELD_SIGN) {
       yield_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
+      break;
     }
   }
   if (yield_sign_overlap == nullptr) {
