@@ -75,6 +75,7 @@ bool TrafficLightUnprotectedLeftTurnScenario::IsTransferable(
       return false;
     } else if (overlap.first == ReferenceLineInfo::SIGNAL) {
       traffic_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
+      break;
     }
   }
   if (traffic_sign_overlap == nullptr) {

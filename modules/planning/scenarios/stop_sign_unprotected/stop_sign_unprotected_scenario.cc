@@ -111,6 +111,7 @@ bool StopSignUnprotectedScenario::IsTransferable(
       return false;
     } else if (overlap.first == ReferenceLineInfo::STOP_SIGN) {
       stop_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
+      break;
     }
   }
   if (stop_sign_overlap == nullptr) {
