@@ -28,18 +28,21 @@ namespace mainboard {
 void ModuleArgument::DisplayUsage() {
   AINFO << "Usage: \n    " << binary_name_ << " [OPTION]...\n"
         << "Description: \n"
-        << "    -h, --help : help information \n"
-        << "    -d, --dag_conf=CONFIG_FILE : module dag config file\n"
+        << "    -h, --help: help information \n"
+        << "    -d, --dag_conf=CONFIG_FILE: module dag config file\n"
         << "    -p, --process_group=process_group: the process "
            "namespace for running this module, default in manager process\n"
         << "    -s, --sched_name=sched_name: sched policy "
            "conf for hole process, sched_name should be conf in cyber.pb.conf\n"
         << "    --plugin=plugin_description_file_path: the description file of "
-           "plugin"
+           "plugin\n"
+        << "    --disable_plugin_autoload : default enable autoload "
+           "mode of plugins, use disable_plugin_autoload to ingore autoload\n"
         << "Example:\n"
         << "    " << binary_name_ << " -h\n"
         << "    " << binary_name_ << " -d dag_conf_file1 -d dag_conf_file2 "
-        << "-p process_group -s sched_name\n";
+        << "-p process_group -s sched_name\n"
+        << "    " << binary_name_ << " --plugin plugin_xml_conf -d dag_conf ";
 }
 
 void ModuleArgument::ParseArgument(const int argc, char* const argv[]) {
@@ -73,6 +76,8 @@ void ModuleArgument::GetOptions(const int argc, char* const argv[]) {
       {"process_name", required_argument, nullptr, 'p'},
       {"sched_name", required_argument, nullptr, 's'},
       {"plugin", required_argument, nullptr, ARGS_OPT_CODE_PLUGIN},
+      {"disable_plugin_autoload", no_argument, nullptr,
+       ARGS_OPT_CODE_DISABLE_PLUGIN_AUTOLOAD},
       {NULL, no_argument, nullptr, 0}};
 
   // log command for info
@@ -113,6 +118,9 @@ void ModuleArgument::GetOptions(const int argc, char* const argv[]) {
         break;
       case ARGS_OPT_CODE_PLUGIN:
         plugin_description_list_.emplace_back(std::string(optarg));
+        break;
+      case ARGS_OPT_CODE_DISABLE_PLUGIN_AUTOLOAD:
+          disable_plugin_autoload_ = true;
         break;
       case 'h':
         DisplayUsage();

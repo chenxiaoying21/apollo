@@ -112,7 +112,7 @@ def module_monitor(mod):
 class ProcessWrapper(object):
 
     def __init__(self, binary_path, dag_num, dag_list, plugin_list, process_name,
-                 process_type, sched_name, exception_handler=''):
+                 process_type, sched_name, extra_args_list, exception_handler=''):
         self.time_of_death = None
         self.started = False
         self.binary_path = binary_path
@@ -121,6 +121,7 @@ class ProcessWrapper(object):
         self.plugin_list = plugin_list
         self.name = process_name
         self.sched_name = sched_name
+        self.extra_args_list = extra_args_list
         self.process_type = process_type
         self.popen = None
         self.exit_code = None
@@ -152,6 +153,8 @@ class ProcessWrapper(object):
             if len(self.sched_name) != 0:
                 args_list.append('-s')
                 args_list.append(self.sched_name)
+            if len(self.extra_args_list) != 0:
+                args_list.extend(self.extra_args_list)
 
         self.args = args_list
 
@@ -396,6 +399,7 @@ def start(launch_file=''):
                 plugin_dict[str(process_name)].extend(plugin_list)
 
     process_list = []
+    extra_args_list = []
     root = tree.getroot()
     for env in root.findall('environment'):
         for var in env.getchildren():
@@ -407,6 +411,7 @@ def start(launch_file=''):
         sched_name = module.find('sched_name')
         process_type = module.find('type')
         exception_handler = module.find('exception_handler')
+        extra_args = module.attrib.get('extra_args')
         if process_type is None:
             process_type = 'library'
         else:
@@ -435,6 +440,8 @@ def start(launch_file=''):
             exception_handler = ''
         else:
             exception_handler = exception_handler.text
+        if extra_args is not None:
+            extra_args_list = extra_args.split()
         module_name = module_name.strip()
         process_name = process_name.strip()
         sched_name = sched_name.strip()
@@ -453,13 +460,13 @@ def start(launch_file=''):
                 pw = ProcessWrapper(
                     process_name.split()[0], 0, [
                         ""], [], process_name, process_type,
-                    exception_handler)
+                    extra_args_list, exception_handler)
             # Default is library
             else:
                 pw = ProcessWrapper(
                     g_binary_name, 0, dag_dict[
                         str(process_name)], plugin_dict[str(process_name)], process_name,
-                    process_type, sched_name, exception_handler)
+                    process_type, sched_name, extra_args_list, exception_handler)
             result = pw.start()
             if result != 0:
                 logger.error(

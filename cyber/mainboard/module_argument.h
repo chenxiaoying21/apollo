@@ -33,6 +33,7 @@ static const char DEFAULT_sched_name_[] = "CYBER_DEFAULT";
 
 // code for command line arguments without short parameters
 static const int ARGS_OPT_CODE_PLUGIN = 1001;
+static const int ARGS_OPT_CODE_DISABLE_PLUGIN_AUTOLOAD = 1002;
 
 class ModuleArgument {
  public:
@@ -46,6 +47,7 @@ class ModuleArgument {
   const std::string& GetSchedName() const;
   const std::list<std::string>& GetDAGConfList() const;
   const std::list<std::string>& GetPluginDescriptionList() const;
+  const bool& GetDisablePluginsAutoLoad() const;
 
  private:
   std::list<std::string> dag_conf_list_;
@@ -53,6 +55,7 @@ class ModuleArgument {
   std::string binary_name_;
   std::string process_group_;
   std::string sched_name_;
+  bool disable_plugin_autoload_ = false;
 };
 
 inline const std::string& ModuleArgument::GetBinaryName() const {
@@ -74,6 +77,10 @@ inline const std::list<std::string>& ModuleArgument::GetDAGConfList() const {
 inline const std::list<std::string>& ModuleArgument::GetPluginDescriptionList()
     const {
   return plugin_description_list_;
+}
+
+inline const bool& ModuleArgument::GetDisablePluginsAutoLoad() const {
+  return disable_plugin_autoload_;
 }
 
 }  // namespace mainboard
