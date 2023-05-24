@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 #include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
-
+#include <utility>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
 
@@ -167,8 +167,8 @@ bool PathAssessmentDeciderUtil::IsStopOnReverseNeighborLane(
   }
 
   double check_s = 0.0;
-  static constexpr double kLookForwardBuffer =
-      5.0;  // filter out sidepass stop fence
+  // filter out sidepass stop fence
+  static constexpr double kLookForwardBuffer = 5.0;
   const double adc_end_s = reference_line_info.AdcSlBoundary().end_s();
   for (const auto& stop_point_sl : all_stop_point_sl) {
     if (stop_point_sl.s() - adc_end_s < kLookForwardBuffer) {

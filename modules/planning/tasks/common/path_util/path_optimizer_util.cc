@@ -14,7 +14,8 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include <utility>
+#include <vector>
 
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/math_utils.h"
@@ -22,6 +23,7 @@
 #include "modules/planning/common/speed/speed_data.h"
 #include "modules/planning/common/trajectory1d/piecewise_jerk_trajectory1d.h"
 #include "modules/planning/math/piecewise_jerk/piecewise_jerk_path_problem.h"
+#include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
 
 namespace apollo {
 namespace planning {

@@ -14,10 +14,13 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/tasks/lane_borrow_path/lane_borrow_path.h"
-
+#include <algorithm>
+#include <functional>
 #include <memory>
-
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/common/obstacle_blocking_analyzer.h"
 #include "modules/planning/common/planning_context.h"
@@ -25,6 +28,7 @@
 #include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include "modules/planning/tasks/lane_borrow_path/lane_borrow_path.h"
 
 namespace apollo {
 namespace planning {
@@ -64,21 +68,21 @@ apollo::common::Status LaneBorrowPath::Process(
   std::vector<PathData> candidate_path_data;
 
   GetStartPointSLState();
-  if (!PathBoundsDecider(candidate_path_boundaries)) {
+  if (!DecidePathBounds(&candidate_path_boundaries)) {
     return Status::OK();
   }
-  if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
+  if (!OptimizePath(candidate_path_boundaries, &candidate_path_data)) {
     return Status::OK();
   }
-  if (PathAssessmentDecider(candidate_path_data,
-                            reference_line_info->mutable_path_data())) {
+  if (AssessPath(&candidate_path_data,
+                 reference_line_info->mutable_path_data())) {
     ADEBUG << "lane borrow path success";
   }
 
   return Status::OK();
 }
 
-bool LaneBorrowPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
+bool LaneBorrowPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
   for (size_t i = 0; i < decided_side_pass_direction_.size(); i++) {
     PathBound path_bound;
     std::string blocking_obstacle_id = "";
@@ -92,7 +96,7 @@ bool LaneBorrowPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
     }
     // 2. Decide a rough boundary based on lane info and ADC's position
     if (!GetBoundaryFromNeighborLane(decided_side_pass_direction_[i],
-                                     &path_bound, borrow_lane_type)) {
+                                     &path_bound, &borrow_lane_type)) {
       AERROR << "Failed to decide a rough boundary based on lane and adc.";
       continue;
     }
@@ -117,22 +121,22 @@ bool LaneBorrowPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
     }
     ADEBUG << "Completed generating path boundaries.";
 
-    boundary.emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
+    boundary->emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
     std::string label;
     if (decided_side_pass_direction_[i] == SidePassDirection::LEFT_BORROW) {
       label = "regular/left" + borrow_lane_type;
     } else {
       label = "regular/right" + borrow_lane_type;
     }
-    boundary.back().set_label(label);
-    boundary.back().set_blocking_obstacle_id(blocking_obstacle_id);
-    RecordDebugInfo(path_bound, boundary.back().label(), reference_line_info_);
+    boundary->back().set_label(label);
+    boundary->back().set_blocking_obstacle_id(blocking_obstacle_id);
+    RecordDebugInfo(path_bound, boundary->back().label(), reference_line_info_);
   }
-  return !boundary.empty();
+  return !boundary->empty();
 }
-bool LaneBorrowPath::PathOptimizer(
+bool LaneBorrowPath::OptimizePath(
     const std::vector<PathBoundary>& path_boundaries,
-    std::vector<PathData>& candidate_path_data) {
+    std::vector<PathData>* candidate_path_data) {
   const auto& config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
   const auto& veh_param =
@@ -187,19 +191,19 @@ bool LaneBorrowPath::PathOptimizer(
       }
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
-      candidate_path_data.push_back(std::move(path_data));
+      candidate_path_data->push_back(std::move(path_data));
     }
   }
-  if (candidate_path_data.empty()) {
+  if (candidate_path_data->empty()) {
     return false;
   }
   return true;
 }
 
-bool LaneBorrowPath::PathAssessmentDecider(
-    std::vector<PathData>& candidate_path_data, PathData* final_path) {
+bool LaneBorrowPath::AssessPath(std::vector<PathData>* candidate_path_data,
+                                PathData* final_path) {
   std::vector<PathData> valid_path_data;
-  for (auto& curr_path_data : candidate_path_data) {
+  for (auto& curr_path_data : *candidate_path_data) {
     if (PathAssessmentDeciderUtil::IsValidRegularPath(*reference_line_info_,
                                                       curr_path_data)) {
       SetPathInfo(&curr_path_data);
@@ -239,7 +243,7 @@ bool LaneBorrowPath::PathAssessmentDecider(
 
 bool LaneBorrowPath::GetBoundaryFromNeighborLane(
     const SidePassDirection pass_direction, PathBound* const path_bound,
-    std::string& borrow_lane_type) {
+    std::string* borrow_lane_type) {
   // Sanity checks.
   CHECK_NOTNULL(path_bound);
   ACHECK(!path_bound->empty());
@@ -336,7 +340,7 @@ bool LaneBorrowPath::GetBoundaryFromNeighborLane(
     }
   }
   PathBoundsDeciderUtil::TrimPathBounds(path_blocked_idx, path_bound);
-  borrow_lane_type = borrowing_reverse_lane ? "reverse" : "forward";
+  *borrow_lane_type = borrowing_reverse_lane ? "reverse" : "forward";
   return true;
 }
 void LaneBorrowPath::UpdateSelfPathInfo() {

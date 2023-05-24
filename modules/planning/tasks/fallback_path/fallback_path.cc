@@ -14,15 +14,16 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/tasks/fallback_path/fallback_path.h"
-
 #include <memory>
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/tasks/common/path_generation.h"
 #include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include "modules/planning/tasks/fallback_path/fallback_path.h"
 
 namespace apollo {
 namespace planning {
@@ -49,21 +50,21 @@ apollo::common::Status FallbackPath::Process(
   std::vector<PathData> candidate_path_data;
 
   GetStartPointSLState();
-  if (!PathBoundsDecider(candidate_path_boundaries)) {
+  if (!DecidePathBounds(&candidate_path_boundaries)) {
     return Status::OK();
   }
-  if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
+  if (!OptimizePath(candidate_path_boundaries, &candidate_path_data)) {
     return Status::OK();
   }
-  if (!PathAssessmentDecider(candidate_path_data,
-                            reference_line_info->mutable_path_data())) {
+  if (!AssessPath(&candidate_path_data,
+                  reference_line_info->mutable_path_data())) {
     AERROR << "Path assessment failed";
   }
 
   return Status::OK();
 }
 
-bool FallbackPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
+bool FallbackPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
   PathBound path_bound;
   // 1. Initialize the path boundaries to be an indefinitely large area.
   if (!PathBoundsDeciderUtil::InitPathBoundary(*reference_line_info_,
@@ -80,15 +81,15 @@ bool FallbackPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
     return false;
   }
 
-  boundary.emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
-  boundary.back().set_label(absl::StrCat("fallback/", "self"));
-  RecordDebugInfo(path_bound, boundary.back().label(), reference_line_info_);
+  boundary->emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
+  boundary->back().set_label(absl::StrCat("fallback/", "self"));
+  RecordDebugInfo(path_bound, boundary->back().label(), reference_line_info_);
   return true;
 }
 
-bool FallbackPath::PathOptimizer(
+bool FallbackPath::OptimizePath(
     const std::vector<PathBoundary>& path_boundaries,
-    std::vector<PathData>& candidate_path_data) {
+    std::vector<PathData>* candidate_path_data) {
   const auto& config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
   const auto& veh_param =
@@ -141,18 +142,18 @@ bool FallbackPath::PathOptimizer(
       }
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
-      candidate_path_data.push_back(std::move(path_data));
+      candidate_path_data->push_back(std::move(path_data));
     }
   }
-  if (candidate_path_data.empty()) {
+  if (candidate_path_data->empty()) {
     return false;
   }
   return true;
 }
 
-bool FallbackPath::PathAssessmentDecider(
-    std::vector<PathData>& candidate_path_data, PathData* final_path) {
-  PathData& curr_path_data = candidate_path_data.back();
+bool FallbackPath::AssessPath(std::vector<PathData>* candidate_path_data,
+                              PathData* final_path) {
+  PathData curr_path_data = candidate_path_data->back();
   RecordDebugInfo(curr_path_data, curr_path_data.path_label(),
                   reference_line_info_);
   if (curr_path_data.Empty()) {

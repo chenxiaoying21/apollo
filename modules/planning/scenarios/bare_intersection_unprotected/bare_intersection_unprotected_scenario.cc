@@ -73,13 +73,13 @@ bool BareIntersectionUnprotectedScenario::IsTransferable(
 
   for (const auto& overlap : first_encountered_overlaps) {
     if ((overlap.first == ReferenceLineInfo::SIGNAL ||
-        overlap.first == ReferenceLineInfo::STOP_SIGN ||
-        overlap.first == ReferenceLineInfo::YIELD_SIGN) &&
+         overlap.first == ReferenceLineInfo::STOP_SIGN ||
+         overlap.first == ReferenceLineInfo::YIELD_SIGN) &&
         traffic_sign_overlap == nullptr) {
       traffic_sign_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
       break;
     } else if (overlap.first == ReferenceLineInfo::PNC_JUNCTION &&
-                     pnc_junction_overlap==nullptr) {
+               pnc_junction_overlap == nullptr) {
       pnc_junction_overlap = const_cast<hdmap::PathOverlap*>(&overlap.second);
     }
   }

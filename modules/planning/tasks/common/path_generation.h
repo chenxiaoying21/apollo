@@ -45,15 +45,24 @@ class PathGeneration : public Task {
   virtual apollo::common::Status Process(Frame* frame) {
     return apollo::common::Status::OK();
   }
+
   /**
    * @brief calculate init sl state by planning start point, result will store
    * in init_sl_state_
    */
+
   void GetStartPointSLState();
+
+  /**
+   * @brief add path_boundary debug info for PnC monitor
+  */
   void RecordDebugInfo(const PathBound& path_boundaries,
                        const std::string& debug_name,
                        ReferenceLineInfo* const reference_line_info);
 
+  /**
+   * @brief add path debug info for PnC monitor
+  */
   void RecordDebugInfo(const PathData& path_data, const std::string& debug_name,
                        ReferenceLineInfo* const reference_line_info);
   SLState init_sl_state_;

@@ -21,9 +21,10 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
+#include <tuple>
+#include <vector>
 #include "modules/planning/tasks/lane_borrow_path/proto/lane_borrow_path.pb.h"
-
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/tasks/common/path_generation.h"
 
@@ -43,21 +44,21 @@ class LaneBorrowPath : public PathGeneration {
    * @brief Calculate all path boundaries
    * @param boundary is calculated path boundaries
    */
-  bool PathBoundsDecider(std::vector<PathBoundary>& boundary);
+  bool DecidePathBounds(std::vector<PathBoundary>* boundary);
   /**
    * @brief Optimize paths for each path boundary
    * @param path_boundaries is input path boundaries
    * @param candidate_path_data is output paths
    */
-  bool PathOptimizer(const std::vector<PathBoundary>& path_boundaries,
-                     std::vector<PathData>& candidate_path_data);
+  bool OptimizePath(const std::vector<PathBoundary>& path_boundaries,
+                    std::vector<PathData>* candidate_path_data);
   /**
    * @brief Assess the feasibility of each path and select the best one
    * @param candidate_path_data is input paths
    * @param final_path is output the best path
    */
-  bool PathAssessmentDecider(std::vector<PathData>& candidate_path_data,
-                             PathData* final_path);
+  bool AssessPath(std::vector<PathData>* candidate_path_data,
+                  PathData* final_path);
   /**
    * @brief Generate path boundary by left or right neightbor lane and self lane
    * @param pass_direction is side pass direction (left or right)
@@ -65,7 +66,7 @@ class LaneBorrowPath : public PathGeneration {
    */
   bool GetBoundaryFromNeighborLane(const SidePassDirection pass_direction,
                                    PathBound* const path_bound,
-                                   std::string& borrow_lane_type);
+                                   std::string* borrow_lane_type);
   /**
    * @brief Determine whether to borrow neighbor lane
    * @return if need to borrow lane return true

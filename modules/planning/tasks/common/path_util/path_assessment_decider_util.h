@@ -14,17 +14,20 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include <limits>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "modules/planning/common/path/path_data.h"
 #include "modules/planning/common/reference_line_info.h"
 
 namespace apollo {
 namespace planning {
 
-namespace {
 // PointDecision contains (s, PathPointType, distance to closest obstacle).
 using PathPointDecision = std::tuple<double, PathData::PathPointType, double>;
 constexpr double kMinObstacleArea = 1e-4;
-}  // namespace
 
 class PathAssessmentDeciderUtil {
  public:
@@ -35,13 +38,18 @@ class PathAssessmentDeciderUtil {
    */
   static bool IsValidRegularPath(const ReferenceLineInfo& reference_line_info,
                                  const PathData& path_data);
+
   static bool IsGreatlyOffReferenceLine(const PathData& path_data);
+
   static bool IsGreatlyOffRoad(const ReferenceLineInfo& reference_line_info,
                                const PathData& path_data);
+
   static bool IsCollidingWithStaticObstacles(
       const ReferenceLineInfo& reference_line_info, const PathData& path_data);
+
   static bool IsStopOnReverseNeighborLane(
       const ReferenceLineInfo& reference_line_info, const PathData& path_data);
+
   /**
    * @brief Init path_point_decision as type
    * @param path_data is input generated path
@@ -52,6 +60,7 @@ class PathAssessmentDeciderUtil {
   static void InitPathPointDecision(
       const PathData& path_data, const PathData::PathPointType type,
       std::vector<PathPointDecision>* const path_point_decision);
+
   /**
    * @brief Trim the points at tail of path which away from lane
    * @param path_data is input generated path

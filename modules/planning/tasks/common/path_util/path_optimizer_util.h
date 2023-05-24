@@ -14,6 +14,8 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include <utility>
+#include <vector>
 #include "modules/planning/proto/piecewise_jerk_path_config.pb.h"
 #include "modules/planning/common/path/path_data.h"
 #include "modules/planning/common/path_boundary.h"

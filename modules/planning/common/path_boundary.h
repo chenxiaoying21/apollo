@@ -30,6 +30,11 @@ class PathBoundary {
  public:
   PathBoundary(const double start_s, const double delta_s,
                std::vector<std::pair<double, double>> path_boundary);
+  /**
+   * @brief construct class by path bound
+   * @param delta_s The distance between two point in s-axis
+   * @param path_bound tuple first is s, second is l_min, third is l_max
+   *    **/
   PathBoundary(const double delta_s,
       std::vector<std::tuple<double, double, double>>& path_bound);
   virtual ~PathBoundary() = default;

@@ -21,9 +21,11 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 #include "modules/planning/tasks/lane_change_path/proto/lane_change_path.pb.h"
-
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/tasks/common/path_generation.h"
 
@@ -44,21 +46,21 @@ class LaneChangePath : public PathGeneration {
    * @brief Calculate all path boundaries
    * @param boundary is calculated path boundaries
    */
-  bool PathBoundsDecider(std::vector<PathBoundary>& boundary);
+  bool DecidePathBounds(std::vector<PathBoundary>* boundary);
   /**
    * @brief Optimize paths for each path boundary
    * @param path_boundaries is input path boundaries
    * @param candidate_path_data is output paths
    */
-  bool PathOptimizer(const std::vector<PathBoundary>& path_boundaries,
-                     std::vector<PathData>& candidate_path_data);
+  bool OptimizePath(const std::vector<PathBoundary>& path_boundaries,
+                    std::vector<PathData>* candidate_path_data);
   /**
    * @brief Assess the feasibility of each path and select the best one
    * @param candidate_path_data is input paths
    * @param final_path is output the best path
    */
-  bool PathAssessmentDecider(std::vector<PathData>& candidate_path_data,
-                             PathData* final_path);
+  bool AssessPath(std::vector<PathData>* candidate_path_data,
+                  PathData* final_path);
   /**
    * @brief Update lane change status
    */
@@ -75,7 +77,7 @@ class LaneChangePath : public PathGeneration {
    */
   void GetLaneChangeStartPoint(const ReferenceLine& reference_line,
                                double adc_frenet_s,
-                               common::math::Vec2d& start_xy);
+                               common::math::Vec2d* start_xy);
   /**
    * @brief Determine if the space before and after changing lanes is safe
    */

@@ -37,25 +37,28 @@ class FallbackPath : public PathGeneration {
  private:
   apollo::common::Status Process(
       Frame* frame, ReferenceLineInfo* reference_line_info) override;
+
   /**
    * @brief Calculate all path boundaries
    * @param boundary is calculated path boundaries
    */
-  bool PathBoundsDecider(std::vector<PathBoundary>& boundary);
+  bool DecidePathBounds(std::vector<PathBoundary>* boundary);
+
   /**
    * @brief Optimize paths for each path boundary
    * @param path_boundaries is input path boundaries
    * @param candidate_path_data is output paths
    */
-  bool PathOptimizer(const std::vector<PathBoundary>& path_boundaries,
-                     std::vector<PathData>& candidate_path_data);
+  bool OptimizePath(const std::vector<PathBoundary>& path_boundaries,
+                    std::vector<PathData>* candidate_path_data);
+
   /**
    * @brief Assess the feasibility of each path and select the best one
    * @param candidate_path_data is input paths
    * @param final_path is output the best path
    */
-  bool PathAssessmentDecider(std::vector<PathData>& candidate_path_data,
-                             PathData* final_path);
+  bool AssessPath(std::vector<PathData>* candidate_path_data,
+                  PathData* final_path);
 
   FallbackPathConfig config_;
 };
