@@ -54,21 +54,21 @@ apollo::common::Status PullOverPath::Process(
 
   GetStartPointSLState();
 
-  if (!PathBoundsDecider(candidate_path_boundaries)) {
+  if (!DecidePathBounds(&candidate_path_boundaries)) {
     return Status::OK();
   }
-  if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
+  if (!OptimizePath(candidate_path_boundaries, &candidate_path_data)) {
     return Status::OK();
   }
-  if (PathAssessmentDecider(candidate_path_data,
-                            reference_line_info->mutable_path_data())) {
+  if (AssessPath(&candidate_path_data,
+                 reference_line_info->mutable_path_data())) {
     ADEBUG << "pull-over path success";
   }
 
   return Status::OK();
 }
 
-bool PullOverPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
+bool PullOverPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
   auto* pull_over_status = injector_->planning_context()
                                ->mutable_planning_status()
                                ->mutable_pull_over();
@@ -165,13 +165,13 @@ bool PullOverPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
     std::get<1>((path_bound)[idx]) = std::get<1>((path_bound)[curr_idx]);
     std::get<2>((path_bound)[idx]) = std::get<2>((path_bound)[curr_idx]);
   }
-  boundary.emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
+  boundary->emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
   return true;
 }
 
-bool PullOverPath::PathOptimizer(
+bool PullOverPath::OptimizePath(
     const std::vector<PathBoundary>& path_boundaries,
-    std::vector<PathData>& candidate_path_data) {
+    std::vector<PathData>* candidate_path_data) {
   auto path_config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
   const auto& veh_param =
@@ -243,18 +243,18 @@ bool PullOverPath::PathOptimizer(
       }
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
-      candidate_path_data.push_back(std::move(path_data));
+      candidate_path_data->push_back(std::move(path_data));
     }
   }
-  if (candidate_path_data.empty()) {
+  if (candidate_path_data->empty()) {
     return false;
   }
   return true;
 }
 
-bool PullOverPath::PathAssessmentDecider(
-    std::vector<PathData>& candidate_path_data, PathData* final_path) {
-  PathData& curr_path_data = candidate_path_data.back();
+bool PullOverPath::AssessPath(std::vector<PathData>* candidate_path_data,
+                              PathData* final_path) {
+  PathData& curr_path_data = candidate_path_data->back();
   RecordDebugInfo(curr_path_data, curr_path_data.path_label(),
                   reference_line_info_);
   if (!PathAssessmentDeciderUtil::IsValidRegularPath(*reference_line_info_,

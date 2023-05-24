@@ -15,6 +15,11 @@
  *****************************************************************************/
 #pragma once
 
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "modules/common/util/point_factory.h"
 #include "modules/planning/common/path_boundary.h"
 #include "modules/planning/common/reference_line_info.h"
@@ -53,7 +58,7 @@ class PathBoundsDeciderUtil {
    */
   static void GetStartPoint(common::TrajectoryPoint planning_start_point,
                             const ReferenceLine& reference_line,
-                            SLState& init_sl_state);
+                            SLState* init_sl_state);
   /**
    * @brief Get lane width in init_sl_state.
    */

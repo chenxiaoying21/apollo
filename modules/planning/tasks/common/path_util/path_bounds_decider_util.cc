@@ -15,7 +15,14 @@
  *****************************************************************************/
 
 #include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
-
+#include <algorithm>
+#include <functional>
+#include <limits>
+#include <set>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/linear_interpolation.h"
 #include "modules/common/util/util.h"
@@ -55,7 +62,7 @@ bool PathBoundsDeciderUtil::InitPathBoundary(
 
 void PathBoundsDeciderUtil::GetStartPoint(
     common::TrajectoryPoint planning_start_point,
-    const ReferenceLine& reference_line, SLState& init_sl_state) {
+    const ReferenceLine& reference_line, SLState* init_sl_state) {
   if (FLAGS_use_front_axe_center_in_path_planning) {
     planning_start_point =
         InferFrontAxeCenterFromRearAxeCenter(planning_start_point);
@@ -67,7 +74,7 @@ void PathBoundsDeciderUtil::GetStartPoint(
 
   // Initialize some private variables.
   // ADC s/l info.
-  init_sl_state = reference_line.ToFrenetFrame(planning_start_point);
+  *init_sl_state = reference_line.ToFrenetFrame(planning_start_point);
 }
 
 double PathBoundsDeciderUtil::GetADCLaneWidth(

@@ -14,8 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/tasks/lane_change_path/lane_change_path.h"
-
+#include <limits>
 #include <memory>
 #include "cyber/time/clock.h"
 #include "modules/common/configs/vehicle_config_helper.h"
@@ -24,6 +23,7 @@
 #include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
 #include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include "modules/planning/tasks/lane_change_path/lane_change_path.h"
 
 namespace apollo {
 namespace planning {
@@ -74,22 +74,22 @@ apollo::common::Status LaneChangePath::Process(
   std::vector<PathData> candidate_path_data;
 
   GetStartPointSLState();
-  if (!PathBoundsDecider(candidate_path_boundaries)) {
+  if (!DecidePathBounds(&candidate_path_boundaries)) {
     return Status(ErrorCode::PLANNING_ERROR, "lane change path bounds failed");
   }
-  if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
+  if (!OptimizePath(candidate_path_boundaries, &candidate_path_data)) {
     return Status(ErrorCode::PLANNING_ERROR,
                   "lane change path optimize failed");
   }
-  if (!PathAssessmentDecider(candidate_path_data,
-                             reference_line_info->mutable_path_data())) {
+  if (!AssessPath(&candidate_path_data,
+                  reference_line_info->mutable_path_data())) {
     return Status(ErrorCode::PLANNING_ERROR, "No valid lane change path");
   }
 
   return Status::OK();
 }
 
-bool LaneChangePath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
+bool LaneChangePath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
   std::vector<std::tuple<double, double, double>> path_bound;
   // 1. Initialize the path boundaries to be an indefinitely large area.
   if (!PathBoundsDeciderUtil::InitPathBoundary(*reference_line_info_,
@@ -124,15 +124,15 @@ bool LaneChangePath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
     path_bound.push_back(temp_path_bound[path_bound.size()]);
     counter++;
   }
-  boundary.emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
-  boundary.back().set_label("regular/pullover");
-  boundary.back().set_blocking_obstacle_id(blocking_obstacle_id);
-  RecordDebugInfo(path_bound, boundary.back().label(), reference_line_info_);
+  boundary->emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
+  boundary->back().set_label("regular/pullover");
+  boundary->back().set_blocking_obstacle_id(blocking_obstacle_id);
+  RecordDebugInfo(path_bound, boundary->back().label(), reference_line_info_);
   return true;
 }
-bool LaneChangePath::PathOptimizer(
+bool LaneChangePath::OptimizePath(
     const std::vector<PathBoundary>& path_boundaries,
-    std::vector<PathData>& candidate_path_data) {
+    std::vector<PathData>* candidate_path_data) {
   const auto& config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
   const auto& veh_param =
@@ -185,19 +185,19 @@ bool LaneChangePath::PathOptimizer(
       }
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
-      candidate_path_data.push_back(std::move(path_data));
+      candidate_path_data->push_back(std::move(path_data));
     }
   }
-  if (candidate_path_data.empty()) {
+  if (candidate_path_data->empty()) {
     return false;
   }
   return true;
 }
 
-bool LaneChangePath::PathAssessmentDecider(
-    std::vector<PathData>& candidate_path_data, PathData* final_path) {
+bool LaneChangePath::AssessPath(std::vector<PathData>* candidate_path_data,
+                                PathData* final_path) {
   std::vector<PathData> valid_path_data;
-  for (auto& curr_path_data : candidate_path_data) {
+  for (auto& curr_path_data : *candidate_path_data) {
     if (PathAssessmentDeciderUtil::IsValidRegularPath(*reference_line_info_,
                                                       curr_path_data)) {
       SetPathInfo(&curr_path_data);
@@ -377,13 +377,13 @@ bool LaneChangePath::IsClearToChangeLane(
 
 void LaneChangePath::GetLaneChangeStartPoint(
     const ReferenceLine& reference_line, double adc_frenet_s,
-    common::math::Vec2d& start_xy) {
+    common::math::Vec2d* start_xy) {
   double lane_change_start_s =
       config_.lane_change_prepare_length() + adc_frenet_s;
   common::SLPoint lane_change_start_sl;
   lane_change_start_sl.set_s(lane_change_start_s);
   lane_change_start_sl.set_l(0.0);
-  reference_line.SLToXY(lane_change_start_sl, &start_xy);
+  reference_line.SLToXY(lane_change_start_sl, start_xy);
 }
 
 void LaneChangePath::GetBoundaryFromLaneChangeForbiddenZone(
@@ -410,7 +410,7 @@ void LaneChangePath::GetBoundaryFromLaneChangeForbiddenZone(
 
     // Update the lane_change_start_xy_ decided by lane_change_start_s
     GetLaneChangeStartPoint(reference_line, init_sl_state_.first[0],
-                            lane_change_start_xy_);
+                            &lane_change_start_xy_);
   }
 
   // Remove the target lane out of the path-boundary, up to the decided S.

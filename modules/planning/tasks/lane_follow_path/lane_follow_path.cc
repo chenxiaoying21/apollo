@@ -53,21 +53,21 @@ apollo::common::Status LaneFollowPath::Process(
   std::vector<PathData> candidate_path_data;
 
   GetStartPointSLState();
-  if (!PathBoundsDecider(candidate_path_boundaries)) {
+  if (!DecidePathBounds(&candidate_path_boundaries)) {
     return Status::OK();
   }
-  if (!PathOptimizer(candidate_path_boundaries, candidate_path_data)) {
+  if (!OptimizePath(candidate_path_boundaries, &candidate_path_data)) {
     return Status::OK();
   }
-  if (!PathAssessmentDecider(candidate_path_data,
-                             reference_line_info->mutable_path_data())) {
+  if (!AssessPath(&candidate_path_data,
+                  reference_line_info->mutable_path_data())) {
     AERROR << "Path assessment failed";
   }
 
   return Status::OK();
 }
 
-bool LaneFollowPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
+bool LaneFollowPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
   PathBound path_bound;
   std::string blocking_obstacle_id = "";
   std::string lane_type = "";
@@ -117,16 +117,16 @@ bool LaneFollowPath::PathBoundsDecider(std::vector<PathBoundary>& boundary) {
   //   regular_path_bound_pair.emplace_back(std::get<1>(path_bound[i]),
   //                                        std::get<2>(path_bound[i]));
   // }
-  boundary.emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
-  boundary.back().set_label(absl::StrCat("regular/", "self"));
-  boundary.back().set_blocking_obstacle_id(blocking_obstacle_id);
-  RecordDebugInfo(path_bound, boundary.back().label(), reference_line_info_);
+  boundary->emplace_back(FLAGS_path_bounds_decider_resolution, path_bound);
+  boundary->back().set_label(absl::StrCat("regular/", "self"));
+  boundary->back().set_blocking_obstacle_id(blocking_obstacle_id);
+  RecordDebugInfo(path_bound, boundary->back().label(), reference_line_info_);
   return true;
 }
 
-bool LaneFollowPath::PathOptimizer(
+bool LaneFollowPath::OptimizePath(
     const std::vector<PathBoundary>& path_boundaries,
-    std::vector<PathData>& candidate_path_data) {
+    std::vector<PathData>* candidate_path_data) {
   const auto& config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
   const auto& veh_param =
@@ -179,18 +179,18 @@ bool LaneFollowPath::PathOptimizer(
       }
       path_data.set_path_label(path_boundary.label());
       path_data.set_blocking_obstacle_id(path_boundary.blocking_obstacle_id());
-      candidate_path_data.push_back(std::move(path_data));
+      candidate_path_data->push_back(std::move(path_data));
     }
   }
-  if (candidate_path_data.empty()) {
+  if (candidate_path_data->empty()) {
     return false;
   }
   return true;
 }
 
-bool LaneFollowPath::PathAssessmentDecider(
-    std::vector<PathData>& candidate_path_data, PathData* final_path) {
-  PathData& curr_path_data = candidate_path_data.back();
+bool LaneFollowPath::AssessPath(std::vector<PathData>* candidate_path_data,
+                                PathData* final_path) {
+  PathData& curr_path_data = candidate_path_data->back();
   RecordDebugInfo(curr_path_data, curr_path_data.path_label(),
                   reference_line_info_);
   if (!PathAssessmentDeciderUtil::IsValidRegularPath(*reference_line_info_,
