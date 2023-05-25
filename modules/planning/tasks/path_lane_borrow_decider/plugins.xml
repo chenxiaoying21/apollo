@@ -1,3 +1,0 @@
-<library path="modules/planning/tasks/path_lane_borrow_decider/libpath_lane_borrow_decider.so">
-    <class type="apollo::planning::PathLaneBorrowDecider" base_class="apollo::planning::Task"></class>
-</library>

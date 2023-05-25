@@ -1,3 +1,0 @@
-<library path="modules/planning/tasks/path_reuse_decider/libpath_reuse_decider.so">
-    <class type="apollo::planning::PathReuseDecider" base_class="apollo::planning::Task"></class>
-</library>
