@@ -26,7 +26,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus ParkAndGoStageCheck::Process(
+StageResult ParkAndGoStageCheck::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Check";
   CHECK_NOTNULL(frame);
@@ -34,10 +34,10 @@ Stage::StageStatus ParkAndGoStageCheck::Process(
 
   ADCInitStatus();
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
-  bool plan_ok = ExecuteTaskOnOpenSpace(frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnOpenSpace(frame);
+  if (result.HasError()) {
     AERROR << "ParkAndGoStageAdjust planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
 
   bool ready_to_cruise =
@@ -46,7 +46,7 @@ Stage::StageStatus ParkAndGoStageCheck::Process(
   return FinishStage(ready_to_cruise);
 }
 
-Stage::StageStatus ParkAndGoStageCheck::FinishStage(const bool success) {
+StageResult ParkAndGoStageCheck::FinishStage(const bool success) {
   if (success) {
     next_stage_ = "PARK_AND_GO_CRUISE";
   } else {
@@ -56,7 +56,7 @@ Stage::StageStatus ParkAndGoStageCheck::FinishStage(const bool success) {
       ->mutable_planning_status()
       ->mutable_park_and_go()
       ->set_in_check_stage(false);
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 void ParkAndGoStageCheck::ADCInitStatus() {

@@ -27,16 +27,16 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus ParkAndGoStageAdjust::Process(
+StageResult ParkAndGoStageAdjust::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Adjust";
   CHECK_NOTNULL(frame);
 
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
-  bool plan_ok = ExecuteTaskOnOpenSpace(frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnOpenSpace(frame);
+  if (result.HasError()) {
     AERROR << "ParkAndGoStageAdjust planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
   const bool is_ready_to_cruise =
       CheckADCReadyToCruise(injector_->vehicle_state(), frame,
@@ -54,12 +54,12 @@ Stage::StageStatus ParkAndGoStageAdjust::Process(
   }
 
   if (!is_ready_to_cruise && !is_end_of_trajectory) {
-    return StageStatus::RUNNING;
+    return result.SetStageStatus(StageStatusType::RUNNING);
   }
   return FinishStage();
 }
 
-Stage::StageStatus ParkAndGoStageAdjust::FinishStage() {
+StageResult ParkAndGoStageAdjust::FinishStage() {
   const auto vehicle_status = injector_->vehicle_state();
   ADEBUG << vehicle_status->steering_percentage();
   if (std::fabs(vehicle_status->steering_percentage()) <
@@ -70,7 +70,7 @@ Stage::StageStatus ParkAndGoStageAdjust::FinishStage() {
     ResetInitPostion();
     next_stage_ = "PARK_AND_GO_PRE_CRUISE";
   }
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 void ParkAndGoStageAdjust::ResetInitPostion() {

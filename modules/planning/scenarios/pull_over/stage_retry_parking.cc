@@ -34,7 +34,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus PullOverStageRetryParking::Process(
+StageResult PullOverStageRetryParking::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: RetryParking";
   CHECK_NOTNULL(frame);
@@ -43,10 +43,10 @@ Stage::StageStatus PullOverStageRetryParking::Process(
   // Open space planning doesn't use planning_init_point from upstream because
   // of different stitching strategy
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
-  bool plan_ok = ExecuteTaskOnOpenSpace(frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnOpenSpace(frame);
+  if (result.HasError()) {
     AERROR << "PullOverStageRetryParking planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
 
   // set debug info in planning_data
@@ -68,10 +68,10 @@ Stage::StageStatus PullOverStageRetryParking::Process(
     return FinishStage();
   }
 
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus PullOverStageRetryParking::FinishStage() {
+StageResult PullOverStageRetryParking::FinishStage() {
   return FinishScenario();
 }
 

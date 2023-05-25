@@ -9,10 +9,12 @@ import "modules/common_msgs/perception_msgs/traffic_light_detection.proto";
 import "modules/common_msgs/planning_msgs/pad_msg.proto";
 import "modules/common_msgs/routing_msgs/routing.proto";
 
-message FuzzingConfig {}
+message FuzzingConfig {
+}
 
 message DriveActionConfig {
-  optional apollo.planning.PadMessage.DrivingAction drive_action = 1 [default = NONE];
+  optional apollo.planning.PadMessage.DrivingAction drive_action = 1
+      [default = NONE];
   optional double trigger_time = 2 [default = 0.0];
 }
 

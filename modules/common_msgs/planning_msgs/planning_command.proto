@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+package apollo.planning;
+
+import "google/protobuf/any.proto";
+import "modules/common_msgs/basic_msgs/header.proto";
+import "modules/common_msgs/routing_msgs/routing.proto";
+
+message ParkingCommand {
+  optional apollo.common.Header header = 1;
+  // The id of the parking spot on the map.
+  required string parking_spot_id = 2;
+  // Expected speed when executing this command. If "target_speed" > maximum
+  // speed of the vehicle, use maximum speed of the vehicle instead. If it is
+  // not given, the default target speed of system will be used.
+  optional double target_speed = 3;
+}
+
+message PlanningCommand {
+  optional apollo.common.Header header = 1;
+  // Unique identification for command.
+  required uint64 command_id = 2;
+  // Move along the lanes on map.
+  optional apollo.routing.RoutingResponse lane_follow_command = 3;
+  oneof command {
+    // Move to the given pose with open space planning trajectory.
+    ParkingCommand parking_command = 4;
+    // Custom command defined by user for extensibility.
+    google.protobuf.Any custom_command = 5;
+  }
+}

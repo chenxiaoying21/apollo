@@ -28,11 +28,11 @@ namespace planning {
 
 class PullOverStageRetryParking : public Stage {
  public:
-  StageStatus Process(const common::TrajectoryPoint& planning_init_point,
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
                       Frame* frame) override;
 
  private:
-  Stage::StageStatus FinishStage();
+  StageResult FinishStage();
 
   bool CheckADCPullOverOpenSpace();
 };

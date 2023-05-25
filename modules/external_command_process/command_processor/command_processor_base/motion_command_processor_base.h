@@ -1,0 +1,226 @@
+/******************************************************************************
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *****************************************************************************/
+
+/**
+ * @file routing_command_processor_base.h
+ */
+
+#pragma once
+
+#include "modules/common_msgs/external_command_msgs/command_status.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_command.pb.h"
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
+#include "modules/external_command_process/command_processor/command_processor_base/proto/command_processor_config.pb.h"
+#include "cyber/cyber.h"
+#include "modules/common/adapters/adapter_gflags.h"
+#include "modules/external_command_process/command_processor/command_processor_base/command_processor_base.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/lane_way_tool.h"
+#include "modules/routing/routing.h"
+
+/**
+ * @namespace apollo::external_command
+ * @brief apollo::external_command
+ */
+namespace apollo {
+namespace external_command {
+
+/**
+ * @class ExternalCommandProcessComponent
+ *
+ * @brief The external interface for processing external commands.
+ */
+template <typename T>
+class MotionCommandProcessorBase : public CommandProcessorBase {
+ public:
+  MotionCommandProcessorBase();
+
+  ~MotionCommandProcessorBase() override = default;
+
+  bool Init(const std::shared_ptr<cyber::Node>& node) override;
+  /**
+   * @brief Get the command status.
+   * @param command_id Id of the command.
+   * @param status Output command status.
+   */
+  bool GetCommandStatus(uint64_t command_id,
+                        CommandStatus* status) const override;
+
+ protected:
+  const std::shared_ptr<apollo::external_command::LaneWayTool>& GetLaneWayTool()
+      const {
+    return lane_way_tool_;
+  }
+  /**
+   * @brief Convert "RoutingCommand" to RoutingRequest.
+   * @param command RoutingCommand to be converted.
+   * @return convert result of "RoutingRequest".
+   */
+  virtual bool Convert(
+      const std::shared_ptr<T>& command,
+      std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const;
+
+ private:
+  /**
+   * @brief Process the incoming lane follow command. Search the routing to end
+   * point and send to planning module.
+   * @param command Incoming lane follow command.
+   * @param status The command process result before sending to planning module.
+   */
+  void OnCommand(const std::shared_ptr<T>& command,
+                 std::shared_ptr<CommandStatus>& status);
+  /**
+   * @brief Callback for command status.
+   * @param status The latest command status.
+   */
+  void OnCommandStatus(const std::shared_ptr<CommandStatus>& status);
+  /**
+   * @brief Process special command except RoutingRequest.
+   * @param command RoutingCommand to be converted.
+   * @param planning_command Output process result.
+   * @return True if no error occurs.
+   */
+  virtual bool ProcessSpecialCommand(
+      const std::shared_ptr<T>& command,
+      const std::shared_ptr<apollo::planning::PlanningCommand>&
+          planning_command) const = 0;
+
+  std::shared_ptr<cyber::Service<T, CommandStatus>> command_service_;
+  std::shared_ptr<cyber::Writer<apollo::planning::PlanningCommand>>
+      planning_command_writer_;
+  std::shared_ptr<cyber::Reader<CommandStatus>> planning_command_status_reader_;
+  std::shared_ptr<apollo::routing::Routing> routing_;
+  std::shared_ptr<apollo::external_command::LaneWayTool> lane_way_tool_;
+  CommandStatus latest_planning_command_status_;
+  T last_received_command_;
+};
+
+template <typename T>
+MotionCommandProcessorBase<T>::MotionCommandProcessorBase()
+    : routing_(std::make_shared<apollo::routing::Routing>()) {
+  latest_planning_command_status_.set_status(CommandStatusType::UNKNOWN);
+  latest_planning_command_status_.set_message("Command status is not inited yet.");
+}
+
+template <typename T>
+bool MotionCommandProcessorBase<T>::Init(
+    const std::shared_ptr<cyber::Node>& node) {
+  // Init function of base class should be invoked first.
+  if (!CommandProcessorBase::Init(node)) {
+    AERROR << "MotionCommandProcessorBase init failed!";
+    return false;
+  }
+  // Create service for input command.
+  const auto& config = GetProcessorConfig();
+  command_service_ = node->CreateService<T, CommandStatus>(
+      config.input_command_name(),
+      [this](const std::shared_ptr<T>& command,
+             std::shared_ptr<CommandStatus>& status) {
+        this->OnCommand(command, status);
+      });
+  // Create writer for output command.
+  CHECK(config.output_command_name().size() > 0);
+  planning_command_writer_ =
+      node->CreateWriter<apollo::planning::PlanningCommand>(
+          config.output_command_name().Get(0));
+  // Create reader for input command status.
+  CHECK(config.input_command_status_name().size() > 0);
+  planning_command_status_reader_ = node->CreateReader<CommandStatus>(
+      config.input_command_status_name().Get(0),
+      [this](const std::shared_ptr<CommandStatus>& status) {
+        this->OnCommandStatus(status);
+      });
+  lane_way_tool_ =
+      std::make_shared<apollo::external_command::LaneWayTool>(node);
+  return true;
+}
+
+template <typename T>
+bool MotionCommandProcessorBase<T>::GetCommandStatus(
+    uint64_t command_id, CommandStatus* status) const {
+  CHECK_NOTNULL(status);
+  if (last_received_command_.command_id() == command_id) {
+    status->CopyFrom(latest_planning_command_status_);
+    return true;
+  }
+  return false;
+}
+
+template <typename T>
+void MotionCommandProcessorBase<T>::OnCommand(
+    const std::shared_ptr<T>& command, std::shared_ptr<CommandStatus>& status) {
+  CHECK_NOTNULL(command);
+  last_received_command_.CopyFrom(*command);
+  // Convert command to RoutingRequest.
+  auto routing_request = std::make_shared<apollo::routing::RoutingRequest>();
+  bool convert_result = Convert(command, routing_request);
+  if (!convert_result) {
+    status->set_status(CommandStatusType::ERROR);
+    status->set_message("Cannot convert command to RoutingRequest: " +
+                        command->DebugString());
+    return;
+  }
+  // Search routing.
+  std::shared_ptr<apollo::planning::PlanningCommand> planning_command =
+      std::make_shared<apollo::planning::PlanningCommand>();
+  if (nullptr != routing_request) {
+    auto routing_response =
+        std::make_shared<apollo::routing::RoutingResponse>();
+    if (!routing_->Process(routing_request, routing_response.get())) {
+      status->set_status(CommandStatusType::ERROR);
+      status->set_message("Cannot get routing of command: " +
+                          command->DebugString());
+      return;
+    }
+    planning_command->mutable_lane_follow_command()->CopyFrom(
+        *routing_response);
+  }
+  // Process command except RoutingRequest.
+  if (!ProcessSpecialCommand(command, planning_command)) {
+    AERROR << "Process special command failed!";
+  }
+  // Send routing response to planning module.
+  planning_command_writer_->Write(planning_command);
+  status->set_status(CommandStatusType::RUNNING);
+}
+
+template <typename T>
+void MotionCommandProcessorBase<T>::OnCommandStatus(
+    const std::shared_ptr<CommandStatus>& status) {
+  CHECK_NOTNULL(status);
+  latest_planning_command_status_.CopyFrom(*status);
+}
+
+template <typename T>
+bool MotionCommandProcessorBase<T>::Convert(
+    const std::shared_ptr<T>& command,
+    std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const {
+  routing_request = nullptr;
+  if (nullptr == command) {
+    AWARN << "The lane follow command to be converted is null!";
+    return true;
+  }
+  routing_request = std::make_shared<apollo::routing::RoutingRequest>();
+  // Get the current vehicle pose as start pose.
+  auto start_pose = routing_request->add_waypoint();
+  if (!lane_way_tool_->GetVehicleLaneWayPoint(start_pose)) {
+    AERROR << "Cannot get current vehicle pose!";
+    return false;
+  }
+  return true;
+}
+
+}  // namespace external_command
+}  // namespace apollo

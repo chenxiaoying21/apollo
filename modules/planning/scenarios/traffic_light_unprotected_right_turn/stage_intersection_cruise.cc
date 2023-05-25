@@ -25,14 +25,13 @@
 namespace apollo {
 namespace planning {
 
-Stage::StageStatus
-TrafficLightUnprotectedRightTurnStageIntersectionCruise::Process(
+StageResult TrafficLightUnprotectedRightTurnStageIntersectionCruise::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: IntersectionCruise";
   CHECK_NOTNULL(frame);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "TrafficLightUnprotectedRightTurnStageIntersectionCruise "
            << "plan error";
   }
@@ -41,10 +40,10 @@ TrafficLightUnprotectedRightTurnStageIntersectionCruise::Process(
   if (stage_done) {
     return FinishStage();
   }
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus
+StageResult
 TrafficLightUnprotectedRightTurnStageIntersectionCruise::FinishStage() {
   return FinishScenario();
 }

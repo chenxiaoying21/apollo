@@ -33,7 +33,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus EmergencyStopStageStandby::Process(
+StageResult EmergencyStopStageStandby::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Standby";
   CHECK_NOTNULL(frame);
@@ -84,8 +84,8 @@ Stage::StageStatus EmergencyStopStageStandby::Process(
   ADEBUG << "Build a stop fence for emergency_stop: id[" << virtual_obstacle_id
          << "] s[" << stop_line_s << "]";
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "EmergencyStopStageStandby planning error";
   }
 
@@ -94,10 +94,10 @@ Stage::StageStatus EmergencyStopStageStandby::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus EmergencyStopStageStandby::FinishStage() {
+StageResult EmergencyStopStageStandby::FinishStage() {
   return FinishScenario();
 }
 

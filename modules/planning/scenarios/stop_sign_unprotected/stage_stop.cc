@@ -47,7 +47,7 @@ using apollo::perception::PerceptionObstacle;
 using StopSignLaneVehicles =
     std::unordered_map<std::string, std::vector<std::string>>;
 
-Stage::StageStatus StopSignUnprotectedStageStop::Process(
+StageResult StopSignUnprotectedStageStop::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Stop";
   CHECK_NOTNULL(frame);
@@ -57,8 +57,8 @@ Stage::StageStatus StopSignUnprotectedStageStop::Process(
   const ScenarioStopSignUnprotectedConfig& scenario_config =
       context->scenario_config;
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "StopSignUnprotectedPreStop planning error";
   }
 
@@ -92,7 +92,7 @@ Stage::StageStatus StopSignUnprotectedStageStop::Process(
   ADEBUG << "stop_start_time[" << start_time << "] wait_time[" << wait_time
          << "]";
   if (wait_time < scenario_config.stop_duration_sec()) {
-    return Stage::RUNNING;
+    return result.SetStageStatus(StageStatusType::RUNNING);
   }
 
   // check on watch_vehicles
@@ -143,7 +143,7 @@ Stage::StageStatus StopSignUnprotectedStageStop::Process(
   const PathDecision& path_decision = reference_line_info.path_decision();
   RemoveWatchVehicle(path_decision, &watch_vehicles);
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 /**
@@ -224,7 +224,7 @@ int StopSignUnprotectedStageStop::RemoveWatchVehicle(
   return 0;
 }
 
-Stage::StageStatus StopSignUnprotectedStageStop::FinishStage() {
+StageResult StopSignUnprotectedStageStop::FinishStage() {
   auto context = GetContextAs<StopSignUnprotectedContext>();
   // update PlanningContext
   injector_->planning_context()
@@ -239,7 +239,7 @@ Stage::StageStatus StopSignUnprotectedStageStop::FinishStage() {
   context->creep_start_time = Clock::NowInSeconds();
 
   next_stage_ = "STOP_SIGN_UNPROTECTED_CREEP";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

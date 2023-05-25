@@ -52,7 +52,7 @@ bool StopSignUnprotectedStageCreep::Init(
   return ret;
 }
 
-Stage::StageStatus StopSignUnprotectedStageCreep::Process(
+StageResult StopSignUnprotectedStageCreep::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Creep";
   CHECK_NOTNULL(frame);
@@ -81,8 +81,8 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
     }
   }
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "StopSignUnprotectedStageCreep planning error";
   }
 
@@ -121,7 +121,7 @@ Stage::StageStatus StopSignUnprotectedStageCreep::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 const CreepStageConfig& StopSignUnprotectedStageCreep::GetCreepStageConfig()
@@ -152,9 +152,9 @@ bool StopSignUnprotectedStageCreep::GetOverlapStopInfo(
   return false;
 }
 
-Stage::StageStatus StopSignUnprotectedStageCreep::FinishStage() {
+StageResult StopSignUnprotectedStageCreep::FinishStage() {
   next_stage_ = "STOP_SIGN_UNPROTECTED_INTERSECTION_CRUISE";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

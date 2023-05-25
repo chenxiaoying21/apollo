@@ -32,11 +32,11 @@ namespace planning {
 class TrafficLightProtectedStageIntersectionCruise
     : public BaseStageTrafficLightCruise {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
  private:
-  Stage::StageStatus FinishStage();
+  StageResult FinishStage();
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

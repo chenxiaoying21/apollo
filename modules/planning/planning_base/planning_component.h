@@ -19,6 +19,7 @@
 #include <memory>
 
 #include "modules/common_msgs/chassis_msgs/chassis.pb.h"
+#include "modules/common_msgs/external_command_msgs/command_status.pb.h"
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
 #include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
@@ -71,6 +72,8 @@ class PlanningComponent final
   std::shared_ptr<cyber::Writer<routing::RoutingRequest>> rerouting_writer_;
   std::shared_ptr<cyber::Writer<PlanningLearningData>>
       planning_learning_data_writer_;
+  std::shared_ptr<cyber::Writer<external_command::CommandStatus>>
+      command_status_writer_;
 
   std::mutex mutex_;
   perception::TrafficLightDetection traffic_light_;

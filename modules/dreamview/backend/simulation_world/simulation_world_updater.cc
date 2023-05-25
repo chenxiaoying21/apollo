@@ -688,7 +688,6 @@ bool SimulationWorldUpdater::ConstructRoutingRequest(
       }
     }
   }
-
   AINFO << "Constructed RoutingRequest to be sent:\n"
         << routing_request->DebugString();
 

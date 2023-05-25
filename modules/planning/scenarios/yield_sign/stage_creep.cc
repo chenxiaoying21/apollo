@@ -51,7 +51,7 @@ bool YieldSignStageCreep::Init(
   return ret;
 }
 
-Stage::StageStatus YieldSignStageCreep::Process(
+StageResult YieldSignStageCreep::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Creep";
   CHECK_NOTNULL(frame);
@@ -78,8 +78,8 @@ Stage::StageStatus YieldSignStageCreep::Process(
     }
   }
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "YieldSignStageCreep planning error";
   }
 
@@ -123,7 +123,7 @@ Stage::StageStatus YieldSignStageCreep::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 const CreepStageConfig& YieldSignStageCreep::GetCreepStageConfig() const {
@@ -158,9 +158,7 @@ bool YieldSignStageCreep::GetOverlapStopInfo(
   return false;
 }
 
-Stage::StageStatus YieldSignStageCreep::FinishStage() {
-  return FinishScenario();
-}
+StageResult YieldSignStageCreep::FinishStage() { return FinishScenario(); }
 
 }  // namespace planning
 }  // namespace apollo

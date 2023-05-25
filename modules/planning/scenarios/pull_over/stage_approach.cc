@@ -37,7 +37,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus PullOverStageApproach::Process(
+StageResult PullOverStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
@@ -46,8 +46,8 @@ Stage::StageStatus PullOverStageApproach::Process(
   const ScenarioPullOverConfig& scenario_config =
       GetContextAs<PullOverContext>()->scenario_config;
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "PullOverStageApproach planning error";
   }
 
@@ -133,15 +133,15 @@ Stage::StageStatus PullOverStageApproach::Process(
     }
   }
 
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus PullOverStageApproach::FinishStage(const bool success) {
+StageResult PullOverStageApproach::FinishStage(const bool success) {
   if (success) {
     return FinishScenario();
   } else {
     next_stage_ = "PULL_OVER_RETRY_APPROACH_PARKING";
-    return Stage::FINISHED;
+    return StageResult(StageStatusType::FINISHED);
   }
 }
 

@@ -26,10 +26,11 @@
 namespace apollo {
 namespace planning {
 
-Stage::StageStatus StageApproachingParkingSpot::Process(
+StageResult StageApproachingParkingSpot::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: StageApproachingParkingSpot";
   CHECK_NOTNULL(frame);
+  StageResult result;
   auto scenario_context = GetContextAs<ValetParkingContext>();
   scenario_context->target_parking_spot_id.clear();
   if (frame->local_view().routing->routing_request().has_parking_info() &&
@@ -43,11 +44,11 @@ Stage::StageStatus StageApproachingParkingSpot::Process(
                                                    .parking_space_id();
   } else {
     AERROR << "No parking space id from routing";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
 
   if (scenario_context->target_parking_spot_id.empty()) {
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
 
   *(frame->mutable_open_space_info()->mutable_target_parking_spot_id()) =
@@ -57,7 +58,7 @@ Stage::StageStatus StageApproachingParkingSpot::Process(
   *(frame->mutable_open_space_info()->mutable_pre_stop_rightaway_point()) =
       scenario_context->pre_stop_rightaway_point;
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
 
   scenario_context->pre_stop_rightaway_flag =
       frame->open_space_info().pre_stop_rightaway_flag();
@@ -66,14 +67,14 @@ Stage::StageStatus StageApproachingParkingSpot::Process(
 
   if (CheckADCStop(*frame)) {
     next_stage_ = "VALET_PARKING_PARKING";
-    return Stage::FINISHED;
+    return StageResult(StageStatusType::FINISHED);
   }
-  if (!plan_ok) {
+  if (result.HasError()) {
     AERROR << "StopSignUnprotectedStagePreStop planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 bool StageApproachingParkingSpot::CheckADCStop(const Frame& frame) {

@@ -17,8 +17,8 @@ proto_library(
     srcs = ["task_manager.proto"],
     deps = [
         "//modules/common_msgs/basic_msgs:header_proto",
-        "//modules/common_msgs/map_msgs:map_parking_space_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/temp_routing_converter/proto:routing_proto",
     ],
 )
 

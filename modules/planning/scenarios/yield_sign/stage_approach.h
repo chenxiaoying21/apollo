@@ -34,11 +34,11 @@ struct YieldSignContext;
 
 class YieldSignStageApproach : public Stage {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
  private:
-  Stage::StageStatus FinishStage();
+  StageResult FinishStage();
 
   ScenarioYieldSignConfig scenario_config_;
 };

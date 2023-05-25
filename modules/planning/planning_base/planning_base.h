@@ -73,6 +73,13 @@ class PlanningBase {
       const std::vector<common::TrajectoryPoint>& stitching_trajectory,
       ADCTrajectory* const trajectory) = 0;
 
+  /**
+   * @brief Check if vehicle reaches the end point of the RoutingRequest.
+   *
+   * @return True if vehicle reaches the end point.
+   */
+  bool IsPlanningFinished();
+
  protected:
   virtual void FillPlanningPb(const double timestamp,
                               ADCTrajectory* const trajectory_pb);

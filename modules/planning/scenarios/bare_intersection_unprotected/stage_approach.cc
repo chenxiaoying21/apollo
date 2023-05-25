@@ -34,7 +34,7 @@ namespace planning {
 using apollo::common::TrajectoryPoint;
 using apollo::hdmap::PathOverlap;
 
-Stage::StageStatus BareIntersectionUnprotectedStageApproach::Process(
+StageResult BareIntersectionUnprotectedStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
@@ -42,8 +42,8 @@ Stage::StageStatus BareIntersectionUnprotectedStageApproach::Process(
   scenario_config_.CopyFrom(
       GetContextAs<BareIntersectionUnprotectedContext>()->scenario_config);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "BareIntersectionUnprotectedStageApproach planning error";
   }
 
@@ -85,8 +85,8 @@ Stage::StageStatus BareIntersectionUnprotectedStageApproach::Process(
   reference_line_info.SetJunctionRightOfWay(current_pnc_junction->start_s,
                                             false);
 
-  plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "BareIntersectionUnprotectedStageApproach planning error";
   }
 
@@ -127,7 +127,7 @@ Stage::StageStatus BareIntersectionUnprotectedStageApproach::Process(
     }
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 bool BareIntersectionUnprotectedStageApproach::CheckClear(
@@ -172,7 +172,7 @@ bool BareIntersectionUnprotectedStageApproach::CheckClear(
   return all_far_away;
 }
 
-Stage::StageStatus BareIntersectionUnprotectedStageApproach::FinishStage(
+StageResult BareIntersectionUnprotectedStageApproach::FinishStage(
     Frame* frame) {
   next_stage_ = "BARE_INTERSECTION_UNPROTECTED_INTERSECTION_CRUISE";
 
@@ -180,7 +180,7 @@ Stage::StageStatus BareIntersectionUnprotectedStageApproach::FinishStage(
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
   reference_line_info.SetCruiseSpeed(FLAGS_default_cruise_speed);
 
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

@@ -19,7 +19,6 @@ proto_library(
         "//modules/common_msgs/basic_msgs:error_code_proto",
         "//modules/common_msgs/basic_msgs:geometry_proto",
         "//modules/common_msgs/basic_msgs:header_proto",
-        "//modules/common_msgs/map_msgs:map_geometry_proto",
         "//modules/common_msgs/map_msgs:map_parking_space_proto",
     ],
 )
@@ -48,6 +47,8 @@ proto_library(
     srcs = ["poi.proto"],
     deps = [
         ":routing_proto",
+        "//modules/common_msgs/map_msgs:map_geometry_proto",
+        "//modules/common_msgs/basic_msgs:geometry_proto",
     ],
 )
 
@@ -58,4 +59,3 @@ py_proto_library(
         ":routing_py_pb2",
     ],
 )
-

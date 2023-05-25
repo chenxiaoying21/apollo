@@ -33,7 +33,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus EmergencyPullOverStageSlowDown::Process(
+StageResult EmergencyPullOverStageSlowDown::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: SlowDown";
   CHECK_NOTNULL(frame);
@@ -54,8 +54,8 @@ Stage::StageStatus EmergencyPullOverStageSlowDown::Process(
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
   reference_line_info.SetCruiseSpeed(target_slow_down_speed);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "EmergencyPullOverStageSlowDown planning error";
   }
 
@@ -65,17 +65,17 @@ Stage::StageStatus EmergencyPullOverStageSlowDown::Process(
     return FinishStage();
   }
 
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus EmergencyPullOverStageSlowDown::FinishStage() {
+StageResult EmergencyPullOverStageSlowDown::FinishStage() {
   auto* pull_over_status = injector_->planning_context()
                                ->mutable_planning_status()
                                ->mutable_pull_over();
   pull_over_status->set_plan_pull_over_path(true);
 
   next_stage_ = "EMERGENCY_PULL_OVER_APPROACH";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

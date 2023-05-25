@@ -87,12 +87,13 @@ Task* Stage::FindTask(const std::string& task_type) const {
   }
 }
 
-bool Stage::ExecuteTaskOnReferenceLine(
+StageResult Stage::ExecuteTaskOnReferenceLine(
     const common::TrajectoryPoint& planning_start_point, Frame* frame) {
+  StageResult stage_result;
   for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
     if (!reference_line_info.IsDrivable()) {
       AERROR << "The generated path is not drivable";
-      return false;
+      return stage_result.SetStageStatus(StageStatusType::ERROR);
     }
 
     for (auto task : task_list_) {
@@ -108,6 +109,7 @@ bool Stage::ExecuteTaskOnReferenceLine(
       RecordDebugInfo(&reference_line_info, task->Name(), time_diff_ms);
 
       if (!ret.ok()) {
+        stage_result.SetTaskStatus(ret);
         AERROR << "Failed to run tasks[" << task->Name()
                << "], Error message: " << ret.error_message();
         break;
@@ -127,22 +129,23 @@ bool Stage::ExecuteTaskOnReferenceLine(
             planning_start_point.relative_time(),
             planning_start_point.path_point().s(), &trajectory)) {
       AERROR << "Fail to aggregate planning trajectory.";
-      return false;
+      return stage_result.SetStageStatus(StageStatusType::ERROR);
     }
     reference_line_info.SetTrajectory(trajectory);
     reference_line_info.SetDrivable(true);
-    return true;
+    return stage_result;
   }
-  return true;
+  return stage_result;
 }
 
-bool Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
+StageResult Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
     const common::TrajectoryPoint& planning_start_point, Frame* frame) {
   // online learning mode
   for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
     reference_line_info.SetDrivable(false);
   }
 
+  StageResult stage_result;
   // FIXME(all): current only pick up the first reference line to use
   // learning model trajectory
   auto& picked_reference_line_info =
@@ -159,6 +162,7 @@ bool Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
     RecordDebugInfo(&picked_reference_line_info, task->Name(), time_diff_ms);
 
     if (!ret.ok()) {
+      stage_result.SetTaskStatus(ret);
       AERROR << "Failed to run tasks[" << task->Name()
              << "], Error message: " << ret.error_message();
       break;
@@ -175,17 +179,19 @@ bool Stage::ExecuteTaskOnReferenceLineForOnlineLearning(
     picked_reference_line_info.SetCost(0);
   }
 
-  return true;
+  return stage_result;
 }
 
-bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
+StageResult Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
   auto ret = common::Status::OK();
+  StageResult stage_result;
   for (auto task : task_list_) {
     ret = task->Execute(frame);
     if (!ret.ok()) {
+      stage_result.SetTaskStatus(ret);
       AERROR << "Failed to run tasks[" << task->Name()
              << "], Error message: " << ret.error_message();
-      return false;
+      return stage_result;
     }
   }
 
@@ -212,12 +218,12 @@ bool Stage::ExecuteTaskOnOpenSpace(Frame* frame) {
     *(frame->mutable_open_space_info()->mutable_publishable_trajectory_data()) =
         std::move(publishable_traj_and_gear);
   }
-  return true;
+  return stage_result;
 }
 
-Stage::StageStatus Stage::FinishScenario() {
+StageResult Stage::FinishScenario() {
   next_stage_ = "";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 void Stage::RecordDebugInfo(ReferenceLineInfo* reference_line_info,

@@ -38,7 +38,7 @@ using apollo::cyber::Clock;
 using apollo::hdmap::PathOverlap;
 using apollo::perception::TrafficLight;
 
-Stage::StageStatus TrafficLightUnprotectedLeftTurnStageApproach::Process(
+StageResult TrafficLightUnprotectedLeftTurnStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
@@ -55,8 +55,8 @@ Stage::StageStatus TrafficLightUnprotectedLeftTurnStageApproach::Process(
   frame->mutable_reference_line_info()->front().SetCruiseSpeed(
       scenario_config.approach_cruise_speed());
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "TrafficLightUnprotectedLeftTurnStageApproach planning error";
   }
 
@@ -112,10 +112,10 @@ Stage::StageStatus TrafficLightUnprotectedLeftTurnStageApproach::Process(
     return FinishStage(frame);
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus TrafficLightUnprotectedLeftTurnStageApproach::FinishStage(
+StageResult TrafficLightUnprotectedLeftTurnStageApproach::FinishStage(
     Frame* frame) {
   auto context = GetContextAs<TrafficLightUnprotectedLeftTurnContext>();
   const ScenarioTrafficLightUnprotectedLeftTurnConfig& scenario_config =
@@ -149,7 +149,7 @@ Stage::StageStatus TrafficLightUnprotectedLeftTurnStageApproach::FinishStage(
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
   reference_line_info.SetCruiseSpeed(FLAGS_default_cruise_speed);
 
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

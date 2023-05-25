@@ -38,8 +38,8 @@ class TrafficLightUnprotectedLeftTurnStageCreep
             const std::shared_ptr<DependencyInjector>& injector,
             const std::string& config_dir, void* context) override;
 
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
  private:
   /**
@@ -50,7 +50,7 @@ class TrafficLightUnprotectedLeftTurnStageCreep
    */
   const CreepStageConfig& GetCreepStageConfig() const override;
 
-  Stage::StageStatus FinishStage();
+  StageResult FinishStage();
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

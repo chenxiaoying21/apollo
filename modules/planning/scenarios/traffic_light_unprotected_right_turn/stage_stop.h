@@ -32,13 +32,13 @@ struct TrafficLightUnprotectedRightTurnContext;
 
 class TrafficLightUnprotectedRightTurnStageStop : public Stage {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
  private:
   bool CheckTrafficLightNoRightTurnOnRed(const std::string& traffic_light_id);
 
-  Stage::StageStatus FinishStage(const bool protected_mode);
+  StageResult FinishStage(const bool protected_mode);
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

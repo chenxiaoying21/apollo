@@ -23,20 +23,22 @@
 namespace apollo {
 namespace planning {
 
-Stage::StageStatus StageParking::Process(
+StageResult StageParking::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   // Open space planning doesn't use planning_init_point from upstream because
   // of different stitching strategy
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
-  bool plan_ok = ExecuteTaskOnOpenSpace(frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnOpenSpace(frame);
+  if (result.HasError()) {
     AERROR << "StageParking planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus StageParking::FinishStage() { return Stage::FINISHED; }
+StageResult StageParking::FinishStage() {
+  return StageResult(StageStatusType::FINISHED);
+}
 
 }  // namespace planning
 }  // namespace apollo

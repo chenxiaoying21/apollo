@@ -11,6 +11,7 @@ cc_library(
     copts = PLANNING_COPTS,
     deps = [
         ":stage",
+        ":process_result",
         "//modules/planning/planning_base/common:planning_common",
         "//modules/planning/planning_base/common:config_util",
         "//modules/planning/planning_base/common/util:util_lib",
@@ -33,6 +34,7 @@ cc_library(
     ],
     copts = PLANNING_COPTS,
     deps = [
+        ":process_result",
         "//modules/planning/planning_base/common/util:common_lib",
         "//modules/planning/planning_base/common:planning_common",
         "//modules/planning/planning_base/common:config_util",
@@ -59,6 +61,16 @@ cc_library(
         "//modules/planning/planning_base/common/util:util_lib",
         "//cyber/plugin_manager:plugin_manager",
         ":scenario",
+    ],
+)
+
+cc_library(
+    name = "process_result",
+    srcs = ["process_result.cc"],
+    hdrs = ["process_result.h"],
+    copts = PLANNING_COPTS,
+    deps = [
+        "//modules/common/status:status",
     ],
 )
 
