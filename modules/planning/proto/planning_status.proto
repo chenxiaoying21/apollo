@@ -23,17 +23,8 @@ message ChangeLaneStatus {
   optional string path_id = 2;
   // the time stamp when the state started.
   optional double timestamp = 3;
-  // the starting position only after which lane-change can happen.
-  optional bool exist_lane_change_start_position = 4 [default = false];
-  optional apollo.common.Point3D lane_change_start_position = 5;
   // the last time stamp when the lane-change planning succeed.
-  optional double last_succeed_timestamp = 6;
-  // if the current path and speed planning on the lane-change
-  // reference-line succeed.
-  optional bool is_current_opt_succeed = 7 [default = false];
-  // denotes if the surrounding area is clear for ego vehicle to
-  // change lane at this moment.
-  optional bool is_clear_to_change_lane = 8 [default = false];
+  optional double last_succeed_timestamp = 4;
 }
 
 message CreepDeciderStatus {
@@ -74,15 +65,9 @@ message ParkAndGoStatus {
 }
 
 message PathDeciderStatus {
-  enum LaneBorrowDirection {
-    LEFT_BORROW = 1;   // borrow left neighbor lane
-    RIGHT_BORROW = 2;  // borrow right neighbor lane
-  }
   optional int32 front_static_obstacle_cycle_counter = 1 [default = 0];
-  optional int32 able_to_use_self_lane_counter = 2 [default = 0];
-  optional bool is_in_path_lane_borrow_scenario = 3 [default = false];
-  optional string front_static_obstacle_id = 4 [default = ""];
-  repeated LaneBorrowDirection decided_side_pass_direction = 5;
+  optional bool is_in_path_lane_borrow_scenario = 2 [default = false];
+  optional string front_static_obstacle_id = 3 [default = ""];
 }
 
 message PullOverStatus {
