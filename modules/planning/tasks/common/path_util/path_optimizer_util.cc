@@ -64,9 +64,12 @@ FrenetFramePath PathOptimizerUtil::ToPiecewiseJerkPath(
   return FrenetFramePath(std::move(frenet_frame_path));
 }
 
-double PathOptimizerUtil::EstimateJerkBoundary(const double vehicle_speed,
-                                               const double axis_distance,
-                                               const double max_yaw_rate) {
+double PathOptimizerUtil::EstimateJerkBoundary(const double vehicle_speed) {
+  const auto& veh_param =
+      common::VehicleConfigHelper::GetConfig().vehicle_param();
+  const double axis_distance = veh_param.wheel_base();
+  const double max_yaw_rate =
+      veh_param.max_steer_angle_rate() / veh_param.steer_ratio() / 2.0;
   return max_yaw_rate / axis_distance / vehicle_speed;
 }
 
@@ -159,11 +162,11 @@ bool PathOptimizerUtil::OptimizePath(
 }
 
 void PathOptimizerUtil::UpdatePathRefWithBound(
-    const PathBoundary& path_boundary, std::vector<double>& ref_l,
-    std::vector<double>& weight_ref_l, double weight) {
+    const PathBoundary& path_boundary, double weight,
+    std::vector<double>& ref_l, std::vector<double>& weight_ref_l) {
   auto& boundary = path_boundary.boundary();
-  CHECK_EQ(boundary.size(), ref_l.size());
-  CHECK_EQ(boundary.size(), weight_ref_l.size());
+  ref_l.resize(boundary.size());
+  weight_ref_l.resize(boundary.size());
   for (size_t i = 0; i < ref_l.size(); i++) {
     if (ref_l[i] < boundary[i].first || ref_l[i] > boundary[i].second) {
       ref_l[i] = (boundary[i].first + boundary[i].second) / 2.0;
@@ -171,6 +174,23 @@ void PathOptimizerUtil::UpdatePathRefWithBound(
     } else {
       weight_ref_l[i] = 0;
     }
+  }
+}
+
+void PathOptimizerUtil::CalculateAccBound(
+    const PathBoundary& path_boundary, const ReferenceLine& reference_line,
+    std::vector<std::pair<double, double>>* ddl_bounds) {
+  const auto& veh_param =
+      common::VehicleConfigHelper::GetConfig().vehicle_param();
+  const double lat_acc_bound =
+      std::tan(veh_param.max_steer_angle() / veh_param.steer_ratio()) /
+      veh_param.wheel_base();
+  size_t path_boundary_size = path_boundary.boundary().size();
+  for (size_t i = 0; i < path_boundary_size; ++i) {
+    double s = static_cast<double>(i) * path_boundary.delta_s() +
+               path_boundary.start_s();
+    double kappa = reference_line.GetNearestReferencePoint(s).kappa();
+    ddl_bounds->emplace_back(-lat_acc_bound - kappa, lat_acc_bound - kappa);
   }
 }
 

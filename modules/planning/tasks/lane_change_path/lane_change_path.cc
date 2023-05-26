@@ -135,31 +135,16 @@ bool LaneChangePath::OptimizePath(
     std::vector<PathData>* candidate_path_data) {
   const auto& config = config_.path_optimizer_config();
   const ReferenceLine& reference_line = reference_line_info_->reference_line();
-  const auto& veh_param =
-      common::VehicleConfigHelper::GetConfig().vehicle_param();
-  const double lat_acc_bound =
-      std::tan(veh_param.max_steer_angle() / veh_param.steer_ratio()) /
-      veh_param.wheel_base();
-  const double axis_distance = veh_param.wheel_base();
-  const double max_yaw_rate =
-      veh_param.max_steer_angle_rate() / veh_param.steer_ratio() / 2.0;
   std::array<double, 3> end_state = {0.0, 0.0, 0.0};
   for (const auto& path_boundary : path_boundaries) {
     size_t path_boundary_size = path_boundary.boundary().size();
     CHECK_GT(path_boundary_size, 1U);
-    std::vector<double> opt_l;
-    std::vector<double> opt_dl;
-    std::vector<double> opt_ddl;
+    std::vector<double> opt_l, opt_dl, opt_ddl;
     std::vector<std::pair<double, double>> ddl_bounds;
-    for (size_t i = 0; i < path_boundary_size; ++i) {
-      double s = static_cast<double>(i) * path_boundary.delta_s() +
-                 path_boundary.start_s();
-      double kappa = reference_line.GetNearestReferencePoint(s).kappa();
-      ddl_bounds.emplace_back(-lat_acc_bound - kappa, lat_acc_bound - kappa);
-    }
-
+    PathOptimizerUtil::CalculateAccBound(path_boundary, reference_line,
+                                         &ddl_bounds);
     const double jerk_bound = PathOptimizerUtil::EstimateJerkBoundary(
-        std::fmax(init_sl_state_.first[1], 1.0), axis_distance, max_yaw_rate);
+        std::fmax(init_sl_state_.first[1], 1.0));
     std::vector<double> ref_l(path_boundary_size, 0);
     std::vector<double> weight_ref_l(path_boundary_size, 0);
 
@@ -167,10 +152,6 @@ bool LaneChangePath::OptimizePath(
         init_sl_state_, end_state, ref_l, weight_ref_l, path_boundary,
         ddl_bounds, jerk_bound, config, &opt_l, &opt_dl, &opt_ddl);
     if (res_opt) {
-      for (size_t i = 0; i < path_boundary_size; i += 4) {
-        ADEBUG << "for s[" << static_cast<double>(i) * path_boundary.delta_s()
-               << "], l = " << opt_l[i] << ", dl = " << opt_dl[i];
-      }
       auto frenet_frame_path = PathOptimizerUtil::ToPiecewiseJerkPath(
           opt_l, opt_dl, opt_ddl, path_boundary.delta_s(),
           path_boundary.start_s());
@@ -228,7 +209,6 @@ void LaneChangePath::UpdateLaneChangeStatus() {
   // Init lane change status
   if (!prev_status->has_status()) {
     UpdateStatus(now, ChangeLaneStatus::CHANGE_LANE_FINISHED, "");
-    prev_status->set_last_succeed_timestamp(now);
     return;
   }
   bool has_change_lane = frame_->reference_line_info().size() > 1;
@@ -251,8 +231,6 @@ void LaneChangePath::UpdateLaneChangeStatus() {
     change_lane_id = reference_line_info_->Lanes().Id();
     ADEBUG << "change_lane_id" << change_lane_id;
     if (prev_status->status() == ChangeLaneStatus::CHANGE_LANE_FAILED) {
-      // TODO(SHU): add an optimization_failure counter to enter
-      // change_lane_failed status
       if (now - prev_status->timestamp() >
           config_.change_lane_fail_freeze_time()) {
         UpdateStatus(now, ChangeLaneStatus::IN_CHANGE_LANE, change_lane_id);

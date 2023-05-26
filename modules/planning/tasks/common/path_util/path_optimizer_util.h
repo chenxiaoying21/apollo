@@ -38,12 +38,11 @@ class PathOptimizerUtil {
   /**
    * @brief Calculation of jerk boundary based on vehicle kinematics model.
    */
-  static double EstimateJerkBoundary(const double vehicle_speed,
-                                     const double axis_distance,
-                                     const double max_yaw_rate);
+  static double EstimateJerkBoundary(const double vehicle_speed);
 
   static std::vector<common::PathPoint>
   ConvertPathPointRefFromFrontAxeToRearAxe(const PathData& path_data);
+
   /**
    * @brief Piecewise jerk path optimizer.
    */
@@ -55,14 +54,21 @@ class PathOptimizerUtil {
       double dddl_bound, const PiecewiseJerkPathConfig& config,
       std::vector<double>* x, std::vector<double>* dx,
       std::vector<double>* ddx);
+
   /**
    * @brief If ref_l is below or above path boundary, will update its values and
    * weights
    */
   static void UpdatePathRefWithBound(const PathBoundary& path_boundary,
-                                     std::vector<double>& ref_l,
-                                     std::vector<double>& weight_ref_l,
-                                     double weight);
+                                     double weight, std::vector<double>& ref_l,
+                                     std::vector<double>& weight_ref_l);
+
+  /**
+   * @brief calculate ddl bound by referenceline kappa and adc lat accleration
+   */
+  static void CalculateAccBound(
+      const PathBoundary& path_boundary, const ReferenceLine& reference_line,
+      std::vector<std::pair<double, double>>* ddl_bounds);
 };
 
 }  // namespace planning
