@@ -23,8 +23,6 @@ message ChangeLaneStatus {
   optional string path_id = 2;
   // the time stamp when the state started.
   optional double timestamp = 3;
-  // the last time stamp when the lane-change planning succeed.
-  optional double last_succeed_timestamp = 4;
 }
 
 message CreepDeciderStatus {
