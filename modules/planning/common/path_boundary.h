@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,7 @@ class PathBoundary {
    * @param path_bound tuple first is s, second is l_min, third is l_max
    *    **/
   PathBoundary(const double delta_s,
-      std::vector<std::tuple<double, double, double>>& path_bound);
+      const std::vector<std::tuple<double, double, double>>& path_bound);
   virtual ~PathBoundary() = default;
 
   double start_s() const;

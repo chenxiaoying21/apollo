@@ -16,8 +16,11 @@
 
 #include "modules/planning/tasks/reuse_path/reuse_path.h"
 
+#include <algorithm>
 #include <memory>
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/tasks/common/path_generation.h"
 
@@ -86,9 +89,9 @@ bool ReusePath::IsPathReusable(Frame* frame,
         history_frame->reference_line_info().front().trajectory_type();
     speed_optimization_successful =
         (history_trajectory_type != ADCTrajectory::SPEED_FALLBACK);
-  }
-  if (history_frame->current_frame_planned_path().empty()) {
-    return false;
+    if (history_frame->current_frame_planned_path().empty()) {
+      return false;
+    }
   }
   if (path_reusable_) {
     if (!frame->current_frame_planned_trajectory().is_replan() &&

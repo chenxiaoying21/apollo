@@ -16,8 +16,11 @@
 
 #include "modules/planning/tasks/pull_over_path/pull_over_path.h"
 
+#include <algorithm>
 #include <memory>
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/util/point_factory.h"
 #include "modules/map/hdmap/hdmap_util.h"

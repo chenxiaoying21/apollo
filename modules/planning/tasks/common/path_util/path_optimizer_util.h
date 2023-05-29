@@ -60,8 +60,8 @@ class PathOptimizerUtil {
    * weights
    */
   static void UpdatePathRefWithBound(const PathBoundary& path_boundary,
-                                     double weight, std::vector<double>& ref_l,
-                                     std::vector<double>& weight_ref_l);
+                                     double weight, std::vector<double>* ref_l,
+                                     std::vector<double>* weight_ref_l);
 
   /**
    * @brief calculate ddl bound by referenceline kappa and adc lat accleration

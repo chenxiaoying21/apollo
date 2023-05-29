@@ -20,8 +20,8 @@
 
 #include "modules/planning/tasks/path_decider/path_decider.h"
 
+#include <algorithm>
 #include <memory>
-
 #include "modules/common_msgs/planning_msgs/decision.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/util/util.h"
@@ -60,9 +60,9 @@ Status PathDecider::Process(const ReferenceLineInfo *reference_line_info,
   }
 
   std::string blocking_obstacle_id;
-  auto* mutable_path_decider_status = injector_->planning_context()
-                                        ->mutable_planning_status()
-                                        ->mutable_path_decider();
+  auto *mutable_path_decider_status = injector_->planning_context()
+                                          ->mutable_planning_status()
+                                          ->mutable_path_decider();
   if (reference_line_info->GetBlockingObstacle() != nullptr) {
     blocking_obstacle_id = reference_line_info->GetBlockingObstacle()->Id();
     int front_static_obstacle_cycle_counter =
@@ -74,12 +74,12 @@ Status PathDecider::Process(const ReferenceLineInfo *reference_line_info,
     mutable_path_decider_status->set_front_static_obstacle_id(
         reference_line_info->GetBlockingObstacle()->Id());
   } else {
-      int front_static_obstacle_cycle_counter =
-          mutable_path_decider_status->front_static_obstacle_cycle_counter();
-      mutable_path_decider_status->set_front_static_obstacle_cycle_counter(
-          std::min(front_static_obstacle_cycle_counter, 0));
-      mutable_path_decider_status->set_front_static_obstacle_cycle_counter(
-          std::max(front_static_obstacle_cycle_counter - 1, -10));
+    int front_static_obstacle_cycle_counter =
+        mutable_path_decider_status->front_static_obstacle_cycle_counter();
+    mutable_path_decider_status->set_front_static_obstacle_cycle_counter(
+        std::min(front_static_obstacle_cycle_counter, 0));
+    mutable_path_decider_status->set_front_static_obstacle_cycle_counter(
+        std::max(front_static_obstacle_cycle_counter - 1, -10));
   }
   if (!MakeObjectDecision(path_data, blocking_obstacle_id, path_decision)) {
     const std::string msg = "Failed to make decision based on tunnel";
