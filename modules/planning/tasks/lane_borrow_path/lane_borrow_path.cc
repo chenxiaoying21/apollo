@@ -151,7 +151,7 @@ bool LaneBorrowPath::OptimizePath(
     std::vector<double> ref_l;
     std::vector<double> weight_ref_l;
     PathOptimizerUtil::UpdatePathRefWithBound(
-        path_boundary, config.path_reference_l_weight(), ref_l, weight_ref_l);
+        path_boundary, config.path_reference_l_weight(), &ref_l, &weight_ref_l);
 
     bool res_opt = PathOptimizerUtil::OptimizePath(
         init_sl_state_, end_state, ref_l, weight_ref_l, path_boundary,

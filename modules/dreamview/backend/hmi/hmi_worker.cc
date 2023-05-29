@@ -912,7 +912,7 @@ bool HMIWorker::ResetSimObstacle(const std::string &scenario_id) {
     }
     callback_api_("MapServiceReloadMap", {});
   }
-  // TODO: if not changing map don't need to reset module
+  // TODO(huanguang): if not changing map don't need to reset module
   // for (const auto &module : modules_open) {
   //   StartModule(module);
   // }

@@ -21,7 +21,8 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
+#include <vector>
 #include "modules/planning/tasks/lane_follow_path/proto/lane_follow_path.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/tasks/common/path_generation.h"

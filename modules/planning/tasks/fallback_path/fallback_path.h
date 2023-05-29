@@ -21,7 +21,8 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
+#include <vector>
 #include "modules/planning/tasks/fallback_path/proto/fallback_path.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/tasks/common/path_generation.h"

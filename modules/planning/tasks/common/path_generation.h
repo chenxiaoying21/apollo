@@ -17,7 +17,7 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
 #include "modules/common/status/status.h"
 #include "modules/planning/common/frame.h"
 #include "modules/planning/common/path_boundary.h"

@@ -163,16 +163,16 @@ bool PathOptimizerUtil::OptimizePath(
 
 void PathOptimizerUtil::UpdatePathRefWithBound(
     const PathBoundary& path_boundary, double weight,
-    std::vector<double>& ref_l, std::vector<double>& weight_ref_l) {
+    std::vector<double>* ref_l, std::vector<double>* weight_ref_l) {
   auto& boundary = path_boundary.boundary();
-  ref_l.resize(boundary.size());
-  weight_ref_l.resize(boundary.size());
-  for (size_t i = 0; i < ref_l.size(); i++) {
-    if (ref_l[i] < boundary[i].first || ref_l[i] > boundary[i].second) {
-      ref_l[i] = (boundary[i].first + boundary[i].second) / 2.0;
-      weight_ref_l[i] = weight;
+  ref_l->resize(boundary.size());
+  weight_ref_l->resize(boundary.size());
+  for (size_t i = 0; i < ref_l->size(); i++) {
+    if (ref_l->at(i) < boundary[i].first || ref_l->at(i) > boundary[i].second) {
+      ref_l->at(i) = (boundary[i].first + boundary[i].second) / 2.0;
+      weight_ref_l->at(i) = weight;
     } else {
-      weight_ref_l[i] = 0;
+      weight_ref_l->at(i) = 0;
     }
   }
 }

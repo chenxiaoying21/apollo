@@ -14,8 +14,12 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 #include "cyber/time/clock.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/common/planning_context.h"

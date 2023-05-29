@@ -21,7 +21,9 @@
 #pragma once
 
 #include <memory>
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/planning/tasks/reuse_path/proto/reuse_path.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/tasks/common/path_generation.h"

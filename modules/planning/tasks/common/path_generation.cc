@@ -17,7 +17,9 @@
 /**
  * @file
  **/
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/planning/tasks/common/path_generation.h"
 
 namespace apollo {

@@ -16,8 +16,11 @@
 
 #include "modules/planning/tasks/lane_follow_path/lane_follow_path.h"
 
+#include <algorithm>
 #include <memory>
-
+#include <string>
+#include <utility>
+#include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/tasks/common/path_generation.h"
 #include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
