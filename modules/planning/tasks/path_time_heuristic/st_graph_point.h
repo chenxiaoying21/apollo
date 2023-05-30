@@ -22,7 +22,7 @@
 
 #include <limits>
 
-#include "modules/planning/common/speed/st_point.h"
+#include "modules/planning/planning_base/common/speed/st_point.h"
 
 namespace apollo {
 namespace planning {

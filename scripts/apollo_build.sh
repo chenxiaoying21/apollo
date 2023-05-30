@@ -57,7 +57,7 @@ function _determine_localization_disabled() {
 function _determine_planning_disabled() {
   if [ "${USE_GPU}" -eq 0 ]; then
     DISABLED_TARGETS="${DISABLED_TARGETS} \
-        except //modules/planning/open_space/trajectory_smoother:planning_block"
+        except //modules/planning/planning_base/open_space/trajectory_smoother:planning_block"
   fi
 }
 

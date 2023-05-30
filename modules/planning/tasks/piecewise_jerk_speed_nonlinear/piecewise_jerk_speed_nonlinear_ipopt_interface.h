@@ -27,8 +27,8 @@
 #include <coin/IpTNLP.hpp>
 #include <coin/IpTypes.hpp>
 
-#include "modules/planning/common/path/path_data.h"
-#include "modules/planning/common/trajectory1d/piecewise_jerk_trajectory1d.h"
+#include "modules/planning/planning_base/common/path/path_data.h"
+#include "modules/planning/planning_base/common/trajectory1d/piecewise_jerk_trajectory1d.h"
 
 namespace apollo {
 namespace planning {

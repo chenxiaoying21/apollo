@@ -23,11 +23,11 @@
 #include "modules/planning/scenarios/yield_sign/yield_sign_scenario.h"
 
 #include "modules/common_msgs/perception_msgs/perception_obstacle.pb.h"
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 #include "cyber/common/log.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/planning_gflags.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
 #include "modules/planning/scenarios/yield_sign/stage_approach.h"
 #include "modules/planning/scenarios/yield_sign/stage_creep.h"
 

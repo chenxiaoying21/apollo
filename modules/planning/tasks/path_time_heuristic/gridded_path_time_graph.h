@@ -24,16 +24,16 @@
 #include <vector>
 
 #include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 #include "modules/planning/tasks/path_time_heuristic/proto/path_time_heuristic.pb.h"
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/status/status.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/common/path_decision.h"
-#include "modules/planning/common/speed/speed_data.h"
-#include "modules/planning/common/speed/st_point.h"
-#include "modules/planning/common/st_graph_data.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/common/path_decision.h"
+#include "modules/planning/planning_base/common/speed/speed_data.h"
+#include "modules/planning/planning_base/common/speed/st_point.h"
+#include "modules/planning/planning_base/common/st_graph_data.h"
 #include "modules/planning/tasks/path_time_heuristic/dp_st_cost.h"
 #include "modules/planning/tasks/path_time_heuristic/st_graph_point.h"
 

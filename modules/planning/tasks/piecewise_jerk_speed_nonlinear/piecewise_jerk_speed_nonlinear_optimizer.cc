@@ -24,15 +24,15 @@
 #include <coin/IpSolveStatistics.hpp>
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
-#include "modules/planning/proto/ipopt_return_status.pb.h"
+#include "modules/planning/planning_base/proto/ipopt_return_status.pb.h"
 #include "modules/common/util/util.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/common/speed_profile_generator.h"
-#include "modules/planning/common/st_graph_data.h"
-#include "modules/planning/common/util/print_debug_info.h"
-#include "modules/planning/math/piecewise_jerk/piecewise_jerk_path_problem.h"
-#include "modules/planning/math/piecewise_jerk/piecewise_jerk_speed_problem.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/common/speed_profile_generator.h"
+#include "modules/planning/planning_base/common/st_graph_data.h"
+#include "modules/planning/planning_base/common/util/print_debug_info.h"
+#include "modules/planning/planning_base/math/piecewise_jerk/piecewise_jerk_path_problem.h"
+#include "modules/planning/planning_base/math/piecewise_jerk/piecewise_jerk_speed_problem.h"
 #include "modules/planning/tasks/piecewise_jerk_speed_nonlinear/piecewise_jerk_speed_nonlinear_ipopt_interface.h"
 
 namespace apollo {

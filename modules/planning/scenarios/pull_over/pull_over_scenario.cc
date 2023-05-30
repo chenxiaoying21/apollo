@@ -83,7 +83,7 @@ bool PullOverScenario::IsTransferable(const Scenario* const other_scenario,
   // too close to destination + not found pull-over position
   if (pull_over_scenario) {
     if (adc_distance_to_dest <
-            context_.scenario_config.max_distance_stop_search()) {
+        context_.scenario_config.max_distance_stop_search()) {
       pull_over_scenario = false;
     }
   }

@@ -21,7 +21,7 @@
 #include "modules/planning/scenarios/traffic_light_unprotected_left_turn/stage_intersection_cruise.h"
 
 #include "cyber/common/log.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/scenarios/traffic_light_unprotected_left_turn/context.h"
 
 namespace apollo {

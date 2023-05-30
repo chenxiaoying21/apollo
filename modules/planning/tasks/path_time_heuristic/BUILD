@@ -38,8 +38,8 @@ cc_library(
     hdrs = ["st_graph_point.h"],
     copts = PLANNING_COPTS,
     deps = [
-        "//modules/planning/common:planning_gflags",
-        "//modules/planning/common/speed:st_point",
+        "//modules/planning/planning_base/common:planning_gflags",
+        "//modules/planning/planning_base/common/speed:st_point",
     ],
 )
 
@@ -51,10 +51,10 @@ cc_library(
     deps = [
         ":st_graph_point",
         "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
-        "//modules/planning/common:frame",
-        "//modules/planning/common:obstacle",
-        "//modules/planning/common/speed:st_boundary",
-        "//modules/planning/tasks/utils:st_gap_estimator",
+        "//modules/planning/planning_base/common:frame",
+        "//modules/planning/planning_base/common:obstacle",
+        "//modules/planning/planning_base/common/speed:st_boundary",
+        "//modules/planning/planning_base/task_base/utils:st_gap_estimator",
         "//modules/planning/tasks/path_time_heuristic/proto:path_time_heuristic_cc_proto",
     ],
 )
@@ -73,12 +73,12 @@ cc_library(
         "//modules/common_msgs/basic_msgs:geometry_cc_proto",
         "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
         "//modules/common/status",
-        "//modules/planning/common:obstacle",
-        "//modules/planning/common:path_decision",
-        "//modules/planning/common:st_graph_data",
-        "//modules/planning/common/speed:speed_data",
+        "//modules/planning/planning_base/common:obstacle",
+        "//modules/planning/planning_base/common:path_decision",
+        "//modules/planning/planning_base/common:st_graph_data",
+        "//modules/planning/planning_base/common/speed:speed_data",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/proto:planning_config_cc_proto",
+        "//modules/planning/planning_base/proto:planning_config_cc_proto",
     ],
 )
 
@@ -100,10 +100,10 @@ cc_library(
         ":gridded_path_time_graph",
         "//modules/common/configs:vehicle_config_helper",
         "//modules/common/vehicle_state:vehicle_state_provider",
-        "//modules/planning/common:st_graph_data",
+        "//modules/planning/planning_base/common:st_graph_data",
         "//modules/common_msgs/planning_msgs:planning_internal_cc_proto",
         "//modules/planning/tasks/speed_bounds_decider:st_boundary_mapper",
-        "//modules/planning/tasks/common:speed_optimizer",
+        "//modules/planning/planning_base/task_base/common:speed_optimizer",
         "//modules/planning/tasks/path_time_heuristic/proto:path_time_heuristic_cc_proto",
     ],
     alwayslink = True,
@@ -114,7 +114,7 @@ cc_test(
     size = "small",
     srcs = ["gridded_path_time_graph_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     deps = [
         ":gridded_path_time_graph",

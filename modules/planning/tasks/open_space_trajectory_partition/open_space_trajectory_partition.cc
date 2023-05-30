@@ -27,7 +27,7 @@
 #include "cyber/time/clock.h"
 #include "modules/common/math/polygon2d.h"
 #include "modules/common/status/status.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_context.h"
 
 namespace apollo {
 namespace planning {

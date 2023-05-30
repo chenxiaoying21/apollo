@@ -46,7 +46,7 @@ cyber_modules {
 cyber_modules {
   key: "Planning"
   value: {
-    dag_files: "/apollo/modules/planning/dag/planning_navi.dag"
+    dag_files: "/apollo/modules/planning/planning_base/dag/planning_navi.dag"
   }
 }
 cyber_modules {

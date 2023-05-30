@@ -46,13 +46,13 @@ cc_library(
     copts = ["-DMODULE_NAME=\\\"planning\\\""],
     deps = [
         "//modules/map/pnc_map",
-        "//modules/planning/common:planning_context",
-        "//modules/planning/common:planning_gflags",
-        "//modules/planning/common:reference_line_info",
+        "//modules/planning/planning_base/common:planning_context",
+        "//modules/planning/planning_base/common:planning_gflags",
+        "//modules/planning/planning_base/common:reference_line_info",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/tasks/common:path_generation",
+        "//modules/planning/planning_base/task_base/common:path_generation",
         "//modules/planning/tasks/fallback_path/proto:fallback_path_cc_proto",
-        "//modules/planning/tasks/common/path_util:path_util"
+        "//modules/planning/planning_base/task_base/common/path_util:path_util"
     ],
     alwayslink = True,
 )

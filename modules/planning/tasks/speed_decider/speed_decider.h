@@ -26,9 +26,9 @@
 
 #include "modules/planning/tasks/speed_decider/proto/speed_decider.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/tasks/task.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/task_base/task.h"
 
 namespace apollo {
 namespace planning {

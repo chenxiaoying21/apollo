@@ -22,10 +22,10 @@
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/common/util/common.h"
-#include "modules/planning/tasks/common/lane_change_util/lane_change_util.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/common/util/common.h"
+#include "modules/planning/planning_base/task_base/common/lane_change_util/lane_change_util.h"
 
 namespace apollo {
 namespace planning {

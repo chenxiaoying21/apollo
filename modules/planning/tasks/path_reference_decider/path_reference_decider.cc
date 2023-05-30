@@ -23,15 +23,15 @@
 #include <utility>
 #include <vector>
 
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 
 #include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/common/math/box2d.h"
 #include "modules/common/math/line_segment2d.h"
-#include "modules/planning/common/path/discretized_path.h"
-#include "modules/planning/common/path_boundary.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/tasks/task.h"
+#include "modules/planning/planning_base/common/path/discretized_path.h"
+#include "modules/planning/planning_base/common/path_boundary.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/task_base/task.h"
 
 namespace apollo {
 namespace planning {

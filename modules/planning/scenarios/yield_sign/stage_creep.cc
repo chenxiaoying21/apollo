@@ -26,10 +26,10 @@
 #include "cyber/time/clock.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/speed_profile_generator.h"
-#include "modules/planning/common/util/util.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/speed_profile_generator.h"
+#include "modules/planning/planning_base/common/util/util.h"
 
 namespace apollo {
 namespace planning {

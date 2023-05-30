@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 #include "modules/planning/tasks/path_reference_decider/proto/path_reference_decider.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/path_boundary.h"
-#include "modules/planning/tasks/task.h"
+#include "modules/planning/planning_base/common/path_boundary.h"
+#include "modules/planning/planning_base/task_base/task.h"
 
 namespace apollo {
 namespace planning {

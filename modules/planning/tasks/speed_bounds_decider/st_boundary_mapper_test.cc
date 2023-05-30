@@ -19,8 +19,8 @@
 #include "gmock/gmock.h"
 #include "cyber/common/log.h"
 #include "modules/map/hdmap/hdmap_util.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/reference_line/qp_spline_reference_line_smoother.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/reference_line/qp_spline_reference_line_smoother.h"
 #include "modules/planning/tasks/speed_bounds_decider/speed_limit_decider.h"
 
 namespace apollo {
@@ -68,7 +68,7 @@ class StBoundaryMapperTest : public ::testing::Test {
 
  protected:
   const std::string map_file =
-      "modules/planning/testdata/garage_map/base_map.txt";
+      "modules/planning/planning_base/testdata/garage_map/base_map.txt";
   hdmap::HDMap hdmap_;
   common::math::Vec2d vehicle_position_;
   std::unique_ptr<ReferenceLine> reference_line_;

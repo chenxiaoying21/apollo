@@ -17,8 +17,8 @@
 #include "modules/planning/scenarios/park_and_go/stage_adjust.h"
 
 #include "cyber/common/log.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/util/common.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/util/common.h"
 #include "modules/planning/scenarios/park_and_go/context.h"
 #include "modules/planning/scenarios/park_and_go/util.h"
 

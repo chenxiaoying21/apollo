@@ -25,7 +25,7 @@
 
 #include "modules/planning/scenarios/stop_sign_unprotected/proto/stop_sign_unprotected.pb.h"
 #include "modules/map/hdmap/hdmap.h"
-#include "modules/planning/scenarios/scenario.h"
+#include "modules/planning/planning_base/scenario_base/scenario.h"
 
 namespace apollo {
 namespace planning {

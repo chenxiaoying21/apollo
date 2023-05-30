@@ -58,7 +58,7 @@ cc_library(
         "//modules/common/util",
         "//modules/common/util:util_tool",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/traffic_light_base:base_stage_traffic_light_cruise",
         "//modules/planning/scenarios/traffic_light_protected/proto:traffic_light_protected_cc_proto",
         "@com_github_gflags_gflags//:gflags",
@@ -71,7 +71,7 @@ cc_test(
     name = "traffic_light_protected_scenario_test",
     size = "small",
     srcs = ["traffic_light_protected_scenario_test.cc"],
-    data = ["//modules/planning:planning_conf"],
+    data = ["//modules/planning/planning_base:planning_conf"],
     linkopts = ["-lgomp"],
     deps = [
         ":traffic_light_protected_scenario_lib",
@@ -85,7 +85,7 @@ cc_test(
     size = "small",
     srcs = ["stage_approach_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

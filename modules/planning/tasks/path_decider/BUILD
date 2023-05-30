@@ -48,10 +48,10 @@ cc_library(
         "//modules/common_msgs/planning_msgs:decision_cc_proto",
         "//modules/common/configs:vehicle_config_helper",
         "//modules/common/util",
-        "//modules/planning/common:planning_context",
-        "//modules/planning/common:planning_gflags",
+        "//modules/planning/planning_base/common:planning_context",
+        "//modules/planning/planning_base/common:planning_gflags",
         "//modules/planning/tasks/path_decider/proto:path_decider_cc_proto",
-        "//modules/planning/tasks:task",
+        "//modules/planning/planning_base/task_base:task",
     ],
     alwayslink = True,
 )

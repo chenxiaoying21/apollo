@@ -63,11 +63,11 @@ cc_library(
         "//cyber",
         "//modules/common/util:util_tool",
         "//modules/common/vehicle_state:vehicle_state_provider",
-        "//modules/planning/common:planning_common",
-        "//modules/planning/common/util:common_lib",
-        "//modules/planning/common/util:util_lib",
+        "//modules/planning/planning_base/common:planning_common",
+        "//modules/planning/planning_base/common/util:common_lib",
+        "//modules/planning/planning_base/common/util:util_lib",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/park_and_go/proto:park_and_go_cc_proto",
         "@com_github_gflags_gflags//:gflags",
     ],
@@ -79,7 +79,7 @@ cc_test(
     size = "small",
     srcs = ["park_and_go_scenario_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -99,7 +99,7 @@ cc_test(
         "stage_pre_cruise_test.cc",
     ],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

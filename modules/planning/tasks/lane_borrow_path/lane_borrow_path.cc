@@ -22,12 +22,12 @@
 #include <utility>
 #include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
-#include "modules/planning/common/obstacle_blocking_analyzer.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/tasks/common/path_generation.h"
-#include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
-#include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
-#include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include "modules/planning/planning_base/common/obstacle_blocking_analyzer.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/task_base/common/path_generation.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_assessment_decider_util.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_optimizer_util.h"
 #include "modules/planning/tasks/lane_borrow_path/lane_borrow_path.h"
 
 namespace apollo {

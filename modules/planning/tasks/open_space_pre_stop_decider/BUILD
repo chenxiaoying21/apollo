@@ -46,9 +46,9 @@ cc_library(
     hdrs = ["open_space_pre_stop_decider.h"],
     copts = PLANNING_COPTS,
     deps = [
-        "//modules/planning/common:reference_line_info",
-        "//modules/planning/common/util:common_lib",
-        "//modules/planning/tasks/common:decider_base",
+        "//modules/planning/planning_base/common:reference_line_info",
+        "//modules/planning/planning_base/common/util:common_lib",
+        "//modules/planning/planning_base/task_base/common:decider_base",
         "//modules/planning/tasks/open_space_pre_stop_decider/proto:open_space_pre_stop_decider_cc_proto"
     ],
     alwayslink = True,

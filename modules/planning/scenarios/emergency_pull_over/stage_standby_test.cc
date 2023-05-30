@@ -14,10 +14,10 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/scenarios/emergency_pull_over/stage_standby.h"
 #include "gtest/gtest.h"
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
+#include "modules/planning/scenarios/emergency_pull_over/stage_standby.h"
 
 namespace apollo {
 namespace planning {

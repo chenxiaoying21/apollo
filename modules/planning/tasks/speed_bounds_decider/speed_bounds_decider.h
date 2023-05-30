@@ -25,9 +25,9 @@
 
 #include "modules/planning/tasks/speed_bounds_decider/proto/speed_bounds_decider.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/st_graph_data.h"
-#include "modules/planning/tasks/common/decider.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/st_graph_data.h"
+#include "modules/planning/planning_base/task_base/common/decider.h"
 
 namespace apollo {
 namespace planning {

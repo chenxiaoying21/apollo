@@ -16,8 +16,8 @@ proto_library(
     name = "open_space_trajectory_provider_proto",
     srcs = ["open_space_trajectory_provider.proto"],
     deps = [
-        "//modules/planning/proto/math:fem_pos_deviation_smoother_config_proto",
-        "//modules/planning/proto:planner_open_space_config_proto"
+        "//modules/planning/planning_base/proto/math:fem_pos_deviation_smoother_config_proto",
+        "//modules/planning/planning_base/proto:planner_open_space_config_proto"
     ],
 )
 
@@ -25,7 +25,7 @@ py_proto_library(
     name = "open_space_trajectory_provider_py_pb2",
     deps = [
        ":open_space_trajectory_provider_proto",
-        "//modules/planning/proto/math:fem_pos_deviation_smoother_config_py_pb2",
-        "//modules/planning/proto:planner_open_space_config_py_pb2",
+        "//modules/planning/planning_base/proto/math:fem_pos_deviation_smoother_config_py_pb2",
+        "//modules/planning/planning_base/proto:planner_open_space_config_py_pb2",
     ],
 )
