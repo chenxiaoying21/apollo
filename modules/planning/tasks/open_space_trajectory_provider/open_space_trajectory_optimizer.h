@@ -33,11 +33,11 @@
 #include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
 #include "modules/planning/tasks/open_space_trajectory_provider/proto/open_space_trajectory_provider.pb.h"
 #include "modules/common/math/vec2d.h"
-#include "modules/planning/common/trajectory/discretized_trajectory.h"
-#include "modules/planning/open_space/coarse_trajectory_generator/hybrid_a_star.h"
-#include "modules/planning/open_space/trajectory_smoother/distance_approach_problem.h"
-#include "modules/planning/open_space/trajectory_smoother/dual_variable_warm_start_problem.h"
-#include "modules/planning/open_space/trajectory_smoother/iterative_anchoring_smoother.h"
+#include "modules/planning/planning_base/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/planning_base/open_space/coarse_trajectory_generator/hybrid_a_star.h"
+#include "modules/planning/planning_base/open_space/trajectory_smoother/distance_approach_problem.h"
+#include "modules/planning/planning_base/open_space/trajectory_smoother/dual_variable_warm_start_problem.h"
+#include "modules/planning/planning_base/open_space/trajectory_smoother/iterative_anchoring_smoother.h"
 
 namespace apollo {
 namespace planning {

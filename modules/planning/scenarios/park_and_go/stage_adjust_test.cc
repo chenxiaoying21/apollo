@@ -17,9 +17,9 @@
 /**
  * @file
  **/
-#include "modules/planning/scenarios/park_and_go/stage_adjust.h"
-#include "modules/planning/scenarios/proto/scenario_pipeline.pb.h"
+#include "modules/planning/planning_base/scenario_base/proto/scenario_pipeline.pb.h"
 #include "modules/planning/scenarios/park_and_go/context.h"
+#include "modules/planning/scenarios/park_and_go/stage_adjust.h"
 
 #include "gtest/gtest.h"
 

@@ -22,10 +22,10 @@
 
 #include <memory>
 
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
+#include "modules/planning/planning_base/scenario_base/stage.h"
 #include "modules/planning/scenarios/emergency_stop/emergency_stop_scenario.h"
-#include "modules/planning/scenarios/stage.h"
 
 namespace apollo {
 namespace planning {

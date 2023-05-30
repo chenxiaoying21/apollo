@@ -26,8 +26,8 @@
 
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/util/common.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/util/common.h"
 
 namespace apollo {
 namespace planning {

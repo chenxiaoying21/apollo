@@ -30,10 +30,10 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap.h"
 #include "modules/map/hdmap/hdmap_common.h"
-#include "modules/planning/common/ego_info.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/constraint_checker/constraint_checker.h"
+#include "modules/planning/planning_base/common/ego_info.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/constraint_checker/constraint_checker.h"
 
 namespace apollo {
 namespace planning {

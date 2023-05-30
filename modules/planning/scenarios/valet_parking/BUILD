@@ -55,7 +55,7 @@ cc_library(
     deps = [
         "//cyber",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/valet_parking/proto:valet_parking_cc_proto",
     ],
     alwayslink = True,
@@ -66,7 +66,7 @@ cc_test(
     size = "small",
     srcs = ["valet_parking_scenario_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -81,7 +81,7 @@ cc_test(
     size = "small",
     srcs = ["stage_approaching_parking_spot_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -96,7 +96,7 @@ cc_test(
     size = "small",
     srcs = ["stage_parking_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

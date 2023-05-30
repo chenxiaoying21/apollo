@@ -19,7 +19,7 @@
 #include <limits>
 #include <memory>
 
-#include "modules/planning/common/st_graph_data.h"
+#include "modules/planning/planning_base/common/st_graph_data.h"
 #include "modules/planning/tasks/st_bounds_decider/st_obstacles_processor.h"
 
 namespace apollo {

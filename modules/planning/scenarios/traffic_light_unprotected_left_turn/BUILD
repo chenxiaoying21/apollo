@@ -60,7 +60,7 @@ cc_library(
         "//modules/common/util",
         "//modules/common/util:util_tool",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/traffic_light_base:base_stage_traffic_light_cruise",
         "//modules/planning/scenarios/traffic_light_base:base_stage_traffic_light_creep",
         "//modules/planning/scenarios/traffic_light_unprotected_left_turn/proto:traffic_light_unprotected_left_turn_cc_proto",
@@ -74,7 +74,7 @@ cc_test(
     name = "traffic_light_left_turn_unprotected_scenario_test",
     size = "small",
     srcs = ["traffic_light_unprotected_left_turn_scenario_test.cc"],
-    data = ["//modules/planning:planning_conf"],
+    data = ["//modules/planning/planning_base:planning_conf"],
     linkopts = ["-lgomp"],
     deps = [
         ":traffic_light_unprotected_left_turn_scenario_lib",
@@ -88,7 +88,7 @@ cc_test(
     size = "small",
     srcs = ["stage_approach_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -103,7 +103,7 @@ cc_test(
     size = "small",
     srcs = ["stage_creep_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

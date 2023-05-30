@@ -17,9 +17,9 @@
 /**
  * @file
  **/
-#include "modules/planning/scenarios/valet_parking/stage_parking.h"
 #include "gtest/gtest.h"
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
+#include "modules/planning/scenarios/valet_parking/stage_parking.h"
 
 namespace apollo {
 namespace planning {

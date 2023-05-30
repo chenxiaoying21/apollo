@@ -27,12 +27,12 @@
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/common/status/status.h"
 #include "modules/common/util/factory.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/reference_line_info.h"
-#include "modules/planning/common/speed_profile_generator.h"
-#include "modules/planning/reference_line/reference_line.h"
-#include "modules/planning/reference_line/reference_point.h"
-#include "modules/planning/scenarios/scenario.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/reference_line_info.h"
+#include "modules/planning/planning_base/common/speed_profile_generator.h"
+#include "modules/planning/planning_base/reference_line/reference_line.h"
+#include "modules/planning/planning_base/reference_line/reference_point.h"
+#include "modules/planning/planning_base/scenario_base/scenario.h"
 
 namespace apollo {
 namespace planning {

@@ -25,9 +25,9 @@
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/speed_profile_generator.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/speed_profile_generator.h"
 #include "modules/planning/scenarios/traffic_light_unprotected_left_turn/context.h"
 
 namespace apollo {

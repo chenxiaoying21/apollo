@@ -16,7 +16,7 @@
 
 #include "modules/planning/scenarios/park_and_go/util.h"
 
-#include "modules/planning/common/frame.h"
+#include "modules/planning/planning_base/common/frame.h"
 
 namespace apollo {
 namespace planning {

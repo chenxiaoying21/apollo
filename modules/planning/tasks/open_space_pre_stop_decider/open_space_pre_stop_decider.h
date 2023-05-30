@@ -26,9 +26,9 @@
 #include "modules/planning/tasks/open_space_pre_stop_decider/proto/open_space_pre_stop_decider.pb.h"
 #include "cyber/common/macros.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/reference_line_info.h"
-#include "modules/planning/tasks/common/decider.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/reference_line_info.h"
+#include "modules/planning/planning_base/task_base/common/decider.h"
 
 namespace apollo {
 namespace planning {

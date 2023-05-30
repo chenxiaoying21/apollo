@@ -20,10 +20,10 @@
 
 #include "modules/planning/scenarios/traffic_light_protected/traffic_light_protected_scenario.h"
 
-#include "modules/planning/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
 #include "cyber/common/log.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/scenarios/traffic_light_protected/stage_approach.h"
 #include "modules/planning/scenarios/traffic_light_protected/stage_intersection_cruise.h"
 

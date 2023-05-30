@@ -21,7 +21,7 @@
 #include "modules/planning/scenarios/stop_sign_unprotected/stage_intersection_cruise.h"
 
 #include "cyber/common/log.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/scenarios/stop_sign_unprotected/context.h"
 
 namespace apollo {

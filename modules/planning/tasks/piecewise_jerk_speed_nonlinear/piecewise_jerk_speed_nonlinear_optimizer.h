@@ -28,8 +28,8 @@
 
 #include "modules/planning/tasks/piecewise_jerk_speed_nonlinear/proto/piecewise_jerk_speed_nonlinear.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/trajectory1d/piecewise_jerk_trajectory1d.h"
-#include "modules/planning/tasks/common/speed_optimizer.h"
+#include "modules/planning/planning_base/common/trajectory1d/piecewise_jerk_trajectory1d.h"
+#include "modules/planning/planning_base/task_base/common/speed_optimizer.h"
 
 namespace apollo {
 namespace planning {

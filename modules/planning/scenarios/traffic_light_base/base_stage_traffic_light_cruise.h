@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-#include "modules/planning/scenarios/base_stage_cruise.h"
+#include "modules/planning/planning_base/scenario_base/base_stage_cruise.h"
 
 namespace apollo {
 namespace planning {

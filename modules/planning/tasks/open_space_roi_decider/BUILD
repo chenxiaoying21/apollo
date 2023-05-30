@@ -46,9 +46,9 @@ cc_library(
     hdrs = ["open_space_roi_decider.h"],
     copts = PLANNING_COPTS,
     deps = [
-        "//modules/planning/common:planning_context",
-        "//modules/planning/common:planning_gflags",
-        "//modules/planning/tasks/common:decider_base",
+        "//modules/planning/planning_base/common:planning_context",
+        "//modules/planning/planning_base/common:planning_gflags",
+        "//modules/planning/planning_base/task_base/common:decider_base",
         "//modules/planning/tasks/open_space_roi_decider/proto:open_space_roi_decider_cc_proto"
     ],
     alwayslink = True,

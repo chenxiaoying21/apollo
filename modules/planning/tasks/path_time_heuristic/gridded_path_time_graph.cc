@@ -30,8 +30,8 @@
 #include "cyber/task/task.h"
 #include "modules/common/math/vec2d.h"
 #include "modules/common/util/point_factory.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/common/util/print_debug_info.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/common/util/print_debug_info.h"
 
 namespace apollo {
 namespace planning {

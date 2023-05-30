@@ -26,11 +26,11 @@
 #include <vector>
 
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
-#include "modules/planning/proto/st_drivable_boundary.pb.h"
+#include "modules/planning/planning_base/proto/st_drivable_boundary.pb.h"
 #include "modules/planning/tasks/path_time_heuristic/proto/path_time_heuristic.pb.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/common/speed/st_boundary.h"
-#include "modules/planning/common/speed/st_point.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/common/speed/st_boundary.h"
+#include "modules/planning/planning_base/common/speed/st_point.h"
 #include "modules/planning/tasks/path_time_heuristic/st_graph_point.h"
 
 namespace apollo {

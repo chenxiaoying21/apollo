@@ -61,11 +61,11 @@ cc_library(
         "//cyber",
         "//modules/common/util:util_tool",
         "//modules/common/vehicle_state:vehicle_state_provider",
-        "//modules/planning/common:planning_common",
-        "//modules/planning/common/util:common_lib",
-        "//modules/planning/common/util:util_lib",
+        "//modules/planning/planning_base/common:planning_common",
+        "//modules/planning/planning_base/common/util:common_lib",
+        "//modules/planning/planning_base/common/util:util_lib",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/pull_over/proto:pull_over_cc_proto",
         "@com_github_gflags_gflags//:gflags",
         "@eigen",
@@ -78,7 +78,7 @@ cc_test(
     size = "small",
     srcs = ["pull_over_scenario_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -93,7 +93,7 @@ cc_test(
     size = "small",
     srcs = ["stage_approach_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -108,7 +108,7 @@ cc_test(
     size = "small",
     srcs = ["stage_retry_approach_parking_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -123,7 +123,7 @@ cc_test(
     size = "small",
     srcs = ["stage_retry_parking_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

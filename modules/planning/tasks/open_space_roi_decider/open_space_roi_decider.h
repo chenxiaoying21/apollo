@@ -40,11 +40,11 @@
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
 #include "modules/map/pnc_map/pnc_map.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/common/indexed_queue.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/tasks/common/decider.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/common/indexed_queue.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/task_base/common/decider.h"
 
 namespace apollo {
 namespace planning {

@@ -24,7 +24,7 @@
 #include <utility>
 
 #include "modules/common/util/point_factory.h"
-#include "modules/planning/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_context.h"
 
 namespace apollo {
 namespace planning {

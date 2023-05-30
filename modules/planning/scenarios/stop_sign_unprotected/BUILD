@@ -63,8 +63,8 @@ cc_library(
         "//modules/common/math",
         "//modules/common/util:util_tool",
         "//modules/common/util",
-        "//modules/planning/common/util:util_lib",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/common/util:util_lib",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/stop_sign_unprotected/proto:stop_sign_unprotected_cc_proto",
         "@com_github_gflags_gflags//:gflags",
         "@eigen",
@@ -76,7 +76,7 @@ cc_test(
     name = "stop_sign_unprotected_scenario_test",
     size = "small",
     srcs = ["stop_sign_unprotected_scenario_test.cc"],
-    data = ["//modules/planning:planning_conf"],
+    data = ["//modules/planning/planning_base:planning_conf"],
     linkopts = ["-lgomp"],
     deps = [
         ":stop_sign_unprotected_scenario_lib",
@@ -90,7 +90,7 @@ cc_test(
     size = "small",
     srcs = ["stage_creep_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -105,7 +105,7 @@ cc_test(
     size = "small",
     srcs = ["stage_pre_stop_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [
@@ -120,7 +120,7 @@ cc_test(
     size = "small",
     srcs = ["stage_stop_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

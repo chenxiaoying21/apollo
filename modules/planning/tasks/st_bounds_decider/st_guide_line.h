@@ -25,14 +25,14 @@
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/common_msgs/config_msgs/vehicle_config.pb.h"
 #include "modules/common/status/status.h"
-#include "modules/planning/common/obstacle.h"
-#include "modules/planning/common/path/path_data.h"
-#include "modules/planning/common/path_decision.h"
-#include "modules/planning/common/speed/speed_data.h"
-#include "modules/planning/common/speed/st_boundary.h"
-#include "modules/planning/common/speed_limit.h"
-#include "modules/planning/common/trajectory/discretized_trajectory.h"
-#include "modules/planning/reference_line/reference_line.h"
+#include "modules/planning/planning_base/common/obstacle.h"
+#include "modules/planning/planning_base/common/path/path_data.h"
+#include "modules/planning/planning_base/common/path_decision.h"
+#include "modules/planning/planning_base/common/speed/speed_data.h"
+#include "modules/planning/planning_base/common/speed/st_boundary.h"
+#include "modules/planning/planning_base/common/speed_limit.h"
+#include "modules/planning/planning_base/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/planning_base/reference_line/reference_line.h"
 
 namespace apollo {
 namespace planning {

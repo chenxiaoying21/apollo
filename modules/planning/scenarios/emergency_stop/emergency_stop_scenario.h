@@ -26,8 +26,8 @@
 #include "modules/planning/scenarios/emergency_stop/proto/emergency_stop.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/common/util/factory.h"
-#include "modules/planning/common/frame.h"
-#include "modules/planning/scenarios/scenario.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/scenario_base/scenario.h"
 
 namespace apollo {
 namespace planning {

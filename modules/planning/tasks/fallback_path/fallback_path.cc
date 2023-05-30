@@ -19,10 +19,10 @@
 #include <utility>
 #include <vector>
 #include "modules/common/configs/vehicle_config_helper.h"
-#include "modules/planning/tasks/common/path_generation.h"
-#include "modules/planning/tasks/common/path_util/path_assessment_decider_util.h"
-#include "modules/planning/tasks/common/path_util/path_bounds_decider_util.h"
-#include "modules/planning/tasks/common/path_util/path_optimizer_util.h"
+#include "modules/planning/planning_base/task_base/common/path_generation.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_assessment_decider_util.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
+#include "modules/planning/planning_base/task_base/common/path_util/path_optimizer_util.h"
 #include "modules/planning/tasks/fallback_path/fallback_path.h"
 
 namespace apollo {

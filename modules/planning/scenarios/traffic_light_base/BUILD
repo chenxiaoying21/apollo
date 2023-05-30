@@ -11,7 +11,7 @@ cc_library(
     copts = PLANNING_COPTS,
     deps = [
         "//modules/map/pnc_map:path",
-        "//modules/planning/scenarios:stage",
+        "//modules/planning/planning_base/scenario_base:stage",
     ],
 )
 
@@ -21,7 +21,7 @@ cc_library(
     hdrs = ["base_stage_traffic_light_cruise.h"],
     copts = PLANNING_COPTS,
     deps = [
-        "//modules/planning/scenarios:stage",
+        "//modules/planning/planning_base/scenario_base:stage",
     ],
 )
 

@@ -20,7 +20,7 @@
 
 #include "modules/planning/scenarios/valet_parking/valet_parking_scenario.h"
 
-#include "modules/planning/common/frame.h"
+#include "modules/planning/planning_base/common/frame.h"
 #include "modules/planning/scenarios/valet_parking/stage_approaching_parking_spot.h"
 #include "modules/planning/scenarios/valet_parking/stage_parking.h"
 

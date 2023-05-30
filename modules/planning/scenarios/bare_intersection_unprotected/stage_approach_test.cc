@@ -14,10 +14,10 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include "modules/planning/scenarios/bare_intersection_unprotected/stage_approach.h"
 #include "gtest/gtest.h"
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
+#include "modules/planning/scenarios/bare_intersection_unprotected/stage_approach.h"
 
 namespace apollo {
 namespace planning {

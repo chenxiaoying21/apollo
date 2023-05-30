@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-#include "modules/planning/scenarios/base_stage_creep.h"
+#include "modules/planning/planning_base/scenario_base/base_stage_creep.h"
 
 namespace apollo {
 namespace planning {

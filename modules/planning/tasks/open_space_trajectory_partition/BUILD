@@ -49,9 +49,9 @@ cc_library(
     ],
     deps = [
         "//modules/common/status",
-        "//modules/planning/proto:planning_config_cc_proto",
-        "//modules/planning/tasks:task",
-        "//modules/planning/tasks/common:trajectory_optimizer",
+        "//modules/planning/planning_base/proto:planning_config_cc_proto",
+        "//modules/planning/planning_base/task_base:task",
+        "//modules/planning/planning_base/task_base/common:trajectory_optimizer",
         "//modules/planning/tasks/open_space_trajectory_partition/proto:open_space_trajectory_partition_cc_proto"
     ],
     alwayslink = True,

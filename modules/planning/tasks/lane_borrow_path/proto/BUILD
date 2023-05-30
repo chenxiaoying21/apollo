@@ -16,7 +16,7 @@ proto_library(
     name = "lane_borrow_path_proto",
     srcs = ["lane_borrow_path.proto"],
     deps = [
-        "//modules/planning/proto:piecewise_jerk_path_config_proto",
+        "//modules/planning/planning_base/proto:piecewise_jerk_path_config_proto",
     ],
 )
 

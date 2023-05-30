@@ -16,7 +16,7 @@ proto_library(
     name = "pull_over_path_proto",
     srcs = ["pull_over_path.proto"],
     deps = [
-        "//modules/planning/proto:piecewise_jerk_path_config_proto",
+        "//modules/planning/planning_base/proto:piecewise_jerk_path_config_proto",
     ],
 )
 

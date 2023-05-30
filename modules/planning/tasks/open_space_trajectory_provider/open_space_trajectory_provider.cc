@@ -26,10 +26,10 @@
 #include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 
 #include "cyber/task/task.h"
-#include "modules/planning/common/planning_context.h"
-#include "modules/planning/common/planning_gflags.h"
-#include "modules/planning/common/trajectory/publishable_trajectory.h"
-#include "modules/planning/common/trajectory_stitcher.h"
+#include "modules/planning/planning_base/common/planning_context.h"
+#include "modules/planning/planning_base/common/planning_gflags.h"
+#include "modules/planning/planning_base/common/trajectory/publishable_trajectory.h"
+#include "modules/planning/planning_base/common/trajectory_stitcher.h"
 
 namespace apollo {
 namespace planning {

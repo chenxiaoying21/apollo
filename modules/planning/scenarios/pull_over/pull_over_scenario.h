@@ -26,9 +26,9 @@
 
 #include "modules/planning/scenarios/pull_over/proto/pull_over.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
-#include "modules/planning/common/frame.h"
+#include "modules/planning/planning_base/common/frame.h"
+#include "modules/planning/planning_base/scenario_base/scenario.h"
 #include "modules/planning/scenarios/pull_over/context.h"
-#include "modules/planning/scenarios/scenario.h"
 
 namespace apollo {
 namespace planning {

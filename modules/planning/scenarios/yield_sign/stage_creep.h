@@ -23,8 +23,8 @@
 #include <memory>
 #include <string>
 
-#include "modules/planning/proto/planning_config.pb.h"
-#include "modules/planning/scenarios/base_stage_creep.h"
+#include "modules/planning/planning_base/proto/planning_config.pb.h"
+#include "modules/planning/planning_base/scenario_base/base_stage_creep.h"
 #include "modules/planning/scenarios/yield_sign/yield_sign_scenario.h"
 
 namespace apollo {

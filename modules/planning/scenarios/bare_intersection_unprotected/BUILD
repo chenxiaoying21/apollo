@@ -57,11 +57,11 @@ cc_library(
         "//cyber",
         "//modules/common/util",
         "//modules/common/util:util_tool",
-        "//modules/planning/common/util:common_lib",
+        "//modules/planning/planning_base/common/util:common_lib",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/planning/scenarios:scenario",
+        "//modules/planning/planning_base/scenario_base:scenario",
         "//modules/planning/scenarios/bare_intersection_unprotected/proto:bare_intersection_unprotected_scenario_cc_proto",
-        "//modules/planning/scenarios:stage",
+        "//modules/planning/planning_base/scenario_base:stage",
         "@com_github_gflags_gflags//:gflags",
         "@eigen",
     ],
@@ -72,7 +72,7 @@ cc_test(
     name = "bare_intersection_unprotected_scenario_test",
     size = "small",
     srcs = ["bare_intersection_unprotected_scenario_test.cc"],
-    data = ["//modules/planning:planning_conf"],
+    data = ["//modules/planning/planning_base:planning_conf"],
     linkopts = ["-lgomp"],
     deps = [
         ":bare_intersection_unprotected_scenario_lib",
@@ -86,7 +86,7 @@ cc_test(
     size = "small",
     srcs = ["stage_approach_test.cc"],
     data = [
-        "//modules/planning:planning_conf",
+        "//modules/planning/planning_base:planning_conf",
     ],
     linkopts = ["-lgomp"],
     deps = [

@@ -30,10 +30,10 @@
 #include "modules/planning/tasks/open_space_trajectory_provider/proto/open_space_trajectory_provider.pb.h"
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/common/status/status.h"
-#include "modules/planning/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/planning_base/common/trajectory/discretized_trajectory.h"
+#include "modules/planning/planning_base/task_base/common/trajectory_optimizer.h"
+#include "modules/planning/planning_base/task_base/task.h"
 #include "modules/planning/tasks/open_space_trajectory_provider/open_space_trajectory_optimizer.h"
-#include "modules/planning/tasks/common/trajectory_optimizer.h"
-#include "modules/planning/tasks/task.h"
 
 namespace apollo {
 namespace planning {
