@@ -29,7 +29,6 @@
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/planning/planning_base/proto/planning_config.pb.h"
-#include "modules/planning/planning_base/proto/traffic_rule_config.pb.h"
 #include "modules/common/status/status.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap.h"
@@ -39,7 +38,7 @@
 #include "modules/planning/planning_base/common/trajectory/publishable_trajectory.h"
 #include "modules/planning/planning_base/planner/planner.h"
 #include "modules/planning/planning_base/planner/planner_dispatcher.h"
-
+#include "modules/planning/planning_base/traffic_rules_base/traffic_decider.h"
 /**
  * @namespace apollo::planning
  * @brief apollo::planning
@@ -85,7 +84,7 @@ class PlanningBase {
   size_t seq_num_ = 0;
 
   PlanningConfig config_;
-  TrafficRuleConfigs traffic_rule_configs_;
+  TrafficDecider traffic_decider_;
   std::unique_ptr<Frame> frame_;
   std::unique_ptr<Planner> planner_;
   std::unique_ptr<PublishableTrajectory> last_publishable_trajectory_;
