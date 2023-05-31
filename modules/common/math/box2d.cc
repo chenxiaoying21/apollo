@@ -345,7 +345,15 @@ void Box2d::RotateFromCenter(const double rotate_angle) {
 
 void Box2d::Shift(const Vec2d &shift_vec) {
   center_ += shift_vec;
-  InitCorners();
+  for (size_t i = 0; i < 4; ++i) {
+    corners_[i] += shift_vec;
+  }
+  for (auto &corner : corners_) {
+    max_x_ = std::fmax(corner.x(), max_x_);
+    min_x_ = std::fmin(corner.x(), min_x_);
+    max_y_ = std::fmax(corner.y(), max_y_);
+    min_y_ = std::fmin(corner.y(), min_y_);
+  }
 }
 
 void Box2d::LongitudinalExtend(const double extension_length) {

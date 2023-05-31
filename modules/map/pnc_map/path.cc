@@ -647,7 +647,7 @@ InterpolatedIndex Path::GetIndexFromS(double s) const {
                   ? std::min(num_points_, last_point_index_[next_sample_id] + 1)
                   : num_points_);
   while (low + 1 < high) {
-    const int mid = (low + high) / 2;
+    const int mid = (low + high) >> 1;
     if (accumulated_s_[mid] <= s) {
       low = mid;
     } else {
@@ -734,6 +734,61 @@ bool Path::GetProjection(const common::math::Vec2d& point, double* accumulate_s,
                          double* lateral) const {
   double distance = 0.0;
   return GetProjection(point, accumulate_s, lateral, &distance);
+}
+
+bool Path::GetProjectionWithWarmStartS(const common::math::Vec2d& point,
+                                       double* accumulate_s,
+                                       double* lateral) const {
+  if (segments_.empty()) {
+    return false;
+  }
+  if (accumulate_s == nullptr || lateral == nullptr) {
+    return false;
+  }
+  if (*accumulate_s < 0.0) {
+    *accumulate_s = 0.0;
+  } else if (*accumulate_s > length()) {
+    *accumulate_s = length();
+  }
+  CHECK_GE(num_points_, 2);
+  double warm_start_s = *accumulate_s;
+  // Find the segment at the position of "accumulate_s".
+  int left_index = 0;
+  int right_index = num_segments_;
+  int mid_index = 0;
+  // Find the segment with projection of the given point on it.
+  while (right_index > left_index + 1) {
+    FindIndex(left_index, right_index, warm_start_s, &mid_index);
+    const auto& segment = segments_[mid_index];
+    const auto& start_point = segment.start();
+    double delta_x = point.x() - start_point.x();
+    double delta_y = point.y() - start_point.y();
+    const auto& unit_direction = segment.unit_direction();
+    double proj = delta_x * unit_direction.x() + delta_y * unit_direction.y();
+    *accumulate_s = accumulated_s_[mid_index] + proj;
+    *lateral = unit_direction.x() * delta_y - unit_direction.y() * delta_x;
+    if (proj > 0.0) {
+      if (proj < segment.length()) {
+        return true;
+      }
+      if (mid_index == right_index) {
+        *accumulate_s = accumulated_s_[mid_index];
+        return true;
+      }
+      left_index = mid_index + 1;
+    } else {
+      if (mid_index == left_index) {
+        *accumulate_s = accumulated_s_[mid_index];
+        return true;
+      }
+      if (std::abs(proj) < segments_[mid_index - 1].length()) {
+        return true;
+      }
+      right_index = mid_index - 1;
+    }
+    warm_start_s = segment.length() + proj;
+  }
+  return true;
 }
 
 bool Path::GetProjectionWithHueristicParams(const Vec2d& point,
@@ -832,7 +887,7 @@ bool Path::GetProjection(const Vec2d& point, double* accumulate_s,
     }
   } else {
     *accumulate_s = accumulated_s_[min_index] +
-                    std::max(0.0, std::min(proj, nearest_seg.length()));
+         std::max(0.0, std::min(proj, nearest_seg.length()));
     *lateral = (prod > 0.0 ? 1 : -1) * *min_distance;
   }
   return true;
@@ -1293,6 +1348,23 @@ bool PathApproximation::OverlapWith(const Path& path, const Box2d& box,
     }
   }
   return false;
+}
+
+void Path::FindIndex(int left_index, int right_index, double target_s,
+                     int* mid_index) const {
+  // Find the segment index with binary search
+  while (right_index > left_index + 1) {
+    *mid_index = ((left_index + right_index) >> 1);
+    if (accumulated_s_[*mid_index] < target_s) {
+      left_index = *mid_index;
+      continue;
+    }
+    if (accumulated_s_[*mid_index - 1] > target_s) {
+      right_index = *mid_index - 1;
+      continue;
+    }
+    return;
+  }
 }
 
 }  // namespace hdmap
