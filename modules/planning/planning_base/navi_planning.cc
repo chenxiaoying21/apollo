@@ -35,7 +35,7 @@
 #include "modules/planning/planning_base/planner/navi/navi_planner.h"
 #include "modules/planning/planning_base/planner/rtk/rtk_replay_planner.h"
 #include "modules/planning/planning_base/reference_line/reference_line_provider.h"
-#include "modules/planning/planning_base/traffic_rules/traffic_decider.h"
+#include "modules/planning/planning_base/traffic_rules_base/traffic_decider.h"
 
 namespace apollo {
 namespace planning {
@@ -70,11 +70,6 @@ Status NaviPlanning::Init(const PlanningConfig& config) {
 
   planner_dispatcher_->Init();
 
-  ACHECK(apollo::cyber::common::GetProtoFromFile(
-      FLAGS_traffic_rule_config_filename, &traffic_rule_configs_))
-      << "Failed to load traffic rule config file "
-      << FLAGS_traffic_rule_config_filename;
-
   // clear planning history
   injector_->history()->Clear();
 
@@ -87,6 +82,8 @@ Status NaviPlanning::Init(const PlanningConfig& config) {
         ErrorCode::PLANNING_ERROR,
         "planning is not initialized with config : " + config_.DebugString());
   }
+
+  traffic_decider_.Init(injector_);
 
   return planner_->Init(config_);
 }
@@ -260,10 +257,8 @@ void NaviPlanning::RunOnce(const LocalView& local_view,
   }
 
   for (auto& ref_line_info : *frame_->mutable_reference_line_info()) {
-    TrafficDecider traffic_decider;
-    traffic_decider.Init(traffic_rule_configs_);
     auto traffic_status =
-        traffic_decider.Execute(frame_.get(), &ref_line_info, injector_);
+        traffic_decider_.Execute(frame_.get(), &ref_line_info);
     if (!traffic_status.ok() || !ref_line_info.IsDrivable()) {
       ref_line_info.SetDrivable(false);
       AWARN << "Reference line " << ref_line_info.Lanes().Id()

@@ -14,13 +14,11 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include <map>
 #include <memory>
 #include <string>
+#include <set>
 
 #include "gtest/gtest.h"
-
-#include "modules/planning/planning_base/proto/traffic_rule_config.pb.h"
 
 // TODO(all) #include "modules/planning/planning_base/navi_planning.h"
 #include "modules/planning/planning_base/on_lane_planning.h"
@@ -57,7 +55,7 @@ namespace planning {
     return RUN_ALL_TESTS();                              \
   }
 
-#define ENABLE_RULE(RULE_ID, ENABLED) this->rule_enabled_[RULE_ID] = ENABLED
+#define ENABLE_RULE(RULE_ID) this->rule_enabled_.emplace(RULE_ID)
 
 DECLARE_string(test_routing_response_file);
 DECLARE_string(test_localization_file);
@@ -84,8 +82,8 @@ class PlanningTestBase : public ::testing::Test {
   bool RunPlanning(const std::string& test_case_name, int case_num,
                    bool no_trajectory_point);
 
-  TrafficRuleConfig* GetTrafficRuleConfig(
-      const TrafficRuleConfig::RuleId& rule_id);
+  std::shared_ptr<TrafficRule> GetTrafficRuleConfig(
+      const std::string& rule_id);
 
  protected:
   void TrimPlanning(ADCTrajectory* origin, bool no_trajectory_point);
@@ -94,7 +92,7 @@ class PlanningTestBase : public ::testing::Test {
 
  protected:
   std::unique_ptr<PlanningBase> planning_ = nullptr;
-  std::map<TrafficRuleConfig::RuleId, bool> rule_enabled_;
+  std::set<std::string> rule_enabled_;
   ADCTrajectory adc_trajectory_;
   LocalView local_view_;
   PlanningConfig config_;

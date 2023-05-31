@@ -79,7 +79,7 @@ cc_library(
         "//modules/planning/planning_base/planner:planner_dispatcher",
         "//modules/planning/planning_base/planner",
         "//modules/planning/planning_base/proto:planning_config_cc_proto",
-        "//modules/planning/planning_base/proto:traffic_rule_config_cc_proto",
+        "//modules/planning/planning_base/traffic_rules_base:traffic_decider",
     ],
 )
 
@@ -109,7 +109,7 @@ cc_library(
         "//modules/planning/planning_base/planner/navi:navi_planner",
         "//modules/planning/planning_base/planner/rtk:rtk_planner",
         "//modules/planning/planning_base/reference_line:reference_line_provider",
-        "//modules/planning/planning_base/traffic_rules:traffic_decider",
+        "//modules/planning/planning_base/traffic_rules_base:traffic_decider",
         "@com_google_protobuf//:protobuf",
     ],
 )
@@ -142,7 +142,7 @@ cc_library(
         "//modules/planning/planning_base/planner/rtk:rtk_planner",
         "//modules/planning/planning_base/proto:planning_semantic_map_config_cc_proto",
         "//modules/planning/planning_base/reference_line:reference_line_provider",
-        "//modules/planning/planning_base/traffic_rules:traffic_decider",
+        "//modules/planning/planning_base/traffic_rules_base:traffic_decider",
         "@com_google_absl//:absl",
         "@com_google_googletest//:gtest_main",
     ],

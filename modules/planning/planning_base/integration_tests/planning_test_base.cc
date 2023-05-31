@@ -21,6 +21,7 @@
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
+
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "modules/common/adapters/adapter_gflags.h"
@@ -173,11 +174,13 @@ void PlanningTestBase::SetUp() {
     planning_->last_publishable_trajectory_.reset(
         new PublishableTrajectory(prev_planning));
   }
-  for (auto& config : *(planning_->traffic_rule_configs_.mutable_config())) {
-    auto iter = rule_enabled_.find(config.rule_id());
-    if (iter != rule_enabled_.end()) {
-      config.set_enabled(iter->second);
-    }
+  for (int i = 0;
+       i < static_cast<int>(planning_->traffic_decider_.rule_list_.size());
+       i++) {
+    auto rulename = planning_->traffic_decider_.rule_list_[i]->Getname();
+    if (!rule_enabled_.count(rulename))
+      planning_->traffic_decider_.rule_list_.erase(
+          planning_->traffic_decider_.rule_list_.begin() + i);
   }
 }
 
@@ -192,11 +195,13 @@ void PlanningTestBase::UpdateData() {
     planning_->last_publishable_trajectory_.reset(
         new PublishableTrajectory(prev_planning));
   }
-  for (auto& config : *planning_->traffic_rule_configs_.mutable_config()) {
-    auto iter = rule_enabled_.find(config.rule_id());
-    if (iter != rule_enabled_.end()) {
-      config.set_enabled(iter->second);
-    }
+  for (int i = 0;
+       i < static_cast<int>(planning_->traffic_decider_.rule_list_.size());
+       i++) {
+    auto rulename = planning_->traffic_decider_.rule_list_[i]->Getname();
+    if (!rule_enabled_.count(rulename))
+      planning_->traffic_decider_.rule_list_.erase(
+          planning_->traffic_decider_.rule_list_.begin() + i);
   }
 }
 
@@ -301,11 +306,11 @@ bool PlanningTestBase::IsValidTrajectory(const ADCTrajectory& trajectory) {
   return true;
 }
 
-TrafficRuleConfig* PlanningTestBase::GetTrafficRuleConfig(
-    const TrafficRuleConfig::RuleId& rule_id) {
-  for (auto& config : *planning_->traffic_rule_configs_.mutable_config()) {
-    if (config.rule_id() == rule_id) {
-      return &config;
+std::shared_ptr<TrafficRule> PlanningTestBase::GetTrafficRuleConfig(
+    const std::string& rule_id) {
+  for (auto& config : planning_->traffic_decider_.rule_list_) {
+    if (config->Getname() == rule_id) {
+      return config;
     }
   }
   return nullptr;

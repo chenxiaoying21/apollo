@@ -232,6 +232,14 @@ bool DeleteFile(const std::string &filename);
 bool GetType(const std::string &filename, FileType *type);
 
 bool CreateDir(const std::string &dir);
+
+template <typename T>
+bool LoadConfig(const std::string &relative_path_, T *config) {
+  CHECK_NOTNULL(config);
+  // todo: get config base relative path
+  return true;
+}
+
 }  // namespace common
 }  // namespace cyber
 }  // namespace apollo
