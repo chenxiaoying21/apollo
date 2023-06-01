@@ -442,36 +442,38 @@ void Path::InitWidth() {
   road_right_width_.clear();
   road_right_width_.reserve(num_sample_points_);
 
-  double s = 0;
+  double sample_s = 0;
+  double segment_end_s = -1.0;
+  double segment_start_s = -1.0;
+  double waypoint_s = 0.0;
+  double left_width = 0.0;
+  double right_width = 0.0;
+  const LaneWaypoint* cur_waypoint = nullptr;
+  bool is_reach_to_end = false;
+  int path_point_index = 0;
   for (int i = 0; i < num_sample_points_; ++i) {
-    const MapPathPoint point = GetSmoothPoint(s);
-    if (point.lane_waypoints().empty()) {
-      lane_left_width_.push_back(FLAGS_default_lane_width / 2.0);
-      lane_right_width_.push_back(FLAGS_default_lane_width / 2.0);
-
-      road_left_width_.push_back(FLAGS_default_lane_width / 2.0);
-      road_right_width_.push_back(FLAGS_default_lane_width / 2.0);
-      AWARN << "path point:" << point.DebugString() << " has invalid width.";
-    } else {
-      const LaneWaypoint waypoint = point.lane_waypoints()[0];
-      CHECK_NOTNULL(waypoint.lane);
-
-      double lane_left_width = 0.0;
-      double lane_right_width = 0.0;
-      waypoint.lane->GetWidth(waypoint.s, &lane_left_width, &lane_right_width);
-      lane_left_width_.push_back(lane_left_width - waypoint.l);
-      lane_right_width_.push_back(lane_right_width + waypoint.l);
-
-      double road_left_width = 0.0;
-      double road_right_width = 0.0;
-      waypoint.lane->GetRoadWidth(waypoint.s, &road_left_width,
-                                  &road_right_width);
-      road_left_width_.push_back(road_left_width - waypoint.l);
-      road_right_width_.push_back(road_right_width + waypoint.l);
+    // Find the segment at the position of "sample_s".
+    while (segment_end_s < sample_s && !is_reach_to_end) {
+      const auto& cur_point = path_points_[path_point_index];
+      cur_waypoint = &(cur_point.lane_waypoints()[0]);
+      CHECK_NOTNULL(cur_waypoint->lane);
+      segment_start_s = accumulated_s_[path_point_index];
+      segment_end_s = segment_start_s + segments_[path_point_index].length();
+      if (++path_point_index >= num_points_) {
+        is_reach_to_end = true;
+      }
     }
-    s += kSampleDistance;
+    // Find the width of the way point at the position of "sample_s".
+    waypoint_s = cur_waypoint->s + sample_s - segment_start_s;
+    cur_waypoint->lane->GetWidth(waypoint_s, &left_width, &right_width);
+    lane_left_width_.push_back(left_width - cur_waypoint->l);
+    lane_right_width_.push_back(right_width + cur_waypoint->l);
+    cur_waypoint->lane->GetRoadWidth(waypoint_s, &left_width, &right_width);
+    road_left_width_.push_back(left_width - cur_waypoint->l);
+    road_right_width_.push_back(right_width + cur_waypoint->l);
+    sample_s += kSampleDistance;
   }
-
+  // Check the width array size.
   auto num_sample_points = static_cast<size_t>(num_sample_points_);
   CHECK_EQ(lane_left_width_.size(), num_sample_points);
   CHECK_EQ(lane_right_width_.size(), num_sample_points);
@@ -887,7 +889,7 @@ bool Path::GetProjection(const Vec2d& point, double* accumulate_s,
     }
   } else {
     *accumulate_s = accumulated_s_[min_index] +
-         std::max(0.0, std::min(proj, nearest_seg.length()));
+                    std::max(0.0, std::min(proj, nearest_seg.length()));
     *lateral = (prod > 0.0 ? 1 : -1) * *min_distance;
   }
   return true;
