@@ -318,7 +318,7 @@ def get_param_value(module, key, default_value=''):
     @param default_value: if not found key, return the default value
     """
     value = module.find(key)
-    if value is None:
+    if value is None or value.text is None:
         return default_value
     return value.text.strip()
 
@@ -374,13 +374,9 @@ def start(launch_file=''):
         for var in env.getchildren():
             os.environ[var.tag] = str(var.text)
     # start each process
-    process_set = set()
     for module in root.findall('module'):
         module_name = get_param_value(module, 'name')
         process_name = get_param_value(module, 'process_name', 'mainboard_default_' + str(os.getpid()))
-        if process_name in process_set:
-            logger.error('module [%s] use a reduplicate process_name [%s], exit!', module_name, process_name)
-            stop()
         sched_name = get_param_value(module, 'sched_name', 'CYBER_DEFAULT')
         process_type = get_param_value(module, 'type', 'library')
         exception_handler = get_param_value(module, 'exception_handler')
@@ -416,10 +412,9 @@ def start(launch_file=''):
             logger.error('Start manager [%s] failed. Stop all!', process_name)
             stop()
         pmon.register(pw)
-        process_set.add(process_name)
 
     # No module in xml
-    if not process_set:
+    if not pmon.procs:
         logger.error("No module was found in xml config.")
         return
     all_died = pmon.run()
