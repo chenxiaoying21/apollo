@@ -26,6 +26,28 @@ install_plugin(
     plugin = ":libyield_sign.so",
 )
 
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-yield-sign/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-yield-sign/include",
+    filter = "*.h",
+)
+
 cyber_plugin_description(
     name = "plugin_libyield_sign_lib_description",
     description = ":plugins.xml",
