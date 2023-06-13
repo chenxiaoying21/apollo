@@ -13,16 +13,38 @@ install(
         ":planning-task-reuse-path.BUILD",
     ],
     deps = [
-        "install_plugin_reuse_path",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_reuse_path",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libreuse_path.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-task-reuse-path/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-task-reuse-path/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

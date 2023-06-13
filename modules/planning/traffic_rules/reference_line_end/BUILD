@@ -14,16 +14,38 @@ install(
         ":planning-traffic-rules-reference-line-end.BUILD",
     ],
     deps = [
-        "install_plugin_reference_line_end",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_reference_line_end",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libreference_line_end.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-reference-line-end/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-reference-line-end/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

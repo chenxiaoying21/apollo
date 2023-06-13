@@ -14,16 +14,38 @@ install(
         ":planning-task-piecewise-jerk-speed.BUILD",
     ],
     deps = [
-        "install_plugin_piecewise_jerk_speed_optimizer",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_piecewise_jerk_speed_optimizer",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libpiecewise_jerk_speed_optimizer.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-task-piecewise-jerk-speed/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-task-piecewise-jerk-speed/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

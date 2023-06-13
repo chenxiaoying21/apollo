@@ -14,12 +14,12 @@ install(
         ":planning-traffic-rules-yield-sign.BUILD",
     ],
     deps = [
-        "install_plugin_yield_sign",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_yield_sign",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",

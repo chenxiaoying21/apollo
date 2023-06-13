@@ -13,12 +13,34 @@ install(
         ":planning-scenario-emergency-stop.BUILD",
     ],
     deps = [
-        "install_plugin_emergency_stop_scenario",
+        "install_plugin",
     ],
 )
 
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-scenario-emergency-stop/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-scenario-emergency-stop/include",
+    filter = "*.h",
+)
+
 install_plugin(
-    name = "install_plugin_emergency_stop_scenario",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",

@@ -14,16 +14,38 @@ install(
         ":planning-traffic-rules-rerouting.BUILD",
     ],
     deps = [
-        "install_plugin_rerouting",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_rerouting",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":librerouting.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-rerouting/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-traffic-rules-rerouting/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

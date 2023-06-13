@@ -13,16 +13,38 @@ install(
         ":planning-task-path-reference-decider.BUILD",
     ],
     deps = [
-        "install_plugin_path_reference_decider",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_path_reference_decider",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libpath_reference_decider.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-task-path-reference-decider/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-task-path-reference-decider/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

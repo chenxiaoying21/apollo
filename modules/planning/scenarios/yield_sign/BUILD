@@ -13,16 +13,38 @@ install(
         ":planning-scenario-yield-sign.BUILD",
     ],
     deps = [
-        "install_plugin_yield_sign_scenario",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_yield_sign_scenario",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libyield_sign_scenario.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-scenario-yield-sign/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-scenario-yield-sign/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

@@ -14,16 +14,38 @@ install(
         ":planning-scenario-emergency-pull-over.BUILD",
     ],
     deps = [
-        "install_plugin_emergency_pull_over_scenario",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_emergency_pull_over_scenario",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libemergency_pull_over_scenario.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-scenario-emergency-pull-over/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-scenario-emergency-pull-over/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(

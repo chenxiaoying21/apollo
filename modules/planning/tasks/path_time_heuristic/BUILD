@@ -14,16 +14,38 @@ install(
         ":planning-task-path-time-heuristic.BUILD",
     ],
     deps = [
-        "install_plugin_path_time_heuristic_optimizer",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_path_time_heuristic_optimizer",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libpath_time_heuristic_optimizer.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-task-path-time-heuristic/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-task-path-time-heuristic/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(
