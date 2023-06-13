@@ -18,7 +18,7 @@
  * @file base_stage_traffic_light_creep.cc
  **/
 
-#include "modules/planning/scenarios/traffic_light_base/base_stage_traffic_light_creep.h"
+#include "modules/planning/planning_base/scenario_base/traffic_light_base/base_stage_traffic_light_creep.h"
 
 #include "modules/map/pnc_map/path.h"
 
