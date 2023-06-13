@@ -13,16 +13,38 @@ install(
         ":planning-task-pull-over-path.BUILD",
     ],
     deps = [
-        "install_plugin_pull_over_path",
+        "install_plugin",
     ],
 )
 
 install_plugin(
-    name = "install_plugin_pull_over_path",
+    name = "install_plugin",
     data = [
     ] + glob(["conf/**"]),
     description = ":plugins.xml",
     plugin = ":libpull_over_path.so",
+)
+
+install_src_files(
+    name = "install_src",
+    deps = [
+        ":install_all_src",
+        ":install_hdrs"
+    ],
+)
+
+install_src_files(
+    name = "install_all_src",
+    src_dir = ["."],
+    dest = "planning-task-pull-over-path/src",
+    filter = "*",
+)
+
+install_src_files(
+    name = "install_hdrs",
+    src_dir = ["."],
+    dest = "planning-task-pull-over-path/include",
+    filter = "*.h",
 )
 
 cyber_plugin_description(
