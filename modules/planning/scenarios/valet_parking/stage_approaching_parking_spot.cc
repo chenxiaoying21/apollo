@@ -33,19 +33,19 @@ StageResult StageApproachingParkingSpot::Process(
   StageResult result;
   auto scenario_context = GetContextAs<ValetParkingContext>();
   scenario_context->target_parking_spot_id.clear();
-  if (frame->local_view().routing->routing_request().has_parking_info() &&
-      frame->local_view()
-          .routing->routing_request()
-          .parking_info()
-          .has_parking_space_id()) {
-    scenario_context->target_parking_spot_id = frame->local_view()
-                                                   .routing->routing_request()
-                                                   .parking_info()
-                                                   .parking_space_id();
-  } else {
-    AERROR << "No parking space id from routing";
-    return result.SetStageStatus(StageStatusType::ERROR);
-  }
+  // if (frame->local_view().routing->routing_request().has_parking_info() &&
+  //     frame->local_view()
+  //         .routing->routing_request()
+  //         .parking_info()
+  //         .has_parking_space_id()) {
+  //   scenario_context->target_parking_spot_id = frame->local_view()
+  //                                                  .routing->routing_request()
+  //                                                  .parking_info()
+  //                                                  .parking_space_id();
+  // } else {
+  //   AERROR << "No parking space id from routing";
+  //   return result.SetStageStatus(StageStatusType::ERROR);
+  // }
 
   if (scenario_context->target_parking_spot_id.empty()) {
     return result.SetStageStatus(StageStatusType::ERROR);
