@@ -26,8 +26,8 @@ using apollo::cyber::ComponentBase;
 using apollo::cyber::Rate;
 using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
-using apollo::routing::RoutingRequest;
-using apollo::routing::RoutingResponse;
+using apollo::temp_routing_converter::RoutingRequest;
+using apollo::temp_routing_converter::RoutingResponse;
 
 bool TaskManagerComponent::Init() {
   TaskManagerConfig task_manager_conf;

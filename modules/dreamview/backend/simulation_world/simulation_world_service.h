@@ -49,6 +49,7 @@
 #include "modules/common_msgs/storytelling_msgs/story.pb.h"
 #include "modules/common_msgs/task_manager_msgs/task_manager.pb.h"
 #include "modules/dreamview/proto/simulation_world.pb.h"
+#include "modules/temp_routing_converter/proto/routing.pb.h"
 
 #include "cyber/common/log.h"
 #include "modules/common/monitor_log/monitor_log_buffer.h"
@@ -147,7 +148,7 @@ class SimulationWorldService {
   void PublishNavigationInfo(
       const std::shared_ptr<apollo::relative_map::NavigationInfo> &);
   void PublishRoutingRequest(
-      const std::shared_ptr<apollo::routing::RoutingRequest> &);
+      const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest> &);
 
   void PublishTask(const std::shared_ptr<apollo::task_manager::Task> &);
 
@@ -381,9 +382,10 @@ class SimulationWorldService {
       drive_event_reader_;
   std::shared_ptr<cyber::Reader<apollo::common::monitor::MonitorMessage>>
       monitor_reader_;
-  std::shared_ptr<cyber::Reader<apollo::routing::RoutingRequest>>
+  std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_reader_;
-  std::shared_ptr<cyber::Reader<apollo::routing::RoutingResponse>>
+  std::shared_ptr<
+      cyber::Reader<apollo::temp_routing_converter::RoutingResponse>>
       routing_response_reader_;
   std::shared_ptr<cyber::Reader<apollo::storytelling::Stories>>
       storytelling_reader_;
@@ -394,9 +396,10 @@ class SimulationWorldService {
   // Writers.
   std::shared_ptr<cyber::Writer<apollo::relative_map::NavigationInfo>>
       navigation_writer_;
-  std::shared_ptr<cyber::Writer<apollo::routing::RoutingRequest>>
+  std::shared_ptr<cyber::Writer<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_writer_;
-  std::shared_ptr<cyber::Writer<apollo::routing::RoutingResponse>>
+  std::shared_ptr<
+      cyber::Writer<apollo::temp_routing_converter::RoutingResponse>>
       routing_response_writer_;
   std::shared_ptr<cyber::Writer<apollo::task_manager::Task>> task_writer_;
 

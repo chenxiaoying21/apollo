@@ -84,9 +84,9 @@ class SimPerfectControl final : public SimControlBase {
   void OnPlanning(
       const std::shared_ptr<apollo::planning::ADCTrajectory> &trajectory);
   void OnRoutingResponse(
-      const std::shared_ptr<apollo::routing::RoutingResponse> &routing);
+      const std::shared_ptr<apollo::temp_routing_converter::RoutingResponse> &routing);
   void OnRoutingRequest(
-      const std::shared_ptr<apollo::routing::RoutingRequest> &routing_request);
+      const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest> &routing_request);
   void OnReceiveNavigationInfo(
       const std::shared_ptr<apollo::relative_map::NavigationInfo>
           &navigation_info);
@@ -141,9 +141,9 @@ class SimPerfectControl final : public SimControlBase {
       localization_reader_;
   std::shared_ptr<cyber::Reader<apollo::planning::ADCTrajectory>>
       planning_reader_;
-  std::shared_ptr<cyber::Reader<apollo::routing::RoutingResponse>>
+  std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingResponse>>
       routing_response_reader_;
-  std::shared_ptr<cyber::Reader<apollo::routing::RoutingRequest>>
+  std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_reader_;
   std::shared_ptr<cyber::Reader<apollo::relative_map::NavigationInfo>>
       navigation_reader_;

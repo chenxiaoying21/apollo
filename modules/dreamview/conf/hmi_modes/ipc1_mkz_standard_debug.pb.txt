@@ -48,9 +48,10 @@ cyber_modules {
   }
 }
 cyber_modules {
-  key: "Routing"
+  key: "Command"
   value: {
-    dag_files: "/apollo/modules/routing/dag/routing.dag"
+    dag_files: "modules/external_command_process/process_component/dag/external_command_process.dag"
+    dag_files: "modules/temp_routing_converter/dag/temp_routing_converter.dag"
   }
 }
 cyber_modules {

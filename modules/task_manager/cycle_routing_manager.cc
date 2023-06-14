@@ -47,7 +47,7 @@ common::Status CycleRoutingManager::Init(
 
 bool CycleRoutingManager::GetNewRouting(
     const localization::Pose& pose,
-    routing::RoutingRequest* new_routing_request) {
+    temp_routing_converter::RoutingRequest* new_routing_request) {
   AINFO << "GetNewRouting: localization_pose: " << pose.position().x() << " "
         << pose.position().y() << ", begin point " << begin_point_.pose().x()
         << " " << begin_point_.pose().y() << ", end point "

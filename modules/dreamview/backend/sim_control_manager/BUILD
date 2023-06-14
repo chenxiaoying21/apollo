@@ -17,6 +17,7 @@ cc_library(
         "//modules/dreamview/backend/sim_control_manager/core:dynamic_model_factory",
         "//modules/dreamview/backend/sim_control_manager/core:sim_control_base",
         "//modules/common/configs:config_gflags",
+        "//modules/temp_routing_converter/proto:routing_cc_proto",
         "@com_github_nlohmann_json//:json",
     ],
 )

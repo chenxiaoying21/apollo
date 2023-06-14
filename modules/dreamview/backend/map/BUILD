@@ -24,6 +24,7 @@ cc_binary(
         "//modules/dreamview/proto:simulation_world_cc_proto",
         "//modules/map/hdmap:hdmap_util",
         "//modules/map/pnc_map",
+        "//modules/temp_routing_converter/proto:routing_cc_proto",
         "@boost",
         "@com_github_nlohmann_json//:json",
         "@com_github_google_glog//:glog",
@@ -56,6 +57,7 @@ cc_test(
     deps = [
         ":map_service",
         "@com_google_googletest//:gtest_main",
+        "//modules/temp_routing_converter/proto:routing_cc_proto",
     ],
 )
 

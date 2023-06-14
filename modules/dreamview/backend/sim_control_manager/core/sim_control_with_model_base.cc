@@ -33,8 +33,8 @@ using apollo::common::util::FillHeader;
 using apollo::control::ControlCommand;
 using apollo::localization::LocalizationEstimate;
 using apollo::prediction::PredictionObstacles;
-using apollo::routing::RoutingRequest;
-using apollo::routing::RoutingResponse;
+using apollo::temp_routing_converter::RoutingRequest;
+using apollo::temp_routing_converter::RoutingResponse;
 using apollo::sim_control::SimCarStatus;
 using Json = nlohmann::json;
 
@@ -70,7 +70,7 @@ void SimControlWithModelBase::InitTimerAndIO() {
       });
   // Setup routing callback.
   cyber::ReaderConfig routing_reader_config;
-  routing_reader_config.channel_name = FLAGS_routing_response_topic;
+  routing_reader_config.channel_name = "/apollo/routing_response";
   routing_reader_config.pending_queue_size = FLAGS_reader_pending_queue_size;
   routing_reader_ = node_->CreateReader<RoutingResponse>(
       routing_reader_config,
@@ -79,7 +79,7 @@ void SimControlWithModelBase::InitTimerAndIO() {
         OnRoutingResponse(*cmd);
       });
   routing_request_reader_ = node_->CreateReader<RoutingRequest>(
-      FLAGS_routing_request_topic,
+      "/apollo/routing_request",
       [this](const std::shared_ptr<RoutingRequest>& routing_request) {
         this->OnRoutingRequest(routing_request);
       });

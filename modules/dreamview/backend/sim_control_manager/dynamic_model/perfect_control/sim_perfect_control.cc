@@ -42,8 +42,8 @@ using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
 using apollo::prediction::PredictionObstacles;
 using apollo::relative_map::NavigationInfo;
-using apollo::routing::RoutingResponse;
-using apollo::routing::RoutingRequest;
+using apollo::temp_routing_converter::RoutingResponse;
+using apollo::temp_routing_converter::RoutingRequest;
 using Json = nlohmann::json;
 
 namespace {
@@ -81,12 +81,12 @@ void SimPerfectControl::InitTimerAndIO() {
         this->OnPlanning(trajectory);
       });
   routing_request_reader_ = node_->CreateReader<RoutingRequest>(
-      FLAGS_routing_request_topic,
+      "/apollo/routing_request",
       [this](const std::shared_ptr<RoutingRequest> &routing_request) {
         this->OnRoutingRequest(routing_request);
       });
   routing_response_reader_ = node_->CreateReader<RoutingResponse>(
-      FLAGS_routing_response_topic,
+      "/apollo/routing_response",
       [this](const std::shared_ptr<RoutingResponse> &routing) {
         this->OnRoutingResponse(routing);
       });
