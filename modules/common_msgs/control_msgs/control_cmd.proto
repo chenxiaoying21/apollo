@@ -1,6 +1,7 @@
 syntax = "proto2";
 package apollo.control;
 
+import "google/protobuf/any.proto";
 import "modules/common_msgs/basic_msgs/drive_state.proto";
 import "modules/common_msgs/basic_msgs/header.proto";
 import "modules/common_msgs/basic_msgs/pnc_point.proto";
@@ -19,6 +20,14 @@ message LatencyStats {
   optional double total_time_ms = 1;
   repeated double controller_time_ms = 2;
   optional bool total_time_exceeded = 3;
+}
+
+message ChassisCommand {
+  optional apollo.common.Header header = 1;
+  // The basic vehicle signals which can also be controlled by apollo system.
+  optional apollo.common.VehicleSignal basic_signal = 2;
+  // Custom chassis operation command defined by user for extensibility.
+  optional google.protobuf.Any custom_operation = 3;
 }
 
 // next id : 27

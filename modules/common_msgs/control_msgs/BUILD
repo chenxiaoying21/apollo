@@ -23,6 +23,7 @@ proto_library(
         "//modules/common_msgs/chassis_msgs:chassis_proto",
         ":input_debug_proto",
         ":pad_msg_proto",
+        "@com_google_protobuf//:any_proto",
     ],
 )
 
