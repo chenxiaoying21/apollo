@@ -20,18 +20,19 @@
 
 #include "modules/external_command_process/command_processor/action_command_processor/action_command_processor.h"
 
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/external_command_process/command_processor/command_processor_base/proto/command_processor_config.pb.h"
 #include "modules/common/util/message_util.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/message_reader.h"
 
 namespace apollo {
 namespace external_command {
-
-using apollo::canbus::Chassis;
 
 bool ActionCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
   if (!CommandProcessorBase::Init(node)) {
     return false;
   }
+  message_reader_ = MessageReader::Instance();
   const auto& config = GetProcessorConfig();
   // Get special config for ActionCommandProcessor.
   std::string special_config_path = GetConfigDir() + "special_config_.pb.txt";
@@ -53,22 +54,14 @@ bool ActionCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
   control_action_writer_ = node->CreateWriter<apollo::control::PadMessage>(
       config.output_command_name().Get(0));
   // Create reader for input command status.
-  CHECK(config.input_command_status_name().size() > 0);
-  chassis_status_reader_ = node->CreateReader<Chassis>(
-      config.input_command_status_name().Get(0),
-      [this](const std::shared_ptr<Chassis>& status) {
-        OnChassisStatus(status);
-      });
-  planning_status_reader_ = node->CreateReader<apollo::planning::ADCTrajectory>(
-      config.input_command_status_name().Get(1),
-      [this](const std::shared_ptr<apollo::planning::ADCTrajectory>& status) {
-        OnPlanningStatus(status);
-      });
-  planning_command_status_reader_ = node->CreateReader<CommandStatus>(
-      config.input_command_status_name().Get(2),
-      [this](const std::shared_ptr<CommandStatus>& status) {
-        this->OnPlanningCommandStatus(status);
-      });
+  CHECK(config.input_command_status_name().size() > 2);
+  
+  chassis_status_name_ = config.input_command_status_name().Get(0);
+  planning_status_name_ = config.input_command_status_name().Get(1);
+  planning_command_status_name_ = config.input_command_status_name().Get(2);
+  message_reader_->RegisterMessage<apollo::canbus::Chassis>(chassis_status_name_);
+  message_reader_->RegisterMessage<apollo::planning::ADCTrajectory>(planning_status_name_);
+  message_reader_->RegisterMessage<CommandStatus>(planning_command_status_name_);
   return true;
 }
 
@@ -105,8 +98,16 @@ bool ActionCommandProcessor::GetCommandStatus(uint64_t command_id,
     } break;
     // Get status of "START".
     case external_command::ActionCommandType::START: {
+      auto* latest_chassis_status =
+          message_reader_->GetMessage<apollo::canbus::Chassis>(
+              chassis_status_name_);
+      if (nullptr == latest_chassis_status) {
+        status->set_status(apollo::external_command::CommandStatusType::ERROR);
+        status->set_message("Cannot get chassis status!");
+        return true;
+      }
       // If the vehicle is moving, the command is considered as finished.
-      if (latest_chassis_status_.speed_mps() >
+      if (latest_chassis_status->speed_mps() >
           special_config_.minimun_non_zero_speed()) {
         status->set_status(
             apollo::external_command::CommandStatusType::FINISHED);
@@ -204,39 +205,20 @@ void ActionCommandProcessor::OnCommand(
   status->set_status(CommandStatusType::RUNNING);
 }
 
-void ActionCommandProcessor::OnChassisStatus(
-    const std::shared_ptr<Chassis>& status) {
-  latest_chassis_status_.CopyFrom(*status);
-}
-
-void ActionCommandProcessor::OnPlanningStatus(
-    const std::shared_ptr<apollo::planning::ADCTrajectory>& status) {
-  latest_planning_status_.CopyFrom(*status);
-}
-
-void ActionCommandProcessor::OnPlanningCommandStatus(
-    const std::shared_ptr<CommandStatus>& status) {
-  CHECK_NOTNULL(status);
-  latest_planning_command_status_.CopyFrom(*status);
-}
-
 void ActionCommandProcessor::SwitchToAutoMode(const std::string& module_name) {
-  latest_mode_switch_status_.set_status(
+  last_mode_switch_status_.set_status(
       apollo::external_command::CommandStatusType::RUNNING);
   // Get the chassis' driving mode first.
-  chassis_status_reader_->Observe();
-  if (chassis_status_reader_->Empty()) {
+  auto* latest_chassis_status =
+      message_reader_->GetMessage<apollo::canbus::Chassis>(
+          chassis_status_name_);
+  if (nullptr == latest_chassis_status) {
     UpdateModeSwitchStatus("Failed to get chassis data!", true);
     return;
   }
-  const auto& chassis_msg = chassis_status_reader_->GetLatestObserved();
-  if (chassis_msg == nullptr) {
-    UpdateModeSwitchStatus(
-        "Chassis msg is not ready and cannot switch to auto mode!", true);
-    return;
-  }
   // Do nothing if chassis is already in auto mode.
-  if (canbus::Chassis::COMPLETE_AUTO_DRIVE == chassis_msg->driving_mode()) {
+  if (canbus::Chassis::COMPLETE_AUTO_DRIVE ==
+      latest_chassis_status->driving_mode()) {
     UpdateModeSwitchStatus("Chassis is already in auto mode.", false);
     return;
   }
@@ -254,7 +236,7 @@ void ActionCommandProcessor::SwitchToAutoMode(const std::string& module_name) {
 
 void ActionCommandProcessor::SwitchToManualMode(
     const std::string& module_name) {
-  latest_mode_switch_status_.set_status(
+  last_mode_switch_status_.set_status(
       apollo::external_command::CommandStatusType::RUNNING);
   SwitchMode(canbus::Chassis::COMPLETE_MANUAL, control::DrivingAction::RESET,
              module_name);
@@ -267,19 +249,15 @@ bool ActionCommandProcessor::SwitchMode(
   const std::string& mode_name =
       canbus::Chassis::DrivingMode_Name(driving_mode);
   // Get the chassis' driving mode first.
-  chassis_status_reader_->Observe();
-  if (chassis_status_reader_->Empty()) {
+  auto* latest_chassis_status =
+      message_reader_->GetMessage<apollo::canbus::Chassis>(
+          chassis_status_name_);
+  if (nullptr == latest_chassis_status) {
     UpdateModeSwitchStatus("Failed to get chassis data!", true);
     return false;
   }
-  const auto& chassis_msg = chassis_status_reader_->GetLatestObserved();
-  if (chassis_msg == nullptr) {
-    UpdateModeSwitchStatus(
-        "Chassis msg is not ready and cannot switch to " + mode_name, true);
-    return false;
-  }
   // Do nothing if chassis is already in manual mode.
-  if (driving_mode == chassis_msg->driving_mode()) {
+  if (driving_mode == latest_chassis_status->driving_mode()) {
     UpdateModeSwitchStatus("Chassis is already in " + mode_name, false);
     return true;
   }
@@ -294,13 +272,14 @@ bool ActionCommandProcessor::SwitchMode(
     control_action_writer_->Write(control_message);
     std::this_thread::sleep_for(kTryInterval);
 
-    chassis_status_reader_->Observe();
-    if (chassis_status_reader_->Empty()) {
+    latest_chassis_status =
+        message_reader_->GetMessage<apollo::canbus::Chassis>(
+            chassis_status_name_);
+    if (nullptr == latest_chassis_status) {
       UpdateModeSwitchStatus("Failed to get chassis data!", true);
       return false;
     }
-    if (chassis_status_reader_->GetLatestObserved()->driving_mode() ==
-        driving_mode) {
+    if (latest_chassis_status->driving_mode() == driving_mode) {
       is_switch_success = true;
       break;
     }
@@ -318,11 +297,19 @@ void ActionCommandProcessor::CheckScenarioFinished(
   // command status is finished.
   status->set_status(apollo::external_command::CommandStatusType::UNKNOWN);
   status->set_message("Cannot get planning scenario status!");
-  if (!latest_planning_status_.has_debug() ||
-      latest_planning_status_.debug().has_planning_data()) {
+  auto* latest_planning_status =
+      message_reader_->GetMessage<apollo::planning::ADCTrajectory>(
+          planning_status_name_);
+  if (nullptr == latest_planning_status) {
+    status->set_status(apollo::external_command::CommandStatusType::ERROR);
+    status->set_message("Cannot get planning status!");
     return;
   }
-  const auto& debug = latest_planning_status_.debug().planning_data();
+  if (!latest_planning_status->has_debug() ||
+      latest_planning_status->debug().has_planning_data()) {
+    return;
+  }
+  const auto& debug = latest_planning_status->debug().planning_data();
   if (!debug.has_scenario()) {
     return;
   }
@@ -330,10 +317,17 @@ void ActionCommandProcessor::CheckScenarioFinished(
   if (!scenario.has_scenario_type()) {
     return;
   }
+  auto* latest_planning_command_status =
+      message_reader_->GetMessage<CommandStatus>(planning_command_status_name_);
+  if (nullptr == latest_planning_command_status) {
+    status->set_status(apollo::external_command::CommandStatusType::ERROR);
+    status->set_message("Cannot get planning command status!");
+    return;
+  }
   status->set_message("");
   const auto& scenario_type = scenario.scenario_type();
   if (scenario_type == scenario_name &&
-      latest_planning_command_status_.status() ==
+      latest_planning_command_status->status() ==
           apollo::external_command::CommandStatusType::FINISHED) {
     status->set_status(apollo::external_command::CommandStatusType::FINISHED);
     return;
@@ -344,24 +338,32 @@ void ActionCommandProcessor::CheckScenarioFinished(
 void ActionCommandProcessor::CheckModeSwitchFinished(
     const apollo::canbus::Chassis::DrivingMode& drive_mode,
     CommandStatus* status) const {
-  if (latest_chassis_status_.has_driving_mode() &&
-      latest_chassis_status_.driving_mode() == drive_mode) {
+  auto* latest_chassis_status =
+      message_reader_->GetMessage<apollo::canbus::Chassis>(
+          chassis_status_name_);
+  if (nullptr == latest_chassis_status) {
+    status->set_status(apollo::external_command::CommandStatusType::ERROR);
+    status->set_message("Cannot get chassis status!");
+    return;
+  }
+  if (latest_chassis_status->has_driving_mode() &&
+      latest_chassis_status->driving_mode() == drive_mode) {
     status->set_status(apollo::external_command::CommandStatusType::FINISHED);
     return;
   }
-  status->CopyFrom(latest_mode_switch_status_);
+  status->CopyFrom(last_mode_switch_status_);
 }
 
 void ActionCommandProcessor::UpdateModeSwitchStatus(const std::string& message,
                                                     bool is_error) {
   if (is_error) {
-    latest_mode_switch_status_.set_status(
+    last_mode_switch_status_.set_status(
         apollo::external_command::CommandStatusType::ERROR);
   } else {
-    latest_mode_switch_status_.set_status(
+    last_mode_switch_status_.set_status(
         apollo::external_command::CommandStatusType::FINISHED);
   }
-  latest_mode_switch_status_.set_message(message);
+  last_mode_switch_status_.set_message(message);
   AERROR << message;
 }
 

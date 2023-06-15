@@ -33,6 +33,7 @@ cc_library(
         "//modules/common_msgs/external_command_msgs:command_status_cc_proto",
         "//modules/external_command_process/command_processor/command_processor_base/proto:command_processor_config_cc_proto",
         "//modules/external_command_process/command_processor/command_processor_base/util:lane_way_tool",
+        "//modules/external_command_process/command_processor/command_processor_base/util:message_reader",
         "//modules/routing:routing",
         "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
         ":command_processor_base_lib",

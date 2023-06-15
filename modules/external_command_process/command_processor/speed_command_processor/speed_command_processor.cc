@@ -21,6 +21,7 @@
 #include "modules/external_command_process/command_processor/speed_command_processor/speed_command_processor.h"
 
 #include "modules/external_command_process/command_processor/command_processor_base/proto/command_processor_config.pb.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/message_reader.h"
 
 namespace apollo {
 namespace external_command {
@@ -29,6 +30,7 @@ bool SpeedCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
   if (!CommandProcessorBase::Init(node)) {
     return false;
   }
+  message_reader_ = MessageReader::Instance();
   const auto& config = GetProcessorConfig();
   command_service_ = node->CreateService<SpeedCommand, CommandStatus>(
       config.input_command_name(),
@@ -37,15 +39,13 @@ bool SpeedCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
         this->OnCommand(command, status);
       });
   // Create writer for output command.
-  CHECK(config.output_command_name().size() > 0);
+  CHECK(config.output_command_name().size() > 0 &&
+        config.input_command_status_name().size() > 0);
   planning_command_writer_ =
       node->CreateWriter<apollo::planning::PlanningCommand>(
           config.output_command_name().Get(0));
-  planning_command_status_reader_ = node->CreateReader<CommandStatus>(
-      config.input_command_status_name().Get(0),
-      [this](const std::shared_ptr<CommandStatus>& status) {
-        this->OnCommandStatus(status);
-      });
+  planning_command_status_name_ = config.input_command_status_name().Get(0);
+  message_reader_->RegisterMessage<CommandStatus>(planning_command_status_name_);
   return true;
 }
 
@@ -67,16 +67,6 @@ void SpeedCommandProcessor::OnCommand(
   auto custom_command = planning_command->mutable_custom_command();
   custom_command->PackFrom(*command);
   last_received_command_.CopyFrom(*command);
-}
-/**
- * @brief Callback for command status.
- * @param status The latest command status.
- */
-void SpeedCommandProcessor::OnCommandStatus(
-    const std::shared_ptr<CommandStatus>& status) {
-  CHECK_NOTNULL(status);
-  CHECK_NOTNULL(status);
-  latest_planning_command_status_.CopyFrom(*status);
 }
 
 }  // namespace external_command

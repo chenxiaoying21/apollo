@@ -28,6 +28,7 @@
 #include "modules/common/adapters/adapter_gflags.h"
 #include "modules/external_command_process/command_processor/command_processor_base/command_processor_base.h"
 #include "modules/external_command_process/command_processor/command_processor_base/util/lane_way_tool.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/message_reader.h"
 #include "modules/routing/routing.h"
 
 /**
@@ -82,11 +83,6 @@ class MotionCommandProcessorBase : public CommandProcessorBase {
   void OnCommand(const std::shared_ptr<T>& command,
                  std::shared_ptr<CommandStatus>& status);
   /**
-   * @brief Callback for command status.
-   * @param status The latest command status.
-   */
-  void OnCommandStatus(const std::shared_ptr<CommandStatus>& status);
-  /**
    * @brief Process special command except RoutingRequest.
    * @param command RoutingCommand to be converted.
    * @param planning_command Output process result.
@@ -100,19 +96,21 @@ class MotionCommandProcessorBase : public CommandProcessorBase {
   std::shared_ptr<cyber::Service<T, CommandStatus>> command_service_;
   std::shared_ptr<cyber::Writer<apollo::planning::PlanningCommand>>
       planning_command_writer_;
-  std::shared_ptr<cyber::Reader<CommandStatus>> planning_command_status_reader_;
+
   std::shared_ptr<apollo::routing::Routing> routing_;
   std::shared_ptr<apollo::external_command::LaneWayTool> lane_way_tool_;
-  CommandStatus latest_planning_command_status_;
   T last_received_command_;
+  MessageReader* message_reader_;
+  std::string planning_command_status_name_;
 };
 
 template <typename T>
 MotionCommandProcessorBase<T>::MotionCommandProcessorBase()
-    : routing_(std::make_shared<apollo::routing::Routing>()) {
-  latest_planning_command_status_.set_status(CommandStatusType::UNKNOWN);
-  latest_planning_command_status_.set_message("Command status is not inited yet.");
-}
+    : command_service_(nullptr),
+      planning_command_writer_(nullptr),
+      routing_(std::make_shared<apollo::routing::Routing>()),
+      lane_way_tool_(nullptr),
+      message_reader_(MessageReader::Instance()) {}
 
 template <typename T>
 bool MotionCommandProcessorBase<T>::Init(
@@ -122,6 +120,9 @@ bool MotionCommandProcessorBase<T>::Init(
     AERROR << "MotionCommandProcessorBase init failed!";
     return false;
   }
+  lane_way_tool_ =
+      std::make_shared<apollo::external_command::LaneWayTool>(node);
+  routing_->Init();
   // Create service for input command.
   const auto& config = GetProcessorConfig();
   command_service_ = node->CreateService<T, CommandStatus>(
@@ -137,13 +138,9 @@ bool MotionCommandProcessorBase<T>::Init(
           config.output_command_name().Get(0));
   // Create reader for input command status.
   CHECK(config.input_command_status_name().size() > 0);
-  planning_command_status_reader_ = node->CreateReader<CommandStatus>(
-      config.input_command_status_name().Get(0),
-      [this](const std::shared_ptr<CommandStatus>& status) {
-        this->OnCommandStatus(status);
-      });
-  lane_way_tool_ =
-      std::make_shared<apollo::external_command::LaneWayTool>(node);
+  planning_command_status_name_ = config.input_command_status_name().Get(0);
+  message_reader_->RegisterMessage<CommandStatus>(
+      planning_command_status_name_);
   return true;
 }
 
@@ -152,7 +149,15 @@ bool MotionCommandProcessorBase<T>::GetCommandStatus(
     uint64_t command_id, CommandStatus* status) const {
   CHECK_NOTNULL(status);
   if (last_received_command_.command_id() == command_id) {
-    status->CopyFrom(latest_planning_command_status_);
+    auto* latest_planning_command_status =
+        message_reader_->GetMessage<CommandStatus>(
+            planning_command_status_name_);
+    if (nullptr == latest_planning_command_status) {
+      status->set_status(apollo::external_command::CommandStatusType::ERROR);
+      status->set_message("Cannot get planning command status!");
+      return true;
+    }
+    status->CopyFrom(*latest_planning_command_status);
     return true;
   }
   return false;
@@ -162,7 +167,9 @@ template <typename T>
 void MotionCommandProcessorBase<T>::OnCommand(
     const std::shared_ptr<T>& command, std::shared_ptr<CommandStatus>& status) {
   CHECK_NOTNULL(command);
+  CHECK_NOTNULL(status);
   last_received_command_.CopyFrom(*command);
+  status->set_command_id(command->command_id());
   // Convert command to RoutingRequest.
   auto routing_request = std::make_shared<apollo::routing::RoutingRequest>();
   bool convert_result = Convert(command, routing_request);
@@ -190,17 +197,11 @@ void MotionCommandProcessorBase<T>::OnCommand(
   // Process command except RoutingRequest.
   if (!ProcessSpecialCommand(command, planning_command)) {
     AERROR << "Process special command failed!";
+    return;
   }
   // Send routing response to planning module.
   planning_command_writer_->Write(planning_command);
   status->set_status(CommandStatusType::RUNNING);
-}
-
-template <typename T>
-void MotionCommandProcessorBase<T>::OnCommandStatus(
-    const std::shared_ptr<CommandStatus>& status) {
-  CHECK_NOTNULL(status);
-  latest_planning_command_status_.CopyFrom(*status);
 }
 
 template <typename T>

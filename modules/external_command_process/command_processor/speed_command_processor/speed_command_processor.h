@@ -32,6 +32,8 @@
 namespace apollo {
 namespace external_command {
 
+class MessageReader;
+
 class SpeedCommandProcessor : public CommandProcessorBase {
  public:
   bool Init(const std::shared_ptr<cyber::Node>& node) override;
@@ -52,18 +54,15 @@ class SpeedCommandProcessor : public CommandProcessorBase {
    */
   void OnCommand(const std::shared_ptr<SpeedCommand>& command,
                  std::shared_ptr<CommandStatus>& status);
-  /**
-   * @brief Callback for command status.
-   * @param status The latest command status.
-   */
-  void OnCommandStatus(const std::shared_ptr<CommandStatus>& status);
 
   std::shared_ptr<cyber::Service<SpeedCommand, CommandStatus>> command_service_;
   std::shared_ptr<cyber::Writer<apollo::planning::PlanningCommand>>
       planning_command_writer_;
-  std::shared_ptr<cyber::Reader<CommandStatus>> planning_command_status_reader_;
-  CommandStatus latest_planning_command_status_;
+
+  MessageReader* message_reader_;
+
   SpeedCommand last_received_command_;
+  std::string planning_command_status_name_;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

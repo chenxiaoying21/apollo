@@ -47,6 +47,7 @@ cc_library(
     deps = [
         "//cyber",
         "//modules/external_command_process/command_processor/command_processor_base:command_processor_base_lib",
+        "//modules/external_command_process/command_processor/command_processor_base/util:message_reader",
         "//modules/common_msgs/external_command_msgs:speed_command_cc_proto",
         "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
     ],

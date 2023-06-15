@@ -33,6 +33,8 @@
 namespace apollo {
 namespace external_command {
 
+class MessageReader;
+
 class ChassisCommandProcessor : public CommandProcessorBase {
  public:
   bool Init(const std::shared_ptr<cyber::Node>& node) override;
@@ -52,20 +54,14 @@ class ChassisCommandProcessor : public CommandProcessorBase {
    */
   void OnCommand(const std::shared_ptr<ChassisCommand>& command,
                  std::shared_ptr<CommandStatus>& status);
-  /**
-   * @brief Callback for command status.
-   * @param status The latest command status.
-   */
-  void OnChassisStatus(const std::shared_ptr<apollo::canbus::Chassis>& status);
 
   std::shared_ptr<cyber::Service<ChassisCommand, CommandStatus>>
       command_service_;
   std::shared_ptr<cyber::Writer<ChassisCommand>> chassis_command_writer_;
-  std::shared_ptr<cyber::Reader<apollo::canbus::Chassis>>
-      chassis_status_reader_;
 
   ChassisCommand last_received_command_;
-  apollo::canbus::Chassis latest_chassis_status_;
+  std::string chassis_status_name_;
+  MessageReader* message_reader_;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

@@ -49,6 +49,7 @@ cc_library(
         "//modules/external_command_process/command_processor/command_processor_base:command_processor_base_lib",
         "//modules/external_command_process/command_processor/command_processor_base/proto:command_processor_config_cc_proto",
         "//modules/external_command_process/command_processor/action_command_processor/proto:action_command_config_cc_proto",
+        "//modules/external_command_process/command_processor/command_processor_base/util:message_reader",
         "//modules/common_msgs/external_command_msgs:action_command_cc_proto",
         "//modules/common_msgs/planning_msgs:pad_msg_cc_proto",
         "//modules/common_msgs/control_msgs:pad_msg_cc_proto",

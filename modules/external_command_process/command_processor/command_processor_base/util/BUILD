@@ -19,6 +19,18 @@ cc_library(
         "//modules/common/adapters:adapter_gflags",
         "//modules/common_msgs/routing_msgs:routing_cc_proto",
         "//modules/common_msgs/localization_msgs:localization_cc_proto",
+        "//modules/external_command_process/command_processor/command_processor_base/util:message_reader",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
+    name = "message_reader",
+    srcs = ["message_reader.cc"],
+    hdrs = ["message_reader.h"],
+    copts = ROUTING_COPTS,
+    deps = [
+        "//cyber",
     ],
     alwayslink = True,
 )

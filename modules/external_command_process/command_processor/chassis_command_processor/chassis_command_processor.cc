@@ -21,6 +21,7 @@
 #include "modules/external_command_process/command_processor/chassis_command_processor/chassis_command_processor.h"
 
 #include "modules/external_command_process/command_processor/command_processor_base/proto/command_processor_config.pb.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/message_reader.h"
 
 namespace apollo {
 namespace external_command {
@@ -29,6 +30,7 @@ bool ChassisCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
   if (!CommandProcessorBase::Init(node)) {
     return false;
   }
+  message_reader_ = MessageReader::Instance();
   const auto& config = GetProcessorConfig();
   command_service_ = node->CreateService<ChassisCommand, CommandStatus>(
       config.input_command_name(),
@@ -37,14 +39,12 @@ bool ChassisCommandProcessor::Init(const std::shared_ptr<cyber::Node>& node) {
         this->OnCommand(command, status);
       });
   // Create writer for output command.
-  CHECK(config.output_command_name().size() > 0);
+  CHECK(config.output_command_name().size() > 0 &&
+        config.input_command_status_name().size() > 0);
   chassis_command_writer_ =
       node->CreateWriter<ChassisCommand>(config.output_command_name().Get(0));
-  chassis_status_reader_ = node->CreateReader<apollo::canbus::Chassis>(
-      config.input_command_status_name().Get(0),
-      [this](const std::shared_ptr<apollo::canbus::Chassis>& status) {
-        this->OnChassisStatus(status);
-      });
+  chassis_status_name_ = config.input_command_status_name().Get(0);
+  message_reader_->RegisterMessage<apollo::canbus::Chassis>(chassis_status_name_);
   return true;
 }
 
@@ -54,14 +54,22 @@ bool ChassisCommandProcessor::GetCommandStatus(uint64_t command_id,
   if (command_id != last_received_command_.command_id()) {
     return false;
   }
+  auto* latest_chassis_status =
+      message_reader_->GetMessage<apollo::canbus::Chassis>(
+          chassis_status_name_);
+  if (nullptr == latest_chassis_status) {
+    status->set_status(apollo::external_command::CommandStatusType::ERROR);
+    status->set_message("Cannot get chassis status!");
+    return true;
+  }
   // Process basic vehicle signals.
   if (last_received_command_.has_basic_signal()) {
     const auto& basic_signal = last_received_command_.basic_signal();
     // Check turn signal.
     if (basic_signal.has_turn_signal()) {
-      if (!latest_chassis_status_.has_signal() ||
-          !latest_chassis_status_.signal().has_turn_signal() ||
-          latest_chassis_status_.signal().turn_signal() !=
+      if (!latest_chassis_status->has_signal() ||
+          !latest_chassis_status->signal().has_turn_signal() ||
+          latest_chassis_status->signal().turn_signal() !=
               basic_signal.turn_signal()) {
         status->set_status(
             apollo::external_command::CommandStatusType::RUNNING);
@@ -70,9 +78,9 @@ bool ChassisCommandProcessor::GetCommandStatus(uint64_t command_id,
     }
     // Check high beam.
     if (basic_signal.has_high_beam()) {
-      if (!latest_chassis_status_.has_signal() ||
-          !latest_chassis_status_.signal().has_high_beam() ||
-          latest_chassis_status_.signal().high_beam() !=
+      if (!latest_chassis_status->has_signal() ||
+          !latest_chassis_status->signal().has_high_beam() ||
+          latest_chassis_status->signal().high_beam() !=
               basic_signal.high_beam()) {
         status->set_status(
             apollo::external_command::CommandStatusType::RUNNING);
@@ -81,9 +89,9 @@ bool ChassisCommandProcessor::GetCommandStatus(uint64_t command_id,
     }
     // Check low beam.
     if (basic_signal.has_low_beam()) {
-      if (!latest_chassis_status_.has_signal() ||
-          !latest_chassis_status_.signal().has_low_beam() ||
-          latest_chassis_status_.signal().low_beam() !=
+      if (!latest_chassis_status->has_signal() ||
+          !latest_chassis_status->signal().has_low_beam() ||
+          latest_chassis_status->signal().low_beam() !=
               basic_signal.low_beam()) {
         status->set_status(
             apollo::external_command::CommandStatusType::RUNNING);
@@ -92,9 +100,9 @@ bool ChassisCommandProcessor::GetCommandStatus(uint64_t command_id,
     }
     // Check horn.
     if (basic_signal.has_horn()) {
-      if (!latest_chassis_status_.has_signal() ||
-          !latest_chassis_status_.signal().has_horn() ||
-          latest_chassis_status_.signal().horn() != basic_signal.horn()) {
+      if (!latest_chassis_status->has_signal() ||
+          !latest_chassis_status->signal().has_horn() ||
+          latest_chassis_status->signal().horn() != basic_signal.horn()) {
         status->set_status(
             apollo::external_command::CommandStatusType::RUNNING);
         return true;
@@ -102,9 +110,9 @@ bool ChassisCommandProcessor::GetCommandStatus(uint64_t command_id,
     }
     // Check emergency light.
     if (basic_signal.has_emergency_light()) {
-      if (!latest_chassis_status_.has_signal() ||
-          !latest_chassis_status_.signal().has_emergency_light() ||
-          latest_chassis_status_.signal().emergency_light() !=
+      if (!latest_chassis_status->has_signal() ||
+          !latest_chassis_status->signal().has_emergency_light() ||
+          latest_chassis_status->signal().emergency_light() !=
               basic_signal.emergency_light()) {
         status->set_status(
             apollo::external_command::CommandStatusType::RUNNING);
@@ -122,13 +130,6 @@ void ChassisCommandProcessor::OnCommand(
   chassis_command_writer_->Write(command);
   status->set_status(apollo::external_command::CommandStatusType::RUNNING);
   last_received_command_.CopyFrom(*command);
-}
-
-void ChassisCommandProcessor::OnChassisStatus(
-    const std::shared_ptr<apollo::canbus::Chassis>& status) {
-  CHECK_NOTNULL(status);
-  CHECK_NOTNULL(status);
-  latest_chassis_status_.CopyFrom(*status);
 }
 
 }  // namespace external_command

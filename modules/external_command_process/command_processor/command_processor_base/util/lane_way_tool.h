@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2018 The Apollo Authors. All Rights Reserved.
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,15 @@
  * limitations under the License.
  *****************************************************************************/
 
+/**
+ * @file lane_way_tool.h
+ */
+
 #pragma once
 
 #include <memory>
 
 #include "modules/common_msgs/external_command_msgs/geometry.pb.h"
-#include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "cyber/cyber.h"
 
 namespace apollo {
@@ -37,12 +40,11 @@ class LocalizationEstimate;
 namespace apollo {            // namespace apollo
 namespace external_command {  // namespace external_command
 
-// class Pose;
+class MessageReader;
 
 class LaneWayTool {
  public:
   LaneWayTool(const std::shared_ptr<cyber::Node> &node);
-
   /**
    * @brief Convert the pose with (x,y) and heading(or not) to lane_way_point.
    * @param pose The pose to be converted.
@@ -63,8 +65,7 @@ class LaneWayTool {
 
  private:
   const hdmap::HDMap *hdmap_;
-  std::shared_ptr<cyber::Reader<apollo::localization::LocalizationEstimate>>
-      localization_reader_;
+  MessageReader *message_reader_;
 };
 
 }  // namespace external_command

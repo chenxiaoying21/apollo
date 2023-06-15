@@ -27,7 +27,6 @@
 #include "modules/common_msgs/external_command_msgs/action_command.pb.h"
 #include "modules/common_msgs/external_command_msgs/command_status.pb.h"
 #include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
-#include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/external_command_process/command_processor/action_command_processor/proto/action_command_config.pb.h"
 #include "cyber/cyber.h"
 #include "cyber/plugin_manager/plugin_manager.h"
@@ -35,6 +34,8 @@
 
 namespace apollo {
 namespace external_command {
+
+class MessageReader;
 
 class ActionCommandProcessor : public CommandProcessorBase {
  public:
@@ -55,22 +56,6 @@ class ActionCommandProcessor : public CommandProcessorBase {
    */
   void OnCommand(const std::shared_ptr<ActionCommand>& command,
                  std::shared_ptr<CommandStatus>& status);
-  /**
-   * @brief Callback for receiving chassis status.
-   * @param status The latest chassis status.
-   */
-  void OnChassisStatus(const std::shared_ptr<apollo::canbus::Chassis>& status);
-  /**
-   * @brief Callback for receiving planning status.
-   * @param status The latest planning status.
-   */
-  void OnPlanningStatus(
-      const std::shared_ptr<apollo::planning::ADCTrajectory>& status);
-  /**
-   * @brief Callback for planning command status.
-   * @param status The latest planning command status.
-   */
-  void OnPlanningCommandStatus(const std::shared_ptr<CommandStatus>& status);
   /**
    * @brief Switch driving mode to auto. Try several times and wait for the
    * driving mode changed to auto mode.
@@ -122,18 +107,14 @@ class ActionCommandProcessor : public CommandProcessorBase {
       planning_action_writer_;
   std::shared_ptr<cyber::Writer<apollo::control::PadMessage>>
       control_action_writer_;
-  std::shared_ptr<cyber::Reader<apollo::canbus::Chassis>>
-      chassis_status_reader_;
-  std::shared_ptr<cyber::Reader<apollo::planning::ADCTrajectory>>
-      planning_status_reader_;
-  std::shared_ptr<cyber::Reader<CommandStatus>> planning_command_status_reader_;
-  apollo::canbus::Chassis latest_chassis_status_;
-  apollo::planning::ADCTrajectory latest_planning_status_;
-  CommandStatus latest_planning_command_status_;
-  CommandStatus latest_mode_switch_status_;
-  std::shared_ptr<ActionCommand> last_command_;
 
+  CommandStatus last_mode_switch_status_;
+  std::shared_ptr<ActionCommand> last_command_;
   ActionCommandConfig special_config_;
+  MessageReader* message_reader_;
+  std::string chassis_status_name_;
+  std::string planning_status_name_;
+  std::string planning_command_status_name_;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

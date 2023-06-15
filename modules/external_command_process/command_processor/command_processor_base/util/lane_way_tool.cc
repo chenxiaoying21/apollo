@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2018 The Apollo Authors. All Rights Reserved.
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,27 @@
  * limitations under the License.
  *****************************************************************************/
 
+/**
+ * @file lane_way_tool.cc
+ */
+
 #include "modules/external_command_process/command_processor/command_processor_base/util/lane_way_tool.h"
 
+#include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/common/adapters/adapter_gflags.h"
+#include "modules/external_command_process/command_processor/command_processor_base/util/message_reader.h"
 #include "modules/map/hdmap/hdmap.h"
 #include "modules/map/hdmap/hdmap_util.h"
 
 namespace apollo {
 namespace external_command {
 
-LaneWayTool::LaneWayTool(const std::shared_ptr<cyber::Node> &node) {
-  hdmap_ = hdmap::HDMapUtil::BaseMapPtr();
-  localization_reader_ =
-      node->CreateReader<apollo::localization::LocalizationEstimate>(
-          FLAGS_localization_topic);
+LaneWayTool::LaneWayTool(const std::shared_ptr<cyber::Node> &node)
+    : hdmap_(hdmap::HDMapUtil::BaseMapPtr()),
+      message_reader_(MessageReader::Instance()) {
+  message_reader_->RegisterMessage<apollo::localization::LocalizationEstimate>(
+      FLAGS_localization_topic);
 }
 
 bool LaneWayTool::ConvertToLaneWayPoint(
@@ -80,14 +86,14 @@ bool LaneWayTool::ConvertToLaneWayPoint(
 bool LaneWayTool::GetVehicleLaneWayPoint(
     apollo::routing::LaneWaypoint *lane_way_point) const {
   CHECK_NOTNULL(lane_way_point);
-  // Read the current localization pose
-  localization_reader_->Observe();
-  if (localization_reader_->Empty()) {
-    AERROR << "Failed to get localization!";
+  // Get the current localization pose
+  auto *localization =
+      message_reader_->GetMessage<apollo::localization::LocalizationEstimate>(
+          FLAGS_localization_topic);
+  if (nullptr == localization) {
+    AERROR << "Cannot get vehicle location!";
     return false;
   }
-  const std::shared_ptr<localization::LocalizationEstimate> localization =
-      localization_reader_->GetLatestObserved();
   external_command::Pose pose;
   pose.set_x(localization->pose().position().x());
   pose.set_y(localization->pose().position().y());
