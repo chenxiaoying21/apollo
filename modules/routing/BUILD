@@ -8,9 +8,9 @@ ROUTING_COPTS = ['-DMODULE_NAME=\\"routing\\"']
 
 cc_library(
     name = "routing",
-    srcs = ["routing.cc"],
+    srcs = [":librouting.so"],
     hdrs = ["routing.h"],
-    copts = ROUTING_COPTS,
+    alwayslink = True,
     deps = [
         "//modules/common/adapters:adapter_gflags",
         "//modules/common/monitor_log",
@@ -20,7 +20,25 @@ cc_library(
         "//modules/routing/proto:routing_config_cc_proto",
         "//modules/common_msgs/monitor_msgs:monitor_log_cc_proto",
     ],
-    alwayslink = True,
+)
+
+cc_binary(
+    name = "librouting.so",
+    srcs = [
+        "routing.cc",
+        "routing.h",
+    ],
+    linkshared = True,
+    linkstatic = True,
+    deps = [
+        "//modules/common/adapters:adapter_gflags",
+        "//modules/common/monitor_log",
+        "//modules/common/util",
+        "//modules/map/hdmap:hdmap_util",
+        "//modules/routing/core",
+        "//modules/routing/proto:routing_config_cc_proto",
+        "//modules/common_msgs/monitor_msgs:monitor_log_cc_proto",
+    ],
 )
 
 cc_library(
