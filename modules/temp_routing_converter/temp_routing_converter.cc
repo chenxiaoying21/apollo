@@ -45,7 +45,7 @@ bool TempRoutingConverter::Init() {
            << ConfigFilePath();
     return false;
   }
-  // Init the readers and writers.
+  // Init the readers, writers and service clients.
   routing_request_reader_ = node_->CreateReader<RoutingRequest>(
       config.routing_request_topic(),
       [this](const std::shared_ptr<RoutingRequest>& routing_request) {
@@ -58,11 +58,14 @@ bool TempRoutingConverter::Init() {
         ADEBUG << "Received routing response: run callback.";
         OnRoutingResponse(routing_response);
       });
-
-  lane_follow_command_writer_ = node_->CreateWriter<LaneFollowCommand>(
-      config.lane_follow_command_topic());
-  valet_parking_command_writer_ = node_->CreateWriter<ValetParkingCommand>(
-      config.valet_parking_command_topic());
+  lane_follow_command_client_ =
+      node_->CreateClient<apollo::external_command::LaneFollowCommand,
+                          apollo::external_command::CommandStatus>(
+          config.lane_follow_command_topic());
+  valet_parking_command_client_ =
+      node_->CreateClient<apollo::external_command::ValetParkingCommand,
+                          apollo::external_command::CommandStatus>(
+          config.valet_parking_command_topic());
   planning_command_writer_ =
       node_->CreateWriter<PlanningCommand>(config.planning_command_topic());
   return true;
@@ -72,20 +75,37 @@ void TempRoutingConverter::OnRoutingRequest(
     const std::shared_ptr<RoutingRequest>& routing_request) {
   if (routing_request->has_parking_info()) {
     auto valet_parking_command = std::make_shared<ValetParkingCommand>();
-    CopyRoutingRequest<ValetParkingCommand>(routing_request, true,
-                                            valet_parking_command.get());
+    // Copy the way points from RoutingRequest.
+    int way_point_size = routing_request->waypoint().size();
+    if (way_point_size > 0) {
+      CopyRoutingRequest<ValetParkingCommand>(
+          routing_request, 0, routing_request->waypoint().size(),
+          valet_parking_command.get());
+    }
     valet_parking_command->set_parking_spot_id(
         routing_request->parking_info().parking_space_id());
-    valet_parking_command_writer_->Write(valet_parking_command);
+    auto response =
+        valet_parking_command_client_->SendRequest(valet_parking_command);
+    if (nullptr == response) {
+      AERROR << "Failed to send request of valet parking!";
+    }
   } else {
     auto lane_follow_command = std::make_shared<LaneFollowCommand>();
-    CopyRoutingRequest<LaneFollowCommand>(routing_request, false,
-                                          lane_follow_command.get());
-    CHECK(routing_request->waypoint().size() > 0);
-    lane_follow_command->mutable_end_pose()->CopyFrom(
-        routing_request->waypoint().Get(routing_request->waypoint().size() -
-                                        1));
-    lane_follow_command_writer_->Write(lane_follow_command);
+    // Copy the way points from RoutingRequest.
+    int way_point_size = routing_request->waypoint().size();
+    CHECK(way_point_size > 0);
+    if (way_point_size > 1) {
+      CopyRoutingRequest<LaneFollowCommand>(
+          routing_request, 0, way_point_size - 1, lane_follow_command.get());
+    }
+    // Copy the end point.
+    Convert(routing_request->waypoint().Get(way_point_size - 1),
+            lane_follow_command->mutable_end_pose());
+    auto response =
+        lane_follow_command_client_->SendRequest(lane_follow_command);
+    if (nullptr == response) {
+      AERROR << "Failed to send request of lane follow!";
+    }
   }
 }
 
@@ -132,6 +152,18 @@ void TempRoutingConverter::OnRoutingResponse(
         input_routing_request.parking_info().parking_space_id());
   }
   planning_command_writer_->Write(planning_command);
+}
+
+void TempRoutingConverter::Convert(
+    const apollo::routing::LaneWaypoint& lane_way_point,
+    apollo::external_command::Pose* pose) const {
+  CHECK(lane_way_point.has_pose());
+  const auto& way_pose = lane_way_point.pose();
+  pose->set_x(way_pose.x());
+  pose->set_y(way_pose.y());
+  if (lane_way_point.has_heading()) {
+    pose->set_heading(lane_way_point.heading());
+  }
 }
 
 }  // namespace temp_routing_converter

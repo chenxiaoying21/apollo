@@ -9,6 +9,9 @@ cc_library(
     name="temp_routing_converter_lib",
     srcs=["temp_routing_converter.cc"],
     hdrs=["temp_routing_converter.h"],
+    copts = [
+        "-DMODULE_NAME=\\\"temp_routing_converter\\\"",
+    ],
     deps=[
         "//cyber",
         "//modules/temp_routing_converter/proto:temp_routing_converter_cc_proto",
@@ -16,6 +19,7 @@ cc_library(
         "//modules/common_msgs/external_command_msgs:lane_follow_command_cc_proto",
         "//modules/common_msgs/external_command_msgs:valet_parking_command_cc_proto",
         "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
+        "//modules/common_msgs/external_command_msgs:command_status_cc_proto",
     ],
     alwayslink=True,
 )

@@ -28,6 +28,7 @@
 #include "modules/common_msgs/external_command_msgs/valet_parking_command.pb.h"
 #include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 #include "modules/temp_routing_converter/proto/routing.pb.h"
+#include "modules/common_msgs/external_command_msgs/command_status.pb.h"
 
 /**
  * @namespace apollo::temp_routing_converter
@@ -60,8 +61,11 @@ class TempRoutingConverter : public cyber::Component<> {
 
   template <typename T>
   void CopyRoutingRequest(
-      const std::shared_ptr<RoutingRequest>& routing_request,
-      bool is_copy_end_point, T* message);
+      const std::shared_ptr<RoutingRequest>& routing_request, int start_index,
+      int end_index, T* message);
+
+  void Convert(const apollo::routing::LaneWaypoint& lane_way_point,
+               apollo::external_command::Pose* pose) const;
 
   std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_reader_;
@@ -70,11 +74,15 @@ class TempRoutingConverter : public cyber::Component<> {
       routing_response_reader_;
 
   // Coverted from RoutingRequest without parking id.
-  std::shared_ptr<cyber::Writer<apollo::external_command::LaneFollowCommand>>
-      lane_follow_command_writer_;
+  std::shared_ptr<
+      apollo::cyber::Client<apollo::external_command::LaneFollowCommand,
+                            apollo::external_command::CommandStatus>>
+      lane_follow_command_client_;
   // Coverted from RoutingRequest with parking id.
-  std::shared_ptr<cyber::Writer<apollo::external_command::ValetParkingCommand>>
-      valet_parking_command_writer_;
+  std::shared_ptr<
+      apollo::cyber::Client<apollo::external_command::ValetParkingCommand,
+                            apollo::external_command::CommandStatus>>
+      valet_parking_command_client_;
   // Coverted from RoutingResponse.
   std::shared_ptr<cyber::Writer<apollo::planning::PlanningCommand>>
       planning_command_writer_;
@@ -83,19 +91,15 @@ class TempRoutingConverter : public cyber::Component<> {
 
 template <typename T>
 void TempRoutingConverter::CopyRoutingRequest(
-    const std::shared_ptr<RoutingRequest>& routing_request,
-    bool is_copy_end_point, T* message) {
+    const std::shared_ptr<RoutingRequest>& routing_request, int start_index,
+    int end_index, T* message) {
   if (routing_request->has_header()) {
     message->mutable_header()->CopyFrom(routing_request->header());
   }
   message->set_command_id(++command_id_);
-  const size_t way_point_num = routing_request->waypoint().size();
-  size_t current_index = 0;
-  for (auto way_point : routing_request->waypoint()) {
-    message->add_way_point()->CopyFrom(way_point);
-    if (!is_copy_end_point && ++current_index >= way_point_num) {
-      break;
-    }
+  const auto& way_points = routing_request->waypoint();
+  for (int i = start_index; i < end_index; ++i) {
+    Convert(way_points.Get(i), message->add_way_point());
   }
 }
 
