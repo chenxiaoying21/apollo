@@ -9,6 +9,7 @@ cc_library(
     name="external_command_process_component_lib",
     srcs=["external_command_process_component.cc"],
     hdrs=["external_command_process_component.h"],
+    copts = ["-DMODULE_NAME=\\\"external_command_process\\\""],
     deps=[
         "//cyber",
         "//modules/external_command_process/process_component/proto:process_component_config_cc_proto",

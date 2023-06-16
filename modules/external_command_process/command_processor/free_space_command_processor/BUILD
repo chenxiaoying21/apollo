@@ -35,7 +35,7 @@ cc_binary(
     name = "libfree_space_command_processor.so",
     linkshared = True,
     linkstatic = True,
-    copts = ["-DMODULE_NAME=\\\"external_command\\\""],
+    copts = ["-DMODULE_NAME=\\\"external_command_process\\\""],
     deps = [":free_space_command_processor_lib"],
 )
 
@@ -43,7 +43,7 @@ cc_library(
     name = "free_space_command_processor_lib",
     srcs = ["free_space_command_processor.cc"],
     hdrs = ["free_space_command_processor.h"],
-    copts = ["-DMODULE_NAME=\\\"external_command\\\""],
+    copts = ["-DMODULE_NAME=\\\"external_command_process\\\""],
     deps = [
         "//cyber",
         "//modules/external_command_process/command_processor/command_processor_base:motion_command_processor_base_lib",

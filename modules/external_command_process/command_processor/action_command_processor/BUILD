@@ -35,7 +35,7 @@ cc_binary(
     name = "libaction_command_processor.so",
     linkshared = True,
     linkstatic = True,
-    copts = ["-DMODULE_NAME=\\\"external_command\\\""],
+    copts = ["-DMODULE_NAME=\\\"external_command_process\\\""],
     deps = [":action_command_processor_lib"],
 )
 
@@ -43,7 +43,7 @@ cc_library(
     name = "action_command_processor_lib",
     srcs = ["action_command_processor.cc"],
     hdrs = ["action_command_processor.h"],
-    copts = ["-DMODULE_NAME=\\\"external_command\\\""],
+    copts = ["-DMODULE_NAME=\\\"external_command_process\\\""],
     deps = [
         "//cyber",
         "//modules/external_command_process/command_processor/command_processor_base:command_processor_base_lib",
