@@ -1,0 +1,29 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//tools/install:install.bzl", "install")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "config",
+    srcs = glob([
+        "data_cleaner.yaml"
+    ]),
+)
+
+py_binary(
+    name = "data_cleaner",
+    srcs = ["data_cleaner.py"],
+    deps = [
+        "//modules/tools/common:logger",
+    ],
+)
+
+install(
+    name = "install",
+    data = [":config"],
+    data_dest = "tools/data_cleaner",
+    py_dest = "tools/data_cleaner",
+    targets = [
+        ":data_cleaner"
+    ],
+)
