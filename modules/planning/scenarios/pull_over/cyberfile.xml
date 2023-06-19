@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-pull-over</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      pull over scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//pull_over</src_path>
+    <src_path>//modules/planning/scenarios/pull_over</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

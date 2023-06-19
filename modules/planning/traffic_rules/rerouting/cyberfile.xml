@@ -1,12 +1,12 @@
 <package>
     <name>planning-traffic-rules-rerouting</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
       rerouting traffic rule
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//rerouting</src_path>
+    <src_path>//modules/planning/traffic_rules/rerouting</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

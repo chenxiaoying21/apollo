@@ -1,12 +1,12 @@
 <package>
     <name>planning-task-pull-over-path</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      pull-over path
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//pull_over_path</src_path>
+    <src_path>//modules/planning/tasks/pull_over_path</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

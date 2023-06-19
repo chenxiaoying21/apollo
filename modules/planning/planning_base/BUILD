@@ -193,6 +193,7 @@ install(
     ),
     targets = [
         ":libplanning_component.so",
+        "//modules/planning/planning_base/common:libplanning_gflags.so"
     ],
     deps = [
         ":pb_planning",

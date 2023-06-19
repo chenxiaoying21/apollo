@@ -1,12 +1,12 @@
 <package>
     <name>planning-traffic-rules-destination</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
       destination traffic rule
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//destination</src_path>
+    <src_path>//modules/planning/traffic_rules/destination</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

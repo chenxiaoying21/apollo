@@ -1,12 +1,12 @@
 <package>
     <name>planning-task-piecewise-jerk-speed-nonlinear</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
       piecewise jerk speed nonlinear optimizer
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//piecewise_jerk_speed_nonlinear</src_path>
+    <src_path>//modules/planning/tasks/piecewise_jerk_speed_nonlinear</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

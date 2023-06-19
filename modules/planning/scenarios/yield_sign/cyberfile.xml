@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-yield-sign</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      yield sign scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//yield_sign</src_path>
+    <src_path>//modules/planning/scenarios/yield_sign</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

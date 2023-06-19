@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-traffic-light-unprotected-left-turn</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
       traffic light unprotected left turn scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//traffic_light_unprotected_left_turn</src_path>
+    <src_path>//modules/planning/scenarios/traffic_light_unprotected_left_turn</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>
