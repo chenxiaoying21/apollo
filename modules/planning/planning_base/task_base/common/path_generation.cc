@@ -17,10 +17,12 @@
 /**
  * @file
  **/
+#include "modules/planning/planning_base/task_base/common/path_generation.h"
+
 #include <string>
 #include <utility>
 #include <vector>
-#include "modules/planning/planning_base/task_base/common/path_generation.h"
+#include "modules/common/configs/vehicle_config_helper.h"
 
 namespace apollo {
 namespace planning {
@@ -124,5 +126,44 @@ void PathGeneration::GetStartPointSLState() {
   // ADC s/l info.
   init_sl_state_ = reference_line.ToFrenetFrame(planning_start_point);
 }
+
+bool PathGeneration::GetSLBoundary(const PathData& path_data, int point_index,
+                                   const ReferenceLineInfo* reference_line_info,
+                                   SLBoundary* const sl_boundary) {
+  CHECK_NOTNULL(sl_boundary);
+  const auto& discrete_path = path_data.discretized_path();
+  if (point_index < 0 ||
+      static_cast<size_t>(point_index) > discrete_path.size()) {
+    return false;
+  }
+  sl_boundary->mutable_boundary_point()->Clear();
+  // Get vehicle config parameters.
+  const auto& vehicle_config =
+      common::VehicleConfigHelper::Instance()->GetConfig();
+  const double ego_length = vehicle_config.vehicle_param().length();
+  const double ego_width = vehicle_config.vehicle_param().width();
+  const double ego_back_to_center =
+      vehicle_config.vehicle_param().back_edge_to_center();
+  const double ego_center_shift_distance =
+      ego_length / 2.0 - ego_back_to_center;
+  // Generate vehicle bounding box.
+  const auto& rear_center_path_point = discrete_path[point_index];
+  const double ego_theta = rear_center_path_point.theta();
+  common::math::Box2d ego_box(
+      {rear_center_path_point.x(), rear_center_path_point.y()}, ego_theta,
+      ego_length, ego_width);
+  common::math::Vec2d shift_vec{
+      ego_center_shift_distance * ego_box.cos_heading(),
+      ego_center_shift_distance * ego_box.sin_heading()};
+  ego_box.Shift(shift_vec);
+  // Set warm_start_s near the geometry center of the box.
+  double warm_start_s = path_data.frenet_frame_path()[point_index].s() +
+                        ego_center_shift_distance;
+  // Get the SL boundary of vehicle.
+  reference_line_info->reference_line().GetSLBoundary(ego_box, sl_boundary,
+                                                      warm_start_s);
+  return true;
+}
+
 }  // namespace planning
 }  // namespace apollo
