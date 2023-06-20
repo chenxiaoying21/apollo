@@ -14,9 +14,12 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include <utility>
-#include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_assessment_decider_util.h"
+
+#include <algorithm>
+#include <utility>
+
+#include "modules/common/configs/vehicle_config_helper.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
 
 namespace apollo {
@@ -94,9 +97,15 @@ bool PathAssessmentDeciderUtil::IsGreatlyOffRoad(
 bool PathAssessmentDeciderUtil::IsCollidingWithStaticObstacles(
     const ReferenceLineInfo& reference_line_info, const PathData& path_data) {
   // Get all obstacles and convert them into frenet-frame polygons.
-  std::vector<Polygon2d> obstacle_polygons;
+  std::vector<const Obstacle*> obstacles;
   const auto& indexed_obstacles =
       reference_line_info.path_decision().obstacles();
+  const auto& vehicle_param =
+      common::VehicleConfigHelper::GetConfig().vehicle_param();
+  double front_edge_to_center = vehicle_param.front_edge_to_center();
+  double back_edge_to_center = vehicle_param.back_edge_to_center();
+  double path_point_lateral_buffer =
+      std::max(vehicle_param.width() / 2.0, vehicle_param.length() / 2.0);
   for (const auto* obstacle : indexed_obstacles.Items()) {
     // Filter out unrelated obstacles.
     if (!PathBoundsDeciderUtil::IsWithinPathDeciderScopeObstacle(*obstacle)) {
@@ -109,39 +118,42 @@ bool PathAssessmentDeciderUtil::IsCollidingWithStaticObstacles(
         kMinObstacleArea) {
       continue;
     }
-    // Convert into polygon and save it.
-    obstacle_polygons.push_back(
-        Polygon2d({Vec2d(obstacle_sl.start_s(), obstacle_sl.start_l()),
-                   Vec2d(obstacle_sl.start_s(), obstacle_sl.end_l()),
-                   Vec2d(obstacle_sl.end_s(), obstacle_sl.end_l()),
-                   Vec2d(obstacle_sl.end_s(), obstacle_sl.start_l())}));
+    obstacles.push_back(obstacle);
   }
   // Go through all the four corner points at every path pt, check collision.
+  const auto& frenet_path = path_data.frenet_frame_path();
   for (size_t i = 0; i < path_data.discretized_path().size(); ++i) {
+    // Skip the point after end point.
     if (path_data.frenet_frame_path().back().s() -
             path_data.frenet_frame_path()[i].s() <
         (FLAGS_num_extra_tail_bound_point + 1) *
             FLAGS_path_bounds_decider_resolution) {
       break;
     }
-    const auto& path_point = path_data.discretized_path()[i];
-    // Get the four corner points ABCD of ADC at every path point.
-    const auto& vehicle_box =
-        common::VehicleConfigHelper::Instance()->GetBoundingBox(path_point);
-    std::vector<Vec2d> ABCDpoints = vehicle_box.GetAllCorners();
-    for (const auto& corner_point : ABCDpoints) {
-      // For each corner point, project it onto reference_line
-      common::SLPoint curr_point_sl;
-      if (!reference_line_info.reference_line().XYToSL(corner_point,
-                                                       &curr_point_sl)) {
-        AERROR << "Failed to get the projection from point onto "
-                  "reference_line";
-        return true;
+    double path_point_start_s = frenet_path[i].s() - back_edge_to_center;
+    double path_point_end_s = frenet_path[i].s() + front_edge_to_center;
+    double path_point_start_l = frenet_path[i].l() - path_point_lateral_buffer;
+    double path_point_end_l = frenet_path[i].l() + path_point_lateral_buffer;
+    // Check the points near the obstacles
+    for (const auto* obstacle : obstacles) {
+      const auto& obstacle_sl = obstacle->PerceptionSLBoundary();
+      // Filter the path points by s range.
+      if (obstacle_sl.start_s() > path_point_end_s ||
+          obstacle_sl.end_s() < path_point_start_s) {
+        break;
       }
-      auto curr_point = Vec2d(curr_point_sl.s(), curr_point_sl.l());
-      // Check if it's in any polygon of other static obstacles.
-      for (const auto& obstacle_polygon : obstacle_polygons) {
-        if (obstacle_polygon.IsPointIn(curr_point)) {
+      if (obstacle_sl.start_l() > path_point_end_l ||
+          obstacle_sl.end_l() < path_point_start_l) {
+        break;
+      }
+      const auto& path_point = path_data.discretized_path()[i];
+      const auto& vehicle_box =
+          common::VehicleConfigHelper::Instance()->GetBoundingBox(path_point);
+      const std::vector<Vec2d>& ABCDpoints = vehicle_box.GetAllCorners();
+      const common::math::Polygon2d& obstacle_polygon =
+          obstacle->PerceptionPolygon();
+      for (const auto& corner_point : ABCDpoints) {
+        if (obstacle_polygon.IsPointIn(corner_point)) {
           ADEBUG << "ADC is colliding with obstacle at path s = "
                  << path_point.s();
           return true;
@@ -149,7 +161,6 @@ bool PathAssessmentDeciderUtil::IsCollidingWithStaticObstacles(
       }
     }
   }
-
   return false;
 }
 

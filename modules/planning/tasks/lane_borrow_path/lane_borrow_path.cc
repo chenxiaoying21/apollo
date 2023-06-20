@@ -14,6 +14,8 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include "modules/planning/tasks/lane_borrow_path/lane_borrow_path.h"
+
 #include <algorithm>
 #include <functional>
 #include <memory>
@@ -28,7 +30,6 @@
 #include "modules/planning/planning_base/task_base/common/path_util/path_assessment_decider_util.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_optimizer_util.h"
-#include "modules/planning/tasks/lane_borrow_path/lane_borrow_path.h"
 
 namespace apollo {
 namespace planning {
@@ -607,27 +608,10 @@ void LaneBorrowPath::SetPathInfo(PathData* const path_data) {
       *path_data, PathData::PathPointType::IN_LANE, &path_decision);
   // Go through every path_point, and add in-lane/out-of-lane info.
   const auto& discrete_path = path_data->discretized_path();
-  const auto& vehicle_config =
-      common::VehicleConfigHelper::Instance()->GetConfig();
-  const double ego_length = vehicle_config.vehicle_param().length();
-  const double ego_width = vehicle_config.vehicle_param().width();
-  const double ego_back_to_center =
-      vehicle_config.vehicle_param().back_edge_to_center();
-  const double ego_center_shift_distance =
-      ego_length / 2.0 - ego_back_to_center;
-
   bool is_prev_point_out_lane = false;
+  SLBoundary ego_sl_boundary;
   for (size_t i = 0; i < discrete_path.size(); ++i) {
-    const auto& rear_center_path_point = discrete_path[i];
-    const double ego_theta = rear_center_path_point.theta();
-    Box2d ego_box({rear_center_path_point.x(), rear_center_path_point.y()},
-                  ego_theta, ego_length, ego_width);
-    Vec2d shift_vec{ego_center_shift_distance * std::cos(ego_theta),
-                    ego_center_shift_distance * std::sin(ego_theta)};
-    ego_box.Shift(shift_vec);
-    SLBoundary ego_sl_boundary;
-    if (!reference_line_info_->reference_line().GetSLBoundary(
-            ego_box, &ego_sl_boundary)) {
+    if (!GetSLBoundary(*path_data, i, reference_line_info_, &ego_sl_boundary)) {
       ADEBUG << "Unable to get SL-boundary of ego-vehicle.";
       continue;
     }

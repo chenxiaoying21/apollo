@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-park-and-go</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      park and go scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//park_and_go</src_path>
+    <src_path>//modules/planning/scenarios/park_and_go</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

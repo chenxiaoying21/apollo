@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-lane-follow</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      lane follow scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//lane_follow</src_path>
+    <src_path>//modules/planning/scenarios/lane_follow</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

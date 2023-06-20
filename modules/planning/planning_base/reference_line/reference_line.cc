@@ -392,13 +392,23 @@ bool ReferenceLine::SLToXY(const SLPoint& sl_point,
 }
 
 bool ReferenceLine::XYToSL(const common::math::Vec2d& xy_point,
-                           SLPoint* const sl_point) const {
-  double s = 0.0;
+                           common::SLPoint* const sl_point,
+                           double warm_start_s) const {
+  double s = warm_start_s;
   double l = 0.0;
-  if (!map_path_.GetProjection(xy_point, &s, &l)) {
-    AERROR << "Cannot get nearest point from path.";
-    return false;
+  if (warm_start_s < 0.0) {
+    if (!map_path_.GetProjection(xy_point, &s, &l)) {
+      AERROR << "Cannot get nearest point from path.";
+      return false;
+    }
+  } else {
+    if (!map_path_.GetProjectionWithWarmStartS(xy_point, &s, &l)) {
+      AERROR << "Cannot get nearest point from path with warm_start_s: "
+             << warm_start_s;
+      return false;
+    }
   }
+
   sl_point->set_s(s);
   sl_point->set_l(l);
   return true;
@@ -661,7 +671,8 @@ bool ReferenceLine::GetApproximateSLBoundary(
 }
 
 bool ReferenceLine::GetSLBoundary(const common::math::Box2d& box,
-                                  SLBoundary* const sl_boundary) const {
+                                  SLBoundary* const sl_boundary,
+                                  double warm_start_s) const {
   double start_s(std::numeric_limits<double>::max());
   double end_s(std::numeric_limits<double>::lowest());
   double start_l(std::numeric_limits<double>::max());
@@ -673,7 +684,7 @@ bool ReferenceLine::GetSLBoundary(const common::math::Box2d& box,
   std::vector<SLPoint> sl_corners;
   for (const auto& point : corners) {
     SLPoint sl_point;
-    if (!XYToSL(point, &sl_point)) {
+    if (!XYToSL(point, &sl_point, warm_start_s)) {
       AERROR << "Failed to get projection for point: " << point.DebugString()
              << " on reference line.";
       return false;
@@ -689,7 +700,7 @@ bool ReferenceLine::GetSLBoundary(const common::math::Box2d& box,
 
     const auto p_mid = (p0 + p1) * 0.5;
     SLPoint sl_point_mid;
-    if (!XYToSL(p_mid, &sl_point_mid)) {
+    if (!XYToSL(p_mid, &sl_point_mid, warm_start_s)) {
       AERROR << "Failed to get projection for point: " << p_mid.DebugString()
              << " on reference line.";
       return false;

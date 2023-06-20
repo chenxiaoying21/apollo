@@ -65,6 +65,18 @@ class PathGeneration : public Task {
    */
   void RecordDebugInfo(const PathData& path_data, const std::string& debug_name,
                        ReferenceLineInfo* const reference_line_info);
+  /**
+   * @brief get sl boundary of the point on PathData
+   * @param path_data PathData which the point is on
+   * @param point_index index of the point on PathData
+   * @param sl_boundary output SLBoundary of the point
+   * 
+   * @return True if SLBoundary is found
+   */
+  bool GetSLBoundary(const PathData& path_data, int point_index,
+                     const ReferenceLineInfo* reference_line_info,
+                     SLBoundary* const sl_boundary);
+
   SLState init_sl_state_;
 };
 

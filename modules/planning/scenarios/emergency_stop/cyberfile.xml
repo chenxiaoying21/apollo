@@ -1,12 +1,12 @@
 <package>
     <name>planning-scenario-emergency-stop</name>
-    <version>1.0.0</version>
+    <version>1.0.0.0</version>
     <description>
      emergency stop scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//emergency_stop</src_path>
+    <src_path>//modules/planning/scenarios/emergency_stop</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>

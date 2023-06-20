@@ -177,7 +177,7 @@ def install(src, dst):
     dst = rename_package_name(dst)
     if legacy:
         if not dst.startswith("lib/"):
-            dst = src 
+            dst = src
 
     # Do not install files in ${prefx}/lib dir
     # if not install_lib and dst.startswith("lib/"):

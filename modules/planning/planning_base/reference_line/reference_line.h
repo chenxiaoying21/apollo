@@ -105,15 +105,38 @@ class ReferenceLine {
   bool GetApproximateSLBoundary(const common::math::Box2d& box,
                                 const double start_s, const double end_s,
                                 SLBoundary* const sl_boundary) const;
+  /**
+   * @brief Get the SL Boundary of the box.
+   * @param box The box to calculate.
+   * @param sl_boundary Output of the SLBoundary.
+   * @param warm_start_s The initial s for searching mapping point on reference
+   * line to accelerate computation time.
+   *
+   * @return True if success.
+   */
   bool GetSLBoundary(const common::math::Box2d& box,
-                     SLBoundary* const sl_boundary) const;
+                     SLBoundary* const sl_boundary,
+                     double warm_start_s = -1.0) const;
+
   bool GetSLBoundary(const hdmap::Polygon& polygon,
                      SLBoundary* const sl_boundary) const;
 
   bool SLToXY(const common::SLPoint& sl_point,
               common::math::Vec2d* const xy_point) const;
+  /**
+   * @brief Transvert Cartesian coordinates to Frenet.
+   * @param xy_point The Cartesian coordinates.
+   * @param sl_point The output Frenet coordinates.
+   * @param warm_start_s The initial s for searching mapping point on reference
+   * line to accelerate computation time. If not given, search begin at the
+   * start of the reference line.
+   *
+   * @return True if success.
+   */
   bool XYToSL(const common::math::Vec2d& xy_point,
-              common::SLPoint* const sl_point) const;
+              common::SLPoint* const sl_point,
+              double warm_start_s = -1.0) const;
+
   template <class XYPoint>
   bool XYToSL(const XYPoint& xy, common::SLPoint* const sl_point) const {
     return XYToSL(common::math::Vec2d(xy.x(), xy.y()), sl_point);

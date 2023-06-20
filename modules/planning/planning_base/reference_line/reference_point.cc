@@ -52,13 +52,16 @@ std::string ReferencePoint::DebugString() const {
 void ReferencePoint::RemoveDuplicates(std::vector<ReferencePoint>* points) {
   CHECK_NOTNULL(points);
   int count = 0;
-  const double limit = kDuplicatedPointsEpsilon * kDuplicatedPointsEpsilon;
   for (size_t i = 0; i < points->size(); ++i) {
+    auto& last_point = (*points)[count - 1];
+    const auto& this_point = (*points)[i];
+    // Use manhattan distance for save computation time.
     if (count == 0 ||
-        (*points)[i].DistanceSquareTo((*points)[count - 1]) > limit) {
-      (*points)[count++] = (*points)[i];
+        std::abs(last_point.x() - this_point.x()) > kDuplicatedPointsEpsilon ||
+        std::abs(last_point.y() - this_point.y()) > kDuplicatedPointsEpsilon) {
+      (*points)[count++] = this_point;
     } else {
-      (*points)[count - 1].add_lane_waypoints((*points)[i].lane_waypoints());
+      last_point.add_lane_waypoints(this_point.lane_waypoints());
     }
   }
   points->resize(count);
