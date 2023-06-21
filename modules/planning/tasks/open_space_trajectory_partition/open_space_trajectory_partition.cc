@@ -667,12 +667,13 @@ bool OpenSpaceTrajectoryPartition::InsertGearShiftTrajectory(
     const std::vector<TrajGearPair>& partitioned_trajectories,
     TrajGearPair* gear_switch_idle_time_trajectory) {
   const auto* last_frame = injector_->frame_history()->Latest();
-  const auto& last_gear_status =
-      last_frame->open_space_info().gear_switch_states();
   auto* current_gear_status =
       frame_->mutable_open_space_info()->mutable_gear_switch_states();
-  *(current_gear_status) = last_gear_status;
-
+  if (last_frame) {
+    const auto& last_gear_status =
+        last_frame->open_space_info().gear_switch_states();
+    *(current_gear_status) = last_gear_status;
+  }
   if (flag_change_to_next || !current_gear_status->gear_shift_period_finished) {
     current_gear_status->gear_shift_period_finished = false;
     if (current_gear_status->gear_shift_period_started) {

@@ -115,26 +115,15 @@ Status OpenSpaceTrajectoryProvider::Process() {
   auto* previous_frame = injector_->frame_history()->Latest();
   // Use complete raw trajectory from last frame for stitching purpose
   std::vector<TrajectoryPoint> stitching_trajectory;
-  if (!IsVehicleStopDueToFallBack(
+  bool is_stop_due_to_fallback = false;
+  if (previous_frame &&
+      IsVehicleStopDueToFallBack(
           previous_frame->open_space_info().fallback_flag(), vehicle_state)) {
-    const auto& previous_planning =
-        previous_frame->open_space_info().stitched_trajectory_result();
-    const auto& previous_planning_header =
-        previous_frame->current_frame_planned_trajectory()
-            .header()
-            .timestamp_sec();
-    const double planning_cycle_time = config_.open_space_planning_period();
-    PublishableTrajectory last_frame_complete_trajectory(
-        previous_planning_header, previous_planning);
-    std::string replan_reason;
-    const double start_timestamp = Clock::NowInSeconds();
-    stitching_trajectory = TrajectoryStitcher::ComputeStitchingTrajectory(
-        vehicle_state, start_timestamp, planning_cycle_time,
-        config_.open_space_trajectory_stitching_preserved_length(), true,
-        &last_frame_complete_trajectory, &replan_reason);
-    need_replan = !replan_reason.empty();
-  } else {
-    AINFO << "Replan due to fallback stop";
+    is_stop_due_to_fallback = true;
+  }
+  if (!is_planned_ || is_stop_due_to_fallback) {
+    AINFO << "need to fallback is_planned" << is_planned_
+          << "is_stop_due_to_fallback" << is_stop_due_to_fallback;
     const double planning_cycle_time =
         1.0 / static_cast<double>(FLAGS_planning_loop_rate);
     stitching_trajectory = TrajectoryStitcher::ComputeReinitStitchingTrajectory(
@@ -173,9 +162,9 @@ Status OpenSpaceTrajectoryProvider::Process() {
                               ->mutable_open_space()
                               ->position_init()) {
         data_ready_.store(true);
+        is_planned_ = true;
       } else {
         data_ready_.store(false);
-        AINFO << "SKIP BECAUSE HAS PLAN";
       }
     }
 
@@ -185,6 +174,7 @@ Status OpenSpaceTrajectoryProvider::Process() {
             open_space_info.origin_heading(), open_space_info.origin_point())) {
       GenerateStopTrajectory(trajectory_data);
       is_generation_thread_stop_.store(true);
+      AINFO << "Vehicle is near to destination";
       return Status(ErrorCode::OK, "Vehicle is near to destination");
     }
 
@@ -201,12 +191,14 @@ Status OpenSpaceTrajectoryProvider::Process() {
         // sync debug instance
         frame_->mutable_open_space_info()->sync_debug_instance();
       }
+      AINFO << "Trajectory Update" << trajectory_data->size();
       data_ready_.store(false);
       trajectory_updated_.store(false);
       return Status::OK();
     }
 
     if (trajectory_error_) {
+      AINFO << "error";
       ++optimizer_thread_counter;
       std::lock_guard<std::mutex> lock(open_space_mutex_);
       trajectory_error_.store(false);
@@ -220,17 +212,20 @@ Status OpenSpaceTrajectoryProvider::Process() {
       }
     }
 
-    if (previous_frame->open_space_info().open_space_provider_success()) {
+    if (previous_frame &&
+        previous_frame->open_space_info().open_space_provider_success()) {
       ReuseLastFrameResult(previous_frame, trajectory_data);
       if (FLAGS_enable_record_debug) {
         // copy previous debug to current frame
         ReuseLastFrameDebug(previous_frame);
       }
       // reuse last frame debug when use last frame traj
+      AINFO << "ReuseLastFrameResult";
       return Status(ErrorCode::OK,
                     "Waiting for open_space_trajectory_optimizer in "
                     "open_space_trajectory_provider");
     } else {
+      AINFO << "Stop due to computation not finished";
       GenerateStopTrajectory(trajectory_data);
       return Status(ErrorCode::OK, "Stop due to computation not finished");
     }

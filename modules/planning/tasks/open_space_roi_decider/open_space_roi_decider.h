@@ -48,6 +48,16 @@
 
 namespace apollo {
 namespace planning {
+enum class ParkingType { PARALLEL_PARKING, VERTICAL_PARKING };
+struct ParkingInfo {
+  ParkingType parking_type;
+  std::string parking_id;
+  // left_top right_top right_down left_down
+  std::vector<common::math::Vec2d> corner_points;
+  common::math::Vec2d center_point;
+  bool is_on_left = false;
+};
+
 class OpenSpaceRoiDecider : public Decider {
  public:
   bool Init(const std::string &config_dir, const std::string &name,
@@ -59,9 +69,7 @@ class OpenSpaceRoiDecider : public Decider {
  private:
   // @brief generate the path by vehicle location and return the target parking
   // spot on that path
-  bool GetParkingSpot(Frame *const frame,
-                      std::array<common::math::Vec2d, 4> *vertices,
-                      hdmap::Path *nearby_path);
+  bool GetParkingSpot(Frame *const frame, ParkingInfo *parking_info);
 
   // @brief get path from reference line and return vertices of pullover spot
   bool GetPullOverSpot(Frame *const frame,
@@ -69,11 +77,12 @@ class OpenSpaceRoiDecider : public Decider {
                        hdmap::Path *nearby_path);
 
   // @brief Set an origin to normalize the problem for later computation
+  void SetOrigin(const ParkingInfo &parking_info, Frame *const frame);
   void SetOrigin(Frame *const frame,
                  const std::array<common::math::Vec2d, 4> &vertices);
   void SetOriginFromADC(Frame *const frame, const hdmap::Path &nearby_path);
-  void SetParkingSpotEndPose(
-      Frame *const frame, const std::array<common::math::Vec2d, 4> &vertices);
+  void SetParkingSpotEndPose(const ParkingInfo &parking_info,
+                             Frame *const frame);
 
   void SetPullOverSpotEndPose(Frame *const frame);
   void SetParkAndGoEndPose(Frame *const frame);
@@ -127,9 +136,8 @@ class OpenSpaceRoiDecider : public Decider {
   //                -                  -
   //                -                  -
   //                left_down-------right_down
-  bool GetParkingBoundary(Frame *const frame,
-                          const std::array<common::math::Vec2d, 4> &vertices,
-                          const hdmap::Path &nearby_path,
+  bool GetParkingBoundary(const ParkingInfo &parking_info,
+                          const hdmap::Path &nearby_path, Frame *const frame,
                           std::vector<std::vector<common::math::Vec2d>>
                               *const roi_parking_boundary);
 
@@ -148,11 +156,6 @@ class OpenSpaceRoiDecider : public Decider {
   void SearchTargetParkingSpotOnPath(
       const hdmap::Path &nearby_path,
       hdmap::ParkingSpaceInfoConstPtr *target_parking_spot);
-
-  // @brief if not close enough to parking spot, return false
-  bool CheckDistanceToParkingSpot(
-      Frame *const frame, const hdmap::Path &nearby_path,
-      const hdmap::ParkingSpaceInfoConstPtr &target_parking_spot);
 
   // @brief Helper function for fuse line segments into convex vertices set
   bool FuseLineSegments(
@@ -209,10 +212,15 @@ class OpenSpaceRoiDecider : public Decider {
   void GetAllLaneSegments(const routing::RoutingResponse &routing_response,
                           std::vector<routing::LaneSegment> *routing_segments);
 
+  bool GetNearbyPath(const apollo::routing::RoutingResponse &routing_response,
+                     const hdmap::ParkingSpaceInfoConstPtr &parking_spot,
+                     std::shared_ptr<hdmap::Path> *nearby_path);
+  bool AdjustPointsOrderToClockwise(std::vector<common::math::Vec2d> *polygon);
+
  private:
   // @brief parking_spot_id from routing
   std::string target_parking_spot_id_;
-
+  std::shared_ptr<apollo::hdmap::Path> nearby_path_;
   const hdmap::HDMap *hdmap_ = nullptr;
 
   apollo::common::VehicleParam vehicle_params_;

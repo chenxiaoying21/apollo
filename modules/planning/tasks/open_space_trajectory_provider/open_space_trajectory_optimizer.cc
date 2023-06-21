@@ -61,6 +61,8 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
   if (XYbounds.empty() || end_pose.empty() || obstacles_edges_num.cols() == 0 ||
       obstacles_A.cols() == 0 || obstacles_b.cols() == 0) {
     ADEBUG << "OpenSpaceTrajectoryOptimizer input data not ready";
+    AERROR << XYbounds.empty() << end_pose.empty() << obstacles_edges_num.cols()
+           << obstacles_A.cols() << obstacles_b.cols();
     return Status(ErrorCode::PLANNING_ERROR,
                   "OpenSpaceTrajectoryOptimizer input data not ready");
   }
@@ -68,8 +70,8 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
   // Generate Stop trajectory if init point close to destination
   if (IsInitPointNearDestination(stitching_trajectory.back(), end_pose,
                                  rotate_angle, translate_origin)) {
-    ADEBUG << "Planning init point is close to destination, skip new "
-              "trajectory generation";
+    AINFO << "Planning init point is close to destination, skip new "
+             "trajectory generation";
     return Status(ErrorCode::OK,
                   "Planning init point is close to destination, skip new "
                   "trajectory generation");
@@ -88,10 +90,11 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
   double init_x = trajectory_stitching_point.path_point().x();
   double init_y = trajectory_stitching_point.path_point().y();
   double init_phi = trajectory_stitching_point.path_point().theta();
-  ADEBUG << "origin x: " << std::setprecision(9) << translate_origin.x();
-  ADEBUG << "origin y: " << std::setprecision(9) << translate_origin.y();
-  ADEBUG << "init_x: " << std::setprecision(9) << init_x;
-  ADEBUG << "init_y: " << std::setprecision(9) << init_y;
+  AINFO << "origin_point: (" << std::setprecision(9) << translate_origin.x()
+        << "," << translate_origin.y() << ")";
+  AINFO << "origin_heading:" << std::setprecision(9) << rotate_angle << ",";
+  AINFO << "init_point: ( " << std::setprecision(9) << init_x << "," << init_y
+        << ")";
 
   // Rotate and scale the state
   PathPointNormalizing(rotate_angle, translate_origin, &init_x, &init_y,
@@ -104,7 +107,7 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
   if (warm_start_->Plan(init_x, init_y, init_phi, end_pose[0], end_pose[1],
                         end_pose[2], XYbounds, obstacles_vertices_vec,
                         &result)) {
-    ADEBUG << "State warm start problem solved successfully!";
+    AINFO << "State warm start problem solved successfully!";
   } else {
     AERROR << "State warm start problem failed to solve";
     return Status(ErrorCode::PLANNING_ERROR,
