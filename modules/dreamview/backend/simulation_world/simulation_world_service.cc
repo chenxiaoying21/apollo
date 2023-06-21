@@ -76,8 +76,8 @@ using apollo::prediction::PredictionObstacle;
 using apollo::prediction::PredictionObstacles;
 using apollo::relative_map::MapMsg;
 using apollo::relative_map::NavigationInfo;
-using apollo::routing::RoutingRequest;
-using apollo::routing::RoutingResponse;
+using apollo::temp_routing_converter::RoutingRequest;
+using apollo::temp_routing_converter::RoutingResponse;
 using apollo::storytelling::Stories;
 using apollo::task_manager::Task;
 
@@ -265,9 +265,9 @@ SimulationWorldService::SimulationWorldService(const MapService *map_service,
 
 void SimulationWorldService::InitReaders() {
   routing_request_reader_ =
-      node_->CreateReader<RoutingRequest>(FLAGS_routing_request_topic);
+      node_->CreateReader<RoutingRequest>("/apollo/routing_request");
   routing_response_reader_ =
-      node_->CreateReader<RoutingResponse>(FLAGS_routing_response_topic);
+      node_->CreateReader<RoutingResponse>("/apollo/routing_response");
   chassis_reader_ = node_->CreateReader<Chassis>(FLAGS_chassis_topic);
   gps_reader_ = node_->CreateReader<Gps>(FLAGS_gps_topic);
   localization_reader_ =
@@ -321,7 +321,7 @@ void SimulationWorldService::InitWriters() {
 
   {  // configure QoS for routing request writer
     apollo::cyber::proto::RoleAttributes routing_request_attr;
-    routing_request_attr.set_channel_name(FLAGS_routing_request_topic);
+    routing_request_attr.set_channel_name("/apollo/routing_request");
     auto qos = routing_request_attr.mutable_qos_profile();
     // only keeps the last message in history
     qos->set_history(apollo::cyber::proto::QosHistoryPolicy::HISTORY_KEEP_LAST);
@@ -336,7 +336,7 @@ void SimulationWorldService::InitWriters() {
   }
 
   routing_response_writer_ =
-      node_->CreateWriter<RoutingResponse>(FLAGS_routing_response_topic);
+      node_->CreateWriter<RoutingResponse>("/apollo/routing_response");
   task_writer_ = node_->CreateWriter<Task>(FLAGS_task_topic);
 }
 

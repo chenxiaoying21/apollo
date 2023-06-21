@@ -44,7 +44,7 @@ using apollo::hdmap::SignalInfoConstPtr;
 using apollo::hdmap::SpeedBumpInfoConstPtr;
 using apollo::hdmap::StopSignInfoConstPtr;
 using apollo::hdmap::YieldSignInfoConstPtr;
-using apollo::routing::RoutingResponse;
+using apollo::temp_routing_converter::RoutingResponse;
 using google::protobuf::RepeatedPtrField;
 
 namespace {

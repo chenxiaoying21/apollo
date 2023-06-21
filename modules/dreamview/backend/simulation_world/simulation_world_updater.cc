@@ -38,7 +38,7 @@ using apollo::hdmap::EndWayPointFile;
 using apollo::hdmap::ParkGoRoutingFile;
 using apollo::relative_map::NavigationInfo;
 using apollo::routing::LaneWaypoint;
-using apollo::routing::RoutingRequest;
+using apollo::temp_routing_converter::RoutingRequest;
 using apollo::task_manager::CycleRoutingTask;
 using apollo::task_manager::ParkGoRoutingTask;
 using apollo::task_manager::ParkingRoutingTask;
@@ -688,7 +688,6 @@ bool SimulationWorldUpdater::ConstructRoutingRequest(
       }
     }
   }
-
   AINFO << "Constructed RoutingRequest to be sent:\n"
         << routing_request->DebugString();
 

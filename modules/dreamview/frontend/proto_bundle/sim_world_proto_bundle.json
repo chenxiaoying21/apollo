@@ -3724,7 +3724,7 @@
                   }
                 },
                 "routingRequest": {
-                  "type": "apollo.routing.RoutingRequest",
+                  "type": "apollo.temp_routing_converter.RoutingRequest",
                   "id": 3
                 }
               }
@@ -17230,7 +17230,7 @@
                   "id": 8
                 },
                 "routing": {
-                  "type": "apollo.routing.RoutingResponse",
+                  "type": "apollo.temp_routing_converter.RoutingResponse",
                   "id": 9
                 },
                 "initPoint": {
@@ -17415,7 +17415,7 @@
             "CloudReferenceLineRoutingRequest": {
               "fields": {
                 "routing": {
-                  "type": "apollo.routing.RoutingResponse",
+                  "type": "apollo.temp_routing_converter.RoutingResponse",
                   "id": 1
                 }
               }
@@ -19816,7 +19816,7 @@
                   "id": 8
                 },
                 "routingRequest": {
-                  "type": "apollo.routing.RoutingRequest",
+                  "type": "apollo.temp_routing_converter.RoutingRequest",
                   "id": 9
                 },
                 "mapDir": {
@@ -20222,7 +20222,7 @@
                   "id": 1
                 },
                 "routingRequest": {
-                  "type": "apollo.routing.RoutingRequest",
+                  "type": "apollo.temp_routing_converter.RoutingRequest",
                   "id": 2
                 }
               }
@@ -20234,7 +20234,7 @@
                   "id": 1
                 },
                 "routingRequest": {
-                  "type": "apollo.routing.RoutingRequest",
+                  "type": "apollo.temp_routing_converter.RoutingRequest",
                   "id": 2
                 }
               }
@@ -20246,7 +20246,7 @@
                   "id": 1
                 },
                 "routingRequest": {
-                  "type": "apollo.routing.RoutingRequest",
+                  "type": "apollo.temp_routing_converter.RoutingRequest",
                   "id": 2
                 }
               }

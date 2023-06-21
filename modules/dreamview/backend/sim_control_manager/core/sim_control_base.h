@@ -48,6 +48,7 @@ namespace dreamview {
  */
 class SimControlBase {
  public:
+  virtual ~SimControlBase() {}
   /**
    * @brief Main logic of the simulated control algorithm.
    */
