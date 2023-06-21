@@ -22,26 +22,26 @@
 #include <vector>
 
 #include "cyber/common/log.h"
-
+#include "modules/common/math/vec2d.h"
 namespace apollo {
 namespace planning {
 
 class PrintPoints {
  public:
   PrintPoints() {}
-  explicit PrintPoints(std::string id) : id_(id) {}
-  void set_id(std::string id) { id_ = id; }
-  void AddPoint(double x, double y) { points.emplace_back(x, y); }
-
-  void PrintToLog() {
-    std::stringstream ssm;
-    ssm << "print_" << id_ << ":";
-    for (size_t i = 0; i < points.size(); i++) {
-      ssm << std::fixed << "(" << points[i].first << ", " << points[i].second
-          << ");";
-    }
-    AINFO << ssm.str();
-  }
+  explicit PrintPoints(std::string id) : id_(id){};
+  /**
+   * @brief set curve id
+   */
+  void set_id(std::string id);
+  /**
+   * @brief add points to curve
+   */
+  void AddPoint(double x, double y);
+  /**
+   * @brief print curve to log
+   */
+  void PrintToLog();
 
  private:
   std::string id_;
@@ -50,17 +50,14 @@ class PrintPoints {
 
 class PrintCurves {
  public:
-  void AddPoint(std::string key, double x, double y) {
-    if (curve_map_.count(key) == 0) {
-      curve_map_[key] = PrintPoints(key);
-    }
-    curve_map_[key].AddPoint(x, y);
-  }
-  void PrintToLog() {
-    for (auto iter = curve_map_.begin(); iter != curve_map_.end(); iter++) {
-      iter->second.PrintToLog();
-    }
-  }
+  /**
+   * @brief add point to curve key
+   */
+  void AddPoint(std::string key, double x, double y);
+  void AddPoint(std::string key, const common::math::Vec2d& point);
+  void AddPoint(std::string key,
+                const std::vector<common::math::Vec2d>& points);
+  void PrintToLog();
 
  private:
   std::map<std::string, PrintPoints> curve_map_;

@@ -19,6 +19,7 @@ cc_library(
         "//modules/planning/planning_base/common:planning_gflags",
         "//modules/planning/planning_base/common:reference_line_info",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
+        "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
     ],
 )
 
@@ -48,10 +49,12 @@ cc_library(
 
 cc_library(
     name = "print_debug_info",
+    srcs = ["print_debug_info.cc"],
     hdrs = ["print_debug_info.h"],
     copts = PLANNING_COPTS,
     deps = [
         "//cyber",
+        "//modules/common/math",
     ],
 )
 

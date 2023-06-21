@@ -100,7 +100,7 @@ OnLanePlanning::~OnLanePlanning() {
   injector_->frame_history()->Clear();
   injector_->history()->Clear();
   injector_->planning_context()->mutable_planning_status()->Clear();
-  last_routing_.Clear();
+  last_command_.Clear();
   injector_->ego_info()->Clear();
 }
 
@@ -167,24 +167,9 @@ Status OnLanePlanning::InitFrame(const uint32_t sequence_num,
     return Status(ErrorCode::PLANNING_ERROR, "Fail to init frame: nullptr.");
   }
 
-  // Get the parking space information from routing request of local view.
-  auto& routing_request = local_view_.routing->routing_request();
-  if (routing_request.has_parking_info() &&
-      routing_request.parking_info().has_parking_space_id()) {
-    *(frame_->mutable_open_space_info()->mutable_target_parking_spot_id()) =
-        routing_request.parking_info().parking_space_id();
-  } else {
-    ADEBUG << "No parking space id from routing";
-  }
-
   std::list<ReferenceLine> reference_lines;
   std::list<hdmap::RouteSegments> segments;
-  if (!reference_line_provider_->GetReferenceLines(&reference_lines,
-                                                   &segments)) {
-    const std::string msg = "Failed to create reference line";
-    AERROR << msg;
-    return Status(ErrorCode::PLANNING_ERROR, msg);
-  }
+  reference_line_provider_->GetReferenceLines(&reference_lines, &segments);
   DCHECK_EQ(reference_lines.size(), segments.size());
 
   auto forward_limit =
@@ -244,7 +229,6 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
                              ADCTrajectory* const ptr_trajectory_pb) {
   // when rerouting, reference line might not be updated. In this case, planning
   // module maintains not-ready until be restarted.
-  static bool failed_to_update_reference_line = false;
   local_view_ = local_view;
   const double start_timestamp = Clock::NowInSeconds();
   const double start_system_timestamp =
@@ -292,31 +276,18 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
 
   // Update reference line provider and reset scenario if new routing
   reference_line_provider_->UpdateVehicleState(vehicle_state);
-  if (util::IsDifferentRouting(last_routing_, *local_view_.routing)) {
-    last_routing_ = *local_view_.routing;
-    ADEBUG << "last_routing_:" << last_routing_.ShortDebugString();
+  if (util::IsDifferentRouting(last_command_, *local_view_.planning_command)) {
+    last_command_ = *local_view_.planning_command;
+    AINFO << "last_command_:" << last_command_.ShortDebugString();
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
-    reference_line_provider_->UpdateRoutingResponse(*local_view_.routing);
+    if (local_view_.planning_command->has_lane_follow_command()) {
+      reference_line_provider_->UpdateRoutingResponse(
+          local_view_.planning_command->lane_follow_command());
+    } else {
+      reference_line_provider_->Reset();
+    }
     planner_->Reset(frame_.get());
-  }
-
-  failed_to_update_reference_line =
-      (!reference_line_provider_->UpdatedReferenceLine());
-
-  // early return when reference line fails to update after rerouting
-  if (failed_to_update_reference_line) {
-    const std::string msg = "Failed to update reference line after rerouting.";
-    AERROR << msg;
-    ptr_trajectory_pb->mutable_decision()
-        ->mutable_main_decision()
-        ->mutable_not_ready()
-        ->set_reason(msg);
-    status.Save(ptr_trajectory_pb->mutable_header()->mutable_status());
-    ptr_trajectory_pb->set_gear(canbus::Chassis::GEAR_DRIVE);
-    FillPlanningPb(start_timestamp, ptr_trajectory_pb);
-    GenerateStopTrajectory(ptr_trajectory_pb);
-    return;
   }
 
   // planning is triggered by prediction data, but we can still use an estimated

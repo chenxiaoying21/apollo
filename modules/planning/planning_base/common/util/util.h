@@ -23,8 +23,8 @@
 #include <boost/range/iterator_range.hpp>
 
 #include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
-
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/planning/planning_base/common/reference_line_info.h"
 
@@ -36,8 +36,8 @@ namespace util {
 
 bool IsVehicleStateValid(const apollo::common::VehicleState& vehicle_state);
 
-bool IsDifferentRouting(const apollo::routing::RoutingResponse& first,
-                        const apollo::routing::RoutingResponse& second);
+bool IsDifferentRouting(const PlanningCommand& first,
+                        const PlanningCommand& second);
 
 double GetADCStopDeceleration(
     apollo::common::VehicleStateProvider* vehicle_state,

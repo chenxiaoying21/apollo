@@ -70,6 +70,15 @@ bool PlanningComponent::Init() {
         routing_.CopyFrom(*routing);
       });
 
+  planning_command_reader_ = node_->CreateReader<PlanningCommand>(
+      config_.topic_config().planning_command_topic(),
+      [this](const std::shared_ptr<PlanningCommand>& planning_command) {
+        AINFO << "Received planning data: run planning callback."
+              << planning_command->header().DebugString();
+        std::lock_guard<std::mutex> lock(mutex_);
+        planning_command_.CopyFrom(*planning_command);
+      });
+
   traffic_light_reader_ = node_->CreateReader<TrafficLightDetection>(
       config_.topic_config().traffic_light_detection_topic(),
       [this](const std::shared_ptr<TrafficLightDetection>& traffic_light) {
@@ -111,9 +120,8 @@ bool PlanningComponent::Init() {
 
   planning_learning_data_writer_ = node_->CreateWriter<PlanningLearningData>(
       config_.topic_config().planning_learning_data_topic());
-  command_status_writer_ =
-      node_->CreateWriter<external_command::CommandStatus>(
-          FLAGS_planning_command_status);
+  command_status_writer_ = node_->CreateWriter<external_command::CommandStatus>(
+      FLAGS_planning_command_status);
   return true;
 }
 
@@ -138,6 +146,15 @@ bool PlanningComponent::Proc(
         hdmap::PncMap::IsNewRouting(*local_view_.routing, routing_)) {
       local_view_.routing =
           std::make_shared<routing::RoutingResponse>(routing_);
+    }
+  }
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!local_view_.planning_command ||
+        local_view_.planning_command->header().sequence_num() !=
+            planning_command_.header().sequence_num()) {
+      local_view_.planning_command =
+          std::make_shared<PlanningCommand>(planning_command_);
     }
   }
   {
@@ -204,15 +221,12 @@ bool PlanningComponent::Proc(
   external_command::CommandStatus command_status;
   common::util::FillHeader(node_->Name(), &command_status);
   if (adc_trajectory_pb.estop().is_estop()) {
-    command_status.set_status(
-        external_command::CommandStatusType::ERROR);
+    command_status.set_status(external_command::CommandStatusType::ERROR);
     command_status.set_message(adc_trajectory_pb.estop().reason());
   } else if (planning_base_->IsPlanningFinished()) {
-    command_status.set_status(
-        external_command::CommandStatusType::FINISHED);
+    command_status.set_status(external_command::CommandStatusType::FINISHED);
   } else {
-    command_status.set_status(
-        external_command::CommandStatusType::RUNNING);
+    command_status.set_status(external_command::CommandStatusType::RUNNING);
   }
   command_status_writer_->Write(command_status);
 
@@ -256,8 +270,8 @@ bool PlanningComponent::CheckInput() {
       not_ready->set_reason("relative map not ready");
     }
   } else {
-    if (!local_view_.routing->has_header()) {
-      not_ready->set_reason("routing not ready");
+    if (!local_view_.planning_command->has_header()) {
+      not_ready->set_reason("planning_command not ready");
     }
   }
 

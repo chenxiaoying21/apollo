@@ -30,7 +30,6 @@ namespace util {
 
 using apollo::common::VehicleState;
 using apollo::hdmap::PathOverlap;
-using apollo::routing::RoutingResponse;
 
 bool IsVehicleStateValid(const VehicleState& vehicle_state) {
   if (std::isnan(vehicle_state.x()) || std::isnan(vehicle_state.y()) ||
@@ -43,8 +42,8 @@ bool IsVehicleStateValid(const VehicleState& vehicle_state) {
   return true;
 }
 
-bool IsDifferentRouting(const RoutingResponse& first,
-                        const RoutingResponse& second) {
+bool IsDifferentRouting(const PlanningCommand& first,
+                        const PlanningCommand& second) {
   if (first.has_header() && second.has_header()) {
     return first.header().sequence_num() != second.header().sequence_num();
   }

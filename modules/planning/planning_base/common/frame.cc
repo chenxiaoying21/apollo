@@ -160,6 +160,9 @@ bool Frame::CreateReferenceLineInfo(
     const std::list<ReferenceLine> &reference_lines,
     const std::list<hdmap::RouteSegments> &segments) {
   reference_line_info_.clear();
+  if (reference_lines.empty()) {
+    return true;
+  }
   auto ref_line_iter = reference_lines.begin();
   auto segments_iter = segments.begin();
   while (ref_line_iter != reference_lines.end()) {
@@ -190,14 +193,19 @@ bool Frame::CreateReferenceLineInfo(
   }
 
   bool has_valid_reference_line = false;
-  for (auto &ref_info : reference_line_info_) {
-    if (!ref_info.Init(obstacles())) {
-      AERROR << "Failed to init reference line";
+  for (auto iter = reference_line_info_.begin();
+       iter != reference_line_info_.end();) {
+    if (!iter->Init(obstacles())) {
+      reference_line_info_.erase(iter++);
     } else {
       has_valid_reference_line = true;
+      iter++;
     }
   }
-  return has_valid_reference_line;
+  if (!has_valid_reference_line) {
+    AINFO << "No valid reference line";
+  }
+  return true;
 }
 
 /**

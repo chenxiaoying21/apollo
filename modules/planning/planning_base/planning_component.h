@@ -67,6 +67,7 @@ class PlanningComponent final
   std::shared_ptr<cyber::Reader<planning::PadMessage>> pad_msg_reader_;
   std::shared_ptr<cyber::Reader<relative_map::MapMsg>> relative_map_reader_;
   std::shared_ptr<cyber::Reader<storytelling::Stories>> story_telling_reader_;
+  std::shared_ptr<cyber::Reader<PlanningCommand>> planning_command_reader_;
 
   std::shared_ptr<cyber::Writer<ADCTrajectory>> planning_writer_;
   std::shared_ptr<cyber::Writer<routing::RoutingRequest>> rerouting_writer_;
@@ -81,7 +82,7 @@ class PlanningComponent final
   planning::PadMessage pad_msg_;
   relative_map::MapMsg relative_map_;
   storytelling::Stories stories_;
-
+  PlanningCommand planning_command_;
   LocalView local_view_;
 
   std::unique_ptr<PlanningBase> planning_base_;

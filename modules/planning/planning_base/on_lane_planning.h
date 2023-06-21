@@ -103,7 +103,7 @@ class OnLanePlanning : public PlanningBase {
                              planning_internal::Debug* debug_chart);
 
  private:
-  routing::RoutingResponse last_routing_;
+  PlanningCommand last_command_;
   std::unique_ptr<ReferenceLineProvider> reference_line_provider_;
   Smoother planning_smoother_;
 };

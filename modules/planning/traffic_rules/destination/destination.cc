@@ -33,9 +33,8 @@ namespace planning {
 using apollo::common::Status;
 using apollo::common::VehicleConfigHelper;
 
-bool Destination::Init(
-    const std::string& name,
-    const std::shared_ptr<DependencyInjector>& injector) {
+bool Destination::Init(const std::string& name,
+                       const std::shared_ptr<DependencyInjector>& injector) {
   if (!TrafficRule::Init(name, injector)) {
     return false;
   }
@@ -65,7 +64,8 @@ int Destination::MakeDecisions(Frame* frame,
     return 0;
   }
 
-  const auto& routing = frame->local_view().routing;
+  const auto& routing =
+      frame->local_view().planning_command->mutable_lane_follow_command();
   if (routing->routing_request().waypoint_size() < 2) {
     AERROR << "routing_request has no end";
     return -1;
@@ -100,11 +100,10 @@ int Destination::MakeDecisions(Frame* frame,
                                    .vehicle_param()
                                    .front_edge_to_center() +
                                config_.stop_distance();
-    util::BuildStopDecision(
-        stop_wall_id, stop_line_s, config_.stop_distance(),
-        StopReasonCode::STOP_REASON_PULL_OVER, wait_for_obstacle_ids,
-        Getname(), frame,
-        reference_line_info);
+    util::BuildStopDecision(stop_wall_id, stop_line_s, config_.stop_distance(),
+                            StopReasonCode::STOP_REASON_PULL_OVER,
+                            wait_for_obstacle_ids, Getname(), frame,
+                            reference_line_info);
     return 0;
   }
 
@@ -113,12 +112,10 @@ int Destination::MakeDecisions(Frame* frame,
   const double dest_lane_s =
       std::fmax(0.0, routing_end.s() - FLAGS_virtual_stop_wall_length -
                          config_.stop_distance());
-  util::BuildStopDecision(stop_wall_id, routing_end.id(), dest_lane_s,
-                          config_.stop_distance(),
-                          StopReasonCode::STOP_REASON_DESTINATION,
-                          wait_for_obstacle_ids,
-                          Getname(),
-                          frame, reference_line_info);
+  util::BuildStopDecision(
+      stop_wall_id, routing_end.id(), dest_lane_s, config_.stop_distance(),
+      StopReasonCode::STOP_REASON_DESTINATION, wait_for_obstacle_ids, Getname(),
+      frame, reference_line_info);
 
   return 0;
 }

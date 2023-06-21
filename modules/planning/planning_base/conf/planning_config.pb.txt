@@ -8,6 +8,7 @@ topic_config {
   relative_map_topic: "/apollo/relative_map"
   routing_request_topic: "/apollo/routing_request"
   routing_response_topic: "/apollo/routing_response"
+  planning_command_topic: "/apollo/planning_command"
   story_telling_topic: "/apollo/storytelling"
   traffic_light_detection_topic: "/apollo/perception/traffic_light"
   planning_learning_data_topic: "/apollo/planning/learning_data"
@@ -60,6 +61,10 @@ standard_planning_config {
     scenario {
       name: "PARK_AND_GO"
       type: "ParkAndGoScenario"
+    }
+    scenario {
+      name: "FREE_SPACE"
+      type: "FreeSpaceScenario"
     }
     scenario {
       name: "LANE_FOLLOW"
