@@ -1,0 +1,13 @@
+# Define all coms in DAG streaming.
+module_config {
+    module_library : "/apollo/bazel-bin/modules/external_command/temp_routing_converter/libtemp_routing_converter.so"
+
+    components {
+      class_name : "TempRoutingConverter"
+      config {
+        name : "temp_routing_converter"
+        config_file_path : "/apollo/modules/external_command/temp_routing_converter/conf/config.pb.txt"
+        flag_file_path: "/apollo/modules/common/data/global_flagfile.txt"
+      }
+    }
+}
