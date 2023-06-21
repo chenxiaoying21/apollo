@@ -58,16 +58,17 @@ bool ValetParkingScenario::Init(std::shared_ptr<DependencyInjector> injector,
 bool ValetParkingScenario::IsTransferable(const Scenario* const other_scenario,
                                           const Frame& frame) {
   // TODO(all) Implement available parking spot detection by preception results
+  if (other_scenario == nullptr || frame.reference_line_info().empty()) {
+    return false;
+  }
   std::string target_parking_spot_id;
-  if (frame.local_view().routing->routing_request().has_parking_info() &&
+  if (frame.local_view().planning_command->has_parking_command() &&
       frame.local_view()
-          .routing->routing_request()
-          .parking_info()
-          .has_parking_space_id()) {
+          .planning_command->parking_command()
+          .has_parking_spot_id()) {
     target_parking_spot_id = frame.local_view()
-                                 .routing->routing_request()
-                                 .parking_info()
-                                 .parking_space_id();
+                                 .planning_command->parking_command()
+                                 .parking_spot_id();
   } else {
     ADEBUG << "No parking space id from routing";
     return false;
@@ -99,7 +100,7 @@ bool ValetParkingScenario::IsTransferable(const Scenario* const other_scenario,
            << target_parking_spot_id;
     return false;
   }
-
+  context_.target_parking_spot_id = target_parking_spot_id;
   return true;
 }
 
@@ -125,37 +126,26 @@ bool ValetParkingScenario::CheckDistanceToParkingSpot(
       (parking_space_overlap.start_s + parking_space_overlap.end_s) / 2.0;
   const hdmap::HDMap* hdmap = hdmap::HDMapUtil::BaseMapPtr();
   hdmap::Id id;
+  double center_point_s, center_point_l;
   id.set_id(parking_space_overlap.object_id);
   ParkingSpaceInfoConstPtr target_parking_spot_ptr =
       hdmap->GetParkingSpaceById(id);
   Vec2d left_bottom_point = target_parking_spot_ptr->polygon().points().at(0);
   Vec2d right_bottom_point = target_parking_spot_ptr->polygon().points().at(1);
-  const auto& routing_request = frame.local_view().routing->routing_request();
-  auto corner_point = routing_request.parking_info().corner_point();
-  left_bottom_point.set_x(corner_point.point().at(0).x());
-  left_bottom_point.set_y(corner_point.point().at(0).y());
-  right_bottom_point.set_x(corner_point.point().at(1).x());
-  right_bottom_point.set_y(corner_point.point().at(1).y());
-  double left_bottom_point_s = 0.0;
-  double left_bottom_point_l = 0.0;
-  double right_bottom_point_s = 0.0;
-  double right_bottom_point_l = 0.0;
-  nearby_path.GetNearestPoint(left_bottom_point, &left_bottom_point_s,
-                              &left_bottom_point_l);
-  nearby_path.GetNearestPoint(right_bottom_point, &right_bottom_point_s,
-                              &right_bottom_point_l);
-  double parking_space_center_s =
-      (left_bottom_point_s + right_bottom_point_s) / 2.0;
+  Vec2d right_top_point = target_parking_spot_ptr->polygon().points().at(2);
+  Vec2d left_top_point = target_parking_spot_ptr->polygon().points().at(3);
+  Vec2d center_point = (left_bottom_point + right_bottom_point +
+                        right_top_point + left_top_point) /
+                       4.0;
+  nearby_path.GetNearestPoint(center_point, &center_point_s, &center_point_l);
   double vehicle_point_s = 0.0;
   double vehicle_point_l = 0.0;
   Vec2d vehicle_vec(vehicle_state.x(), vehicle_state.y());
   nearby_path.GetNearestPoint(vehicle_vec, &vehicle_point_s, &vehicle_point_l);
-  if (std::abs(parking_space_center_s - vehicle_point_s) <
-      parking_start_range) {
+  if (std::abs(center_point_s - vehicle_point_s) < parking_start_range) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 }  // namespace planning

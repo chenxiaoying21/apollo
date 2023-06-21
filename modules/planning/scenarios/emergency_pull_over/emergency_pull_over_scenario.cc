@@ -53,6 +53,9 @@ bool EmergencyPullOverScenario::Init(
 
 bool EmergencyPullOverScenario::IsTransferable(
     const Scenario* const other_scenario, const Frame& frame) {
+  if (frame.reference_line_info().empty()) {
+    return false;
+  }
   const auto& pad_msg_driving_action = frame.GetPadMsgDrivingAction();
   if (pad_msg_driving_action == PadMessage::PULL_OVER) {
     return true;

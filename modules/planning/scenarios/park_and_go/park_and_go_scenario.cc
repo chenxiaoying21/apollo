@@ -52,9 +52,10 @@ bool ParkAndGoScenario::Init(std::shared_ptr<DependencyInjector> injector,
 
 bool ParkAndGoScenario::IsTransferable(const Scenario* const other_scenario,
                                        const Frame& frame) {
-  if (other_scenario == nullptr) {
+  if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }
+  AINFO << frame.reference_line_info().size();
   bool park_and_go = false;
   const auto& scenario_config = context_.scenario_config;
   const auto vehicle_state_provider = injector_->vehicle_state();
@@ -73,7 +74,8 @@ bool ParkAndGoScenario::IsTransferable(const Scenario* const other_scenario,
   hdmap::LaneInfoConstPtr lane;
 
   // check ego vehicle distance to destination
-  const auto& routing = frame.local_view().routing;
+  const auto& routing =
+      frame.local_view().planning_command->mutable_lane_follow_command();
   const auto& routing_end = *(routing->routing_request().waypoint().rbegin());
   common::SLPoint dest_sl;
   const auto& reference_line_info = frame.reference_line_info().front();

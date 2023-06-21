@@ -28,6 +28,9 @@ namespace planning {
 
 bool LaneFollowScenario::IsTransferable(const Scenario* other_scenario,
                                         const Frame& frame) {
+  if (frame.reference_line_info().empty()) {
+    return false;
+  }
   if (other_scenario == nullptr) {
     return true;
   }

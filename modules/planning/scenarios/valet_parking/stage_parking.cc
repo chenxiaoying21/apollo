@@ -27,7 +27,10 @@ StageResult StageParking::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   // Open space planning doesn't use planning_init_point from upstream because
   // of different stitching strategy
+  auto scenario_context = GetContextAs<ValetParkingContext>();
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
+  *(frame->mutable_open_space_info()->mutable_target_parking_spot_id()) =
+      scenario_context->target_parking_spot_id;
   StageResult result = ExecuteTaskOnOpenSpace(frame);
   if (result.HasError()) {
     AERROR << "StageParking planning error";

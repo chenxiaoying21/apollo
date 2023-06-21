@@ -69,7 +69,6 @@ bool ScenarioManager::Init(const PlanningConfig& planning_config) {
 void ScenarioManager::Update(const common::TrajectoryPoint& ego_point,
                              Frame* frame) {
   CHECK_NOTNULL(frame);
-  ACHECK(!frame->reference_line_info().empty());
   for (auto scenario : scenario_list_) {
     if (current_scenario_.get() == scenario.get() &&
         current_scenario_->GetStatus() ==
@@ -90,7 +89,10 @@ void ScenarioManager::Update(const common::TrajectoryPoint& ego_point,
 }
 
 void ScenarioManager::Reset(Frame* frame) {
-  current_scenario_->Exit(frame);
+  if (current_scenario_) {
+    current_scenario_->Exit(frame);
+  }
+  AINFO << "Reset to default scenario:" << default_scenario_type_->Name();
   current_scenario_ = default_scenario_type_;
 }
 }  // namespace planning

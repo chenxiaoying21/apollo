@@ -54,13 +54,14 @@ bool PullOverScenario::Init(std::shared_ptr<DependencyInjector> injector,
 
 bool PullOverScenario::IsTransferable(const Scenario* const other_scenario,
                                       const Frame& frame) {
-  if (other_scenario == nullptr) {
+  if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }
   if (!FLAGS_enable_pull_over_at_destination) {
     return false;
   }
-  const auto& routing = frame.local_view().routing;
+  const auto& routing =
+      frame.local_view().planning_command->mutable_lane_follow_command();
   const auto& routing_end = *(routing->routing_request().waypoint().rbegin());
 
   common::SLPoint dest_sl;

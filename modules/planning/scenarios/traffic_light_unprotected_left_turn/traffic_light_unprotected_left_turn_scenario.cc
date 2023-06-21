@@ -59,7 +59,7 @@ bool TrafficLightUnprotectedLeftTurnScenario::Init(
 
 bool TrafficLightUnprotectedLeftTurnScenario::IsTransferable(
     const Scenario* const other_scenario, const Frame& frame) {
-  if (other_scenario == nullptr) {
+  if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }
   const auto& reference_line_info = frame.reference_line_info().front();

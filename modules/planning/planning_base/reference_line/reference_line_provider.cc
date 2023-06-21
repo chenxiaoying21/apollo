@@ -134,6 +134,15 @@ void ReferenceLineProvider::Stop() {
   }
 }
 
+void ReferenceLineProvider::Reset() {
+  std::lock_guard<std::mutex> lock(routing_mutex_);
+  has_routing_ = false;
+  reference_lines_.clear();
+  route_segments_.clear();
+  is_reference_line_updated_ = false;
+  routing_.Clear();
+}
+
 void ReferenceLineProvider::UpdateReferenceLine(
     const std::list<ReferenceLine> &reference_lines,
     const std::list<hdmap::RouteSegments> &route_segments) {
@@ -141,6 +150,9 @@ void ReferenceLineProvider::UpdateReferenceLine(
     AERROR << "The calculated reference line size(" << reference_lines.size()
            << ") and route_segments size(" << route_segments.size()
            << ") are different";
+    return;
+  }
+  if (reference_lines.empty()) {
     return;
   }
   std::lock_guard<std::mutex> lock(reference_lines_mutex_);
@@ -192,7 +204,6 @@ void ReferenceLineProvider::GenerateThread() {
     cyber::SleepFor(std::chrono::milliseconds(kSleepTime));
     const double start_time = Clock::NowInSeconds();
     if (!has_routing_) {
-      AINFO << "Routing is not ready.";
       continue;
     }
     std::list<ReferenceLine> reference_lines;
@@ -225,7 +236,9 @@ bool ReferenceLineProvider::GetReferenceLines(
     std::list<hdmap::RouteSegments> *segments) {
   CHECK_NOTNULL(reference_lines);
   CHECK_NOTNULL(segments);
-
+  if (!has_routing_) {
+    return true;
+  }
   if (FLAGS_use_navigation_mode) {
     double start_time = Clock::NowInSeconds();
     bool result = GetReferenceLinesFromRelativeMap(reference_lines, segments);
@@ -254,9 +267,9 @@ bool ReferenceLineProvider::GetReferenceLines(
     }
   }
 
-  AWARN << "Reference line is NOT ready.";
+  ADEBUG << "Reference line is NOT ready.";
   if (reference_line_history_.empty()) {
-    AERROR << "Failed to use reference line latest history";
+    ADEBUG << "Failed to use reference line latest history";
     return false;
   }
 
@@ -562,6 +575,9 @@ bool ReferenceLineProvider::CreateReferenceLine(
   {
     std::lock_guard<std::mutex> lock(routing_mutex_);
     routing = routing_;
+  }
+  if (routing.road_size() == 0) {
+    return true;
   }
   bool is_new_routing = false;
   {

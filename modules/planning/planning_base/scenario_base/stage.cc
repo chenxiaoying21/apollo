@@ -90,6 +90,10 @@ Task* Stage::FindTask(const std::string& task_type) const {
 StageResult Stage::ExecuteTaskOnReferenceLine(
     const common::TrajectoryPoint& planning_start_point, Frame* frame) {
   StageResult stage_result;
+  if (frame->reference_line_info().empty()) {
+    AERROR << "referenceline is empty in stage" << name_;
+    return stage_result.SetStageStatus(StageStatusType::ERROR);
+  }
   for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
     if (!reference_line_info.IsDrivable()) {
       AERROR << "The generated path is not drivable";

@@ -81,6 +81,10 @@ void LaneFollowStage::RecordObstacleDebugInfo(
 
 StageResult LaneFollowStage::Process(
     const TrajectoryPoint& planning_start_point, Frame* frame) {
+  if (frame->reference_line_info().empty()) {
+    return StageResult(StageStatusType::FINISHED);
+  }
+
   bool has_drivable_reference_line = false;
 
   ADEBUG << "Number of reference lines:\t"

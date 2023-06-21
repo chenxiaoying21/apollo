@@ -77,7 +77,7 @@ class ReferenceLineProvider {
   bool Start();
 
   void Stop();
-
+  void Reset();
   bool GetReferenceLines(std::list<ReferenceLine>* reference_lines,
                          std::list<hdmap::RouteSegments>* segments);
 
