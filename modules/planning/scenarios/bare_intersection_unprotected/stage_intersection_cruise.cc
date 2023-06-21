@@ -27,13 +27,13 @@
 namespace apollo {
 namespace planning {
 
-Stage::StageStatus BareIntersectionUnprotectedStageIntersectionCruise::Process(
+StageResult BareIntersectionUnprotectedStageIntersectionCruise::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: IntersectionCruise";
   CHECK_NOTNULL(frame);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "StopSignUnprotectedStageIntersectionCruise plan error";
   }
 
@@ -41,7 +41,7 @@ Stage::StageStatus BareIntersectionUnprotectedStageIntersectionCruise::Process(
   if (stage_done) {
     return FinishStage();
   }
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 hdmap::PathOverlap*
@@ -58,8 +58,7 @@ BareIntersectionUnprotectedStageIntersectionCruise::GetTrafficSignOverlap(
   return traffic_sign_overlap;
 }
 
-Stage::StageStatus
-BareIntersectionUnprotectedStageIntersectionCruise::FinishStage() {
+StageResult BareIntersectionUnprotectedStageIntersectionCruise::FinishStage() {
   return FinishScenario();
 }
 

@@ -54,7 +54,7 @@ bool TrafficLightUnprotectedRightTurnStageCreep::Init(
   return ret;
 }
 
-Stage::StageStatus TrafficLightUnprotectedRightTurnStageCreep::Process(
+StageResult TrafficLightUnprotectedRightTurnStageCreep::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Creep";
   CHECK_NOTNULL(frame);
@@ -83,8 +83,8 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageCreep::Process(
     }
   }
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "TrafficLightUnprotectedRightTurnStageCreep planning error";
   }
 
@@ -127,7 +127,7 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageCreep::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 const CreepStageConfig&
@@ -136,9 +136,9 @@ TrafficLightUnprotectedRightTurnStageCreep::GetCreepStageConfig() const {
       ->scenario_config.creep_stage_config();
 }
 
-Stage::StageStatus TrafficLightUnprotectedRightTurnStageCreep::FinishStage() {
+StageResult TrafficLightUnprotectedRightTurnStageCreep::FinishStage() {
   next_stage_ = "TRAFFIC_LIGHT_UNPROTECTED_RIGHT_TURN_INTERSECTION_CRUISE";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

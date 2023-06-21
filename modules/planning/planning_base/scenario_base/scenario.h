@@ -27,6 +27,7 @@
 #include "modules/planning/planning_base/scenario_base/proto/scenario_pipeline.pb.h"
 #include "cyber/common/file.h"
 #include "modules/planning/planning_base/common/dependency_injector.h"
+#include "modules/planning/planning_base/scenario_base/process_result.h"
 
 namespace apollo {
 namespace common {
@@ -49,12 +50,6 @@ class DependencyInjector;
 
 class Scenario {
  public:
-  enum ScenarioStatus {
-    STATUS_UNKNOWN = 0,
-    STATUS_PROCESSING = 1,
-    STATUS_DONE = 2,
-  };
-
   Scenario();
 
   virtual ~Scenario() = default;
@@ -76,7 +71,7 @@ class Scenario {
     return false;
   }
 
-  virtual ScenarioStatus Process(
+  virtual ScenarioResult Process(
       const common::TrajectoryPoint& planning_init_point, Frame* frame);
 
   virtual bool Exit(Frame* frame) { return true; }
@@ -91,7 +86,9 @@ class Scenario {
    */
   std::shared_ptr<Stage> CreateStage(const StagePipeline& stage_pipeline);
 
-  const ScenarioStatus& GetStatus() const { return scenario_status_; }
+  const ScenarioStatusType& GetStatus() const {
+    return scenario_result_.GetScenarioStatus();
+  }
 
   const std::string GetStage() const;
 
@@ -108,7 +105,7 @@ class Scenario {
   template <typename T>
   bool LoadConfig(T* config);
 
-  ScenarioStatus scenario_status_;
+  ScenarioResult scenario_result_;
   std::shared_ptr<Stage> current_stage_;
   std::unordered_map<std::string, const StagePipeline*> stage_pipeline_map_;
   std::string msg_;  // debug msg

@@ -32,8 +32,8 @@ namespace planning {
 
 class StopSignUnprotectedStagePreStop : public Stage {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
  private:
   int AddWatchVehicle(const Obstacle& obstacle,
@@ -42,7 +42,7 @@ class StopSignUnprotectedStagePreStop : public Stage {
 
   bool CheckADCStop(const double adc_front_edge_s, const double stop_line_s);
 
-  Stage::StageStatus FinishStage();
+  StageResult FinishStage();
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(

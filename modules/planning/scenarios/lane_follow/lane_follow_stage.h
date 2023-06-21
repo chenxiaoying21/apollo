@@ -42,10 +42,10 @@ namespace planning {
 
 class LaneFollowStage : public Stage {
  public:
-  StageStatus Process(const common::TrajectoryPoint& planning_init_point,
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
                       Frame* frame) override;
 
-  common::Status PlanOnReferenceLine(
+  StageResult PlanOnReferenceLine(
       const common::TrajectoryPoint& planning_start_point, Frame* frame,
       ReferenceLineInfo* reference_line_info);
 

@@ -38,7 +38,7 @@ using apollo::hdmap::HDMapUtil;
 using apollo::hdmap::PathOverlap;
 using apollo::perception::TrafficLight;
 
-Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::Process(
+StageResult TrafficLightUnprotectedRightTurnStageStop::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Stop";
   CHECK_NOTNULL(frame);
@@ -47,8 +47,8 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::Process(
   auto context = GetContextAs<TrafficLightUnprotectedRightTurnContext>();
   const auto& scenario_config = context->scenario_config;
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "TrafficLightRightTurnUnprotectedStop planning error";
   }
 
@@ -135,7 +135,7 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::Process(
     }
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 bool TrafficLightUnprotectedRightTurnStageStop::
@@ -156,7 +156,7 @@ bool TrafficLightUnprotectedRightTurnStageStop::
   return false;
 }
 
-Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::FinishStage(
+StageResult TrafficLightUnprotectedRightTurnStageStop::FinishStage(
     const bool protected_mode) {
   auto context = GetContextAs<TrafficLightUnprotectedRightTurnContext>();
   if (protected_mode) {
@@ -188,7 +188,7 @@ Stage::StageStatus TrafficLightUnprotectedRightTurnStageStop::FinishStage(
       next_stage_ = "TRAFFIC_LIGHT_UNPROTECTED_RIGHT_TURN_CREEP";
     }
   }
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

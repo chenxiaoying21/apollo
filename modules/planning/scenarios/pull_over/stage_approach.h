@@ -30,11 +30,11 @@ namespace planning {
 
 class PullOverStageApproach : public Stage {
  public:
-  StageStatus Process(const common::TrajectoryPoint& planning_init_point,
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
                       Frame* frame) override;
 
  private:
-  Stage::StageStatus FinishStage(const bool success);
+  StageResult FinishStage(const bool success);
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::PullOverStageApproach,

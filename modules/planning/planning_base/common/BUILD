@@ -157,7 +157,7 @@ cc_library(
 cc_binary(
   name = "libplanning_gflags.so",
     srcs = ["planning_gflags.cc",
-                  "planning_gflags.h"],
+            "planning_gflags.h"],
     copts = PLANNING_COPTS,
     linkshared = True,
     linkstatic = True,

@@ -79,7 +79,7 @@ void LaneFollowStage::RecordObstacleDebugInfo(
   }
 }
 
-Stage::StageStatus LaneFollowStage::Process(
+StageResult LaneFollowStage::Process(
     const TrajectoryPoint& planning_start_point, Frame* frame) {
   bool has_drivable_reference_line = false;
 
@@ -87,7 +87,7 @@ Stage::StageStatus LaneFollowStage::Process(
          << frame->mutable_reference_line_info()->size();
 
   unsigned int count = 0;
-
+  StageResult result;
   for (auto& reference_line_info : *frame->mutable_reference_line_info()) {
     // TODO(SHU): need refactor
     if (count++ == frame->mutable_reference_line_info()->size()) {
@@ -101,10 +101,10 @@ Stage::StageStatus LaneFollowStage::Process(
       break;
     }
 
-    auto cur_status =
+    result =
         PlanOnReferenceLine(planning_start_point, frame, &reference_line_info);
 
-    if (cur_status.ok()) {
+    if (!result.HasError()) {
       if (!reference_line_info.IsChangeLanePath()) {
         ADEBUG << "reference line is NOT lane change ref.";
         has_drivable_reference_line = true;
@@ -124,11 +124,12 @@ Stage::StageStatus LaneFollowStage::Process(
     }
   }
 
-  return has_drivable_reference_line ? StageStatus::RUNNING
-                                     : StageStatus::ERROR;
+  return has_drivable_reference_line
+             ? result.SetStageStatus(StageStatusType::RUNNING)
+             : result.SetStageStatus(StageStatusType::ERROR);
 }
 
-Status LaneFollowStage::PlanOnReferenceLine(
+StageResult LaneFollowStage::PlanOnReferenceLine(
     const TrajectoryPoint& planning_start_point, Frame* frame,
     ReferenceLineInfo* reference_line_info) {
   if (!reference_line_info->IsChangeLanePath()) {
@@ -138,11 +139,11 @@ Status LaneFollowStage::PlanOnReferenceLine(
   ADEBUG << "Current reference_line_info is IsChangeLanePath: "
          << reference_line_info->IsChangeLanePath();
 
-  auto ret = Status::OK();
+  StageResult ret;
   for (auto task : task_list_) {
     const double start_timestamp = Clock::NowInSeconds();
 
-    ret = task->Execute(frame, reference_line_info);
+    ret.SetTaskStatus(task->Execute(frame, reference_line_info));
 
     const double end_timestamp = Clock::NowInSeconds();
     const double time_diff_ms = (end_timestamp - start_timestamp) * 1000;
@@ -151,9 +152,9 @@ Status LaneFollowStage::PlanOnReferenceLine(
     ADEBUG << task->Name() << " time spend: " << time_diff_ms << " ms.";
     RecordDebugInfo(reference_line_info, task->Name(), time_diff_ms);
 
-    if (!ret.ok()) {
+    if (ret.HasError()) {
       AERROR << "Failed to run tasks[" << task->Name()
-             << "], Error message: " << ret.error_message();
+             << "], Error message: " << ret.GetTaskStatus().error_message();
       break;
     }
 
@@ -169,7 +170,7 @@ Status LaneFollowStage::PlanOnReferenceLine(
 
   // check path and speed results for path or speed fallback
   reference_line_info->set_trajectory_type(ADCTrajectory::NORMAL);
-  if (!ret.ok()) {
+  if (ret.HasError()) {
     PlanFallbackTrajectory(planning_start_point, frame, reference_line_info);
   }
 
@@ -179,7 +180,7 @@ Status LaneFollowStage::PlanOnReferenceLine(
           planning_start_point.path_point().s(), &trajectory)) {
     const std::string msg = "Fail to aggregate planning trajectory.";
     AERROR << msg;
-    return Status(ErrorCode::PLANNING_ERROR, msg);
+    return ret.SetStageStatus(StageStatusType::ERROR, msg);
   }
 
   // determine if there is a destination on reference line.
@@ -226,13 +227,13 @@ Status LaneFollowStage::PlanOnReferenceLine(
         ConstraintChecker::Result::VALID) {
       const std::string msg = "Current planning trajectory is not valid.";
       AERROR << msg;
-      return Status(ErrorCode::PLANNING_ERROR, msg);
+      return ret.SetStageStatus(StageStatusType::ERROR, msg);
     }
   }
 
   reference_line_info->SetTrajectory(trajectory);
   reference_line_info->SetDrivable(true);
-  return Status::OK();
+  return ret;
 }
 
 void LaneFollowStage::PlanFallbackTrajectory(

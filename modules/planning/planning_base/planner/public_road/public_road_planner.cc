@@ -46,14 +46,15 @@ Status PublicRoadPlanner::Plan(const TrajectoryPoint& planning_start_point,
     scenario_debug->set_msg(scenario_->GetMsg());
   }
 
-  if (result == Scenario::STATUS_DONE) {
+  if (result.GetScenarioStatus() == ScenarioStatusType::STATUS_DONE) {
     // only updates scenario manager when previous scenario's status is
     // STATUS_DONE
     scenario_manager_.Update(planning_start_point, frame);
-  } else if (result == Scenario::STATUS_UNKNOWN) {
-    return Status(common::PLANNING_ERROR, "scenario returned unknown");
+  } else if (result.GetScenarioStatus() == ScenarioStatusType::STATUS_UNKNOWN) {
+    return Status(common::PLANNING_ERROR,
+                  result.GetTaskStatus().error_message());
   }
-  return Status::OK();
+  return Status(common::OK, result.GetTaskStatus().error_message());
 }
 
 }  // namespace planning

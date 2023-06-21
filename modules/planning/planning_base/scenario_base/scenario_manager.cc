@@ -72,7 +72,8 @@ void ScenarioManager::Update(const common::TrajectoryPoint& ego_point,
   ACHECK(!frame->reference_line_info().empty());
   for (auto scenario : scenario_list_) {
     if (current_scenario_.get() == scenario.get() &&
-        current_scenario_->GetStatus() == Scenario::STATUS_PROCESSING) {
+        current_scenario_->GetStatus() ==
+            ScenarioStatusType::STATUS_PROCESSING) {
       // The previous scenario has higher priority
       return;
     }

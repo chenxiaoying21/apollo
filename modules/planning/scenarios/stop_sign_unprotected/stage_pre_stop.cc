@@ -50,14 +50,14 @@ using apollo::perception::PerceptionObstacle;
 using StopSignLaneVehicles =
     std::unordered_map<std::string, std::vector<std::string>>;
 
-Stage::StageStatus StopSignUnprotectedStagePreStop::Process(
+StageResult StopSignUnprotectedStagePreStop::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: PreStop";
   CHECK_NOTNULL(frame);
   CHECK_NOTNULL(context_);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "StopSignUnprotectedStagePreStop planning error";
   }
 
@@ -120,7 +120,7 @@ Stage::StageStatus StopSignUnprotectedStagePreStop::Process(
     AddWatchVehicle(*obstacle, &watch_vehicles);
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 /**
@@ -253,12 +253,12 @@ bool StopSignUnprotectedStagePreStop::CheckADCStop(
   return true;
 }
 
-Stage::StageStatus StopSignUnprotectedStagePreStop::FinishStage() {
+StageResult StopSignUnprotectedStagePreStop::FinishStage() {
   auto scenario_context = GetContextAs<StopSignUnprotectedContext>();
   scenario_context->stop_start_time = Clock::NowInSeconds();
   next_stage_ = "STOP_SIGN_UNPROTECTED_STOP";
 
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

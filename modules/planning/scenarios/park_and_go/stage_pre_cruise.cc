@@ -29,7 +29,7 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus ParkAndGoStagePreCruise::Process(
+StageResult ParkAndGoStagePreCruise::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Pre Cruise";
   CHECK_NOTNULL(frame);
@@ -39,10 +39,10 @@ Stage::StageStatus ParkAndGoStagePreCruise::Process(
       GetContextAs<ParkAndGoContext>()->scenario_config;
 
   frame->mutable_open_space_info()->set_is_on_open_space_trajectory(true);
-  bool plan_ok = ExecuteTaskOnOpenSpace(frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnOpenSpace(frame);
+  if (result.HasError()) {
     AERROR << "ParkAndGoStagePreCruise planning error";
-    return StageStatus::ERROR;
+    return result.SetStageStatus(StageStatusType::ERROR);
   }
   // const bool ready_to_cruise =
   //     CheckADCReadyToCruise(frame, scenario_config_);
@@ -55,12 +55,12 @@ Stage::StageStatus ParkAndGoStagePreCruise::Process(
                             scenario_config)) {
     return FinishStage();
   }
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus ParkAndGoStagePreCruise::FinishStage() {
+StageResult ParkAndGoStagePreCruise::FinishStage() {
   next_stage_ = "PARK_AND_GO_CRUISE";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

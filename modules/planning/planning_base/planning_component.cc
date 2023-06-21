@@ -111,7 +111,9 @@ bool PlanningComponent::Init() {
 
   planning_learning_data_writer_ = node_->CreateWriter<PlanningLearningData>(
       config_.topic_config().planning_learning_data_topic());
-
+  command_status_writer_ =
+      node_->CreateWriter<external_command::CommandStatus>(
+          FLAGS_planning_command_status);
   return true;
 }
 
@@ -196,6 +198,23 @@ bool PlanningComponent::Proc(
     p.set_relative_time(p.relative_time() + dt);
   }
   planning_writer_->Write(adc_trajectory_pb);
+
+  // Send command execution feedback.
+  // Error occured while executing the command.
+  external_command::CommandStatus command_status;
+  common::util::FillHeader(node_->Name(), &command_status);
+  if (adc_trajectory_pb.estop().is_estop()) {
+    command_status.set_status(
+        external_command::CommandStatusType::ERROR);
+    command_status.set_message(adc_trajectory_pb.estop().reason());
+  } else if (planning_base_->IsPlanningFinished()) {
+    command_status.set_status(
+        external_command::CommandStatusType::FINISHED);
+  } else {
+    command_status.set_status(
+        external_command::CommandStatusType::RUNNING);
+  }
+  command_status_writer_->Write(command_status);
 
   // record in history
   auto* history = injector_->history();

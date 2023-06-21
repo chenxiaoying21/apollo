@@ -36,7 +36,7 @@ using apollo::common::TrajectoryPoint;
 using apollo::common::VehicleConfigHelper;
 using apollo::common::VehicleSignal;
 
-Stage::StageStatus EmergencyPullOverStageStandby::Process(
+StageResult EmergencyPullOverStageStandby::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Standby";
   CHECK_NOTNULL(frame);
@@ -85,8 +85,8 @@ Stage::StageStatus EmergencyPullOverStageStandby::Process(
            << virtual_obstacle_id << "] s[" << stop_line_s << "]";
   }
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "EmergencyPullOverStageStandby planning error";
   }
 
@@ -95,10 +95,10 @@ Stage::StageStatus EmergencyPullOverStageStandby::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus EmergencyPullOverStageStandby::FinishStage() {
+StageResult EmergencyPullOverStageStandby::FinishStage() {
   return FinishScenario();
 }
 

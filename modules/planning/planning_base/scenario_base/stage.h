@@ -27,6 +27,7 @@
 
 #include "modules/planning/planning_base/scenario_base/proto/scenario_pipeline.pb.h"
 #include "modules/planning/planning_base/common/dependency_injector.h"
+#include "modules/planning/planning_base/scenario_base/process_result.h"
 
 namespace apollo {
 namespace common {
@@ -43,13 +44,6 @@ class ReferenceLineInfo;
 
 class Stage {
  public:
-  enum StageStatus {
-    ERROR = 1,
-    READY = 2,
-    RUNNING = 3,
-    FINISHED = 4,
-  };
-
   Stage();
 
   virtual bool Init(const StagePipeline& config,
@@ -63,7 +57,7 @@ class Stage {
    * If the stage want to transit to a different stage after finish,
    * it should set the type of 'next_stage_'.
    */
-  virtual StageStatus Process(
+  virtual StageResult Process(
       const common::TrajectoryPoint& planning_init_point, Frame* frame) = 0;
 
   const std::string& Name() const;
@@ -78,15 +72,15 @@ class Stage {
   const std::string& NextStage() const { return next_stage_; }
 
  protected:
-  bool ExecuteTaskOnReferenceLine(
+  StageResult ExecuteTaskOnReferenceLine(
       const common::TrajectoryPoint& planning_start_point, Frame* frame);
 
-  bool ExecuteTaskOnReferenceLineForOnlineLearning(
+  StageResult ExecuteTaskOnReferenceLineForOnlineLearning(
       const common::TrajectoryPoint& planning_start_point, Frame* frame);
 
-  bool ExecuteTaskOnOpenSpace(Frame* frame);
+  StageResult ExecuteTaskOnOpenSpace(Frame* frame);
 
-  virtual Stage::StageStatus FinishScenario();
+  virtual StageResult FinishScenario();
 
   void RecordDebugInfo(ReferenceLineInfo* reference_line_info,
                        const std::string& name, const double time_diff_ms);

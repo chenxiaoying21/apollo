@@ -37,6 +37,59 @@ Status PlanningBase::Init(const PlanningConfig& config) {
   return Status::OK();
 }
 
+bool PlanningBase::IsPlanningFinished() {
+  if (nullptr == frame_ || frame_->reference_line_info().empty() ||
+      nullptr == local_view_.routing) {
+    return true;
+  }
+  const auto& reference_line_info = frame_->reference_line_info().front();
+  // Check if the ReferenceLineInfo is the last passage.
+  const auto& reference_points =
+      reference_line_info.reference_line().reference_points();
+  if (reference_points.empty()) {
+    return true;
+  }
+  const auto& last_reference_point = reference_points.back();
+  const auto& lane_way_points = last_reference_point.lane_waypoints();
+  if (lane_way_points.empty()) {
+    return true;
+  }
+  // Get the latest RoutingRequest
+  auto& routing_request = local_view_.routing->routing_request();
+  if (routing_request.waypoint().empty()) {
+    return true;
+  }
+  // If the lane id of RoutingRequest end point and the last way point of
+  // ReferenceLineInfo is the same, ReferenceLineInfo is on the last passage.
+  const std::string& end_lane_id_of_routing_request =
+      routing_request.waypoint().rbegin()->id();
+  bool is_reference_line_on_last_passage = false;
+  for (const auto& way_point : lane_way_points) {
+    if (way_point.lane->id().id() == end_lane_id_of_routing_request) {
+      is_reference_line_on_last_passage = true;
+      break;
+    }
+  }
+  if (!is_reference_line_on_last_passage) {
+    return false;
+  }
+  // Check if vehicle reached end of the ReferenceLineInfo
+  double adc_s = reference_line_info.AdcSlBoundary().end_s();
+  const double max_adc_stop_speed = common::VehicleConfigHelper::Instance()
+                                        ->GetConfig()
+                                        .vehicle_param()
+                                        .max_abs_speed_when_stopped();
+  const double current_vehicle_speed =
+      injector_->vehicle_state()->linear_velocity();
+  const double kStopDistanceTolerance = 2.0;
+  if (current_vehicle_speed <= max_adc_stop_speed &&
+      adc_s + kStopDistanceTolerance >
+          reference_line_info.reference_line().Length()) {
+    return true;
+  }
+  return false;
+}
+
 void PlanningBase::FillPlanningPb(const double timestamp,
                                   ADCTrajectory* const trajectory_pb) {
   trajectory_pb->mutable_header()->set_timestamp_sec(timestamp);
@@ -51,5 +104,6 @@ void PlanningBase::FillPlanningPb(const double timestamp,
   trajectory_pb->mutable_routing_header()->CopyFrom(
       local_view_.routing->header());
 }
+
 }  // namespace planning
 }  // namespace apollo

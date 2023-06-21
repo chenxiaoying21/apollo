@@ -34,7 +34,7 @@ using apollo::common::TrajectoryPoint;
 using apollo::cyber::Clock;
 using apollo::hdmap::PathOverlap;
 
-Stage::StageStatus YieldSignStageApproach::Process(
+StageResult YieldSignStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
@@ -42,8 +42,8 @@ Stage::StageStatus YieldSignStageApproach::Process(
   auto scenario_context = GetContextAs<YieldSignContext>();
   scenario_config_.CopyFrom(scenario_context->scenario_config);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "YieldSignStageApproach planning error";
   }
 
@@ -142,10 +142,10 @@ Stage::StageStatus YieldSignStageApproach::Process(
     }
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus YieldSignStageApproach::FinishStage() {
+StageResult YieldSignStageApproach::FinishStage() {
   // update PlanningContext
   auto* yield_sign_status = injector_->planning_context()
                                 ->mutable_planning_status()
@@ -161,7 +161,7 @@ Stage::StageStatus YieldSignStageApproach::FinishStage() {
   scenario_context->creep_start_time = Clock::NowInSeconds();
 
   next_stage_ = "YIELD_SIGN_CREEP";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning

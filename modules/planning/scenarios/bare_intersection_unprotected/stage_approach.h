@@ -35,13 +35,13 @@ struct BareIntersectionUnprotectedContext;
 
 class BareIntersectionUnprotectedStageApproach : public Stage {
  public:
-  Stage::StageStatus Process(const common::TrajectoryPoint& planning_init_point,
-                             Frame* frame) override;
+  StageResult Process(const common::TrajectoryPoint& planning_init_point,
+                      Frame* frame) override;
 
   bool CheckClear(const ReferenceLineInfo& reference_line_info,
                   std::vector<std::string>* wait_for_obstacle_ids);
 
-  Stage::StageStatus FinishStage(Frame* frame);
+  StageResult FinishStage(Frame* frame);
 
  private:
   ScenarioBareIntersectionUnprotectedConfig scenario_config_;

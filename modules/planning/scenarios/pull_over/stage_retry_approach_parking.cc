@@ -31,19 +31,19 @@ namespace planning {
 
 using apollo::common::TrajectoryPoint;
 
-Stage::StageStatus PullOverStageRetryApproachParking::FinishStage() {
+StageResult PullOverStageRetryApproachParking::FinishStage() {
   next_stage_ = "PULL_OVER_RETRY_PARKING";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
-Stage::StageStatus PullOverStageRetryApproachParking::Process(
+StageResult PullOverStageRetryApproachParking::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: RetryApproachParking";
   CHECK_NOTNULL(frame);
   CHECK_NOTNULL(context_);
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "PullOverStageRetryApproachParking planning error";
   }
 
@@ -51,7 +51,7 @@ Stage::StageStatus PullOverStageRetryApproachParking::Process(
     return FinishStage();
   }
 
-  return StageStatus::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
 bool PullOverStageRetryApproachParking::CheckADCStop(const Frame& frame) {

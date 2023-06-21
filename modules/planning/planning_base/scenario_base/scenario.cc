@@ -32,7 +32,7 @@ namespace apollo {
 namespace planning {
 
 Scenario::Scenario()
-    : scenario_status_(STATUS_UNKNOWN),
+    : scenario_result_(ScenarioResult(ScenarioStatusType::STATUS_UNKNOWN)),
       current_stage_(nullptr),
       msg_(""),
       injector_(nullptr),
@@ -77,7 +77,7 @@ bool Scenario::Init(std::shared_ptr<DependencyInjector> injector,
   return true;
 }
 
-Scenario::ScenarioStatus Scenario::Process(
+ScenarioResult Scenario::Process(
     const common::TrajectoryPoint& planning_init_point, Frame* frame) {
   if (current_stage_ == nullptr) {
     current_stage_ = CreateStage(
@@ -85,53 +85,59 @@ Scenario::ScenarioStatus Scenario::Process(
     AINFO << "Create stage" << current_stage_->Name();
   }
   if (current_stage_->Name().empty()) {
-    scenario_status_ = STATUS_DONE;
-    return scenario_status_;
+    scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_DONE);
+    return scenario_result_;
   }
   auto ret = current_stage_->Process(planning_init_point, frame);
-  switch (ret) {
-    case Stage::ERROR: {
+  scenario_result_.SetStageResult(ret);
+  switch (ret.GetStageStatus()) {
+    case StageStatusType::ERROR: {
       AERROR << "Stage '" << current_stage_->Name() << "' returns error";
-      scenario_status_ = STATUS_UNKNOWN;
+      scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_UNKNOWN);
       break;
     }
-    case Stage::RUNNING: {
-      scenario_status_ = STATUS_PROCESSING;
+    case StageStatusType::RUNNING: {
+      scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_PROCESSING);
       break;
     }
-    case Stage::FINISHED: {
+    case StageStatusType::FINISHED: {
       auto next_stage = current_stage_->NextStage();
       if (next_stage != current_stage_->Name()) {
         AINFO << "switch stage from " << current_stage_->Name() << " to "
               << next_stage;
         if (next_stage.empty()) {
-          scenario_status_ = STATUS_DONE;
-          return scenario_status_;
+          scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_DONE);
+          return scenario_result_;
         }
         if (stage_pipeline_map_.find(next_stage) == stage_pipeline_map_.end()) {
           AERROR << "Failed to find config for stage: " << next_stage;
-          scenario_status_ = STATUS_UNKNOWN;
-          return scenario_status_;
+          scenario_result_.SetScenarioStatus(
+              ScenarioStatusType::STATUS_UNKNOWN);
+          return scenario_result_;
         }
         current_stage_ = CreateStage(*stage_pipeline_map_[next_stage]);
         if (current_stage_ == nullptr) {
           AWARN << "Current stage is a null pointer.";
-          return STATUS_UNKNOWN;
+          scenario_result_.SetScenarioStatus(
+              ScenarioStatusType::STATUS_UNKNOWN);
+          return scenario_result_;
         }
       }
       if (current_stage_ != nullptr && !current_stage_->Name().empty()) {
-        scenario_status_ = STATUS_PROCESSING;
+        scenario_result_.SetScenarioStatus(
+            ScenarioStatusType::STATUS_PROCESSING);
       } else {
-        scenario_status_ = STATUS_DONE;
+        scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_DONE);
       }
       break;
     }
     default: {
-      AWARN << "Unexpected Stage return value: " << ret;
-      scenario_status_ = STATUS_UNKNOWN;
+      AWARN << "Unexpected Stage return value: "
+            << static_cast<int>(ret.GetStageStatus());
+      scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_UNKNOWN);
     }
   }
-  return scenario_status_;
+  return scenario_result_;
 }
 
 std::shared_ptr<Stage> Scenario::CreateStage(
@@ -154,7 +160,7 @@ const std::string Scenario::GetStage() const {
 }
 
 void Scenario::Reset() {
-  scenario_status_ = ScenarioStatus::STATUS_UNKNOWN;
+  scenario_result_ = ScenarioResult(ScenarioStatusType::STATUS_UNKNOWN);
   current_stage_ = nullptr;
 }
 

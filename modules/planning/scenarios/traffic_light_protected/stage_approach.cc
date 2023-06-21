@@ -34,7 +34,7 @@ using apollo::common::TrajectoryPoint;
 using apollo::hdmap::PathOverlap;
 using apollo::perception::TrafficLight;
 
-Stage::StageStatus TrafficLightProtectedStageApproach::Process(
+StageResult TrafficLightProtectedStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
@@ -44,8 +44,8 @@ Stage::StageStatus TrafficLightProtectedStageApproach::Process(
   const ScenarioTrafficLightProtectedConfig& scenario_config =
       context->scenario_config;
 
-  bool plan_ok = ExecuteTaskOnReferenceLine(planning_init_point, frame);
-  if (!plan_ok) {
+  StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
+  if (result.HasError()) {
     AERROR << "TrafficLightProtectedStageApproach planning error";
   }
 
@@ -96,10 +96,10 @@ Stage::StageStatus TrafficLightProtectedStageApproach::Process(
     return FinishStage();
   }
 
-  return Stage::RUNNING;
+  return result.SetStageStatus(StageStatusType::RUNNING);
 }
 
-Stage::StageStatus TrafficLightProtectedStageApproach::FinishStage() {
+StageResult TrafficLightProtectedStageApproach::FinishStage() {
   auto context = GetContextAs<TrafficLightProtectedContext>();
   auto* traffic_light = injector_->planning_context()
                             ->mutable_planning_status()
@@ -111,7 +111,7 @@ Stage::StageStatus TrafficLightProtectedStageApproach::FinishStage() {
   }
 
   next_stage_ = "TRAFFIC_LIGHT_PROTECTED_INTERSECTION_CRUISE";
-  return Stage::FINISHED;
+  return StageResult(StageStatusType::FINISHED);
 }
 
 }  // namespace planning
