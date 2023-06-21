@@ -1,0 +1,15 @@
+<package>
+    <name>external-command-speed</name>
+    <version>1.0.0</version>
+    <description>
+    speed command processor.
+    </description>
+    <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
+    <type>module</type>
+    <src_path>//speed_command_processor</src_path>
+    <license>BSD</license>
+    <author>Apollo</author>
+    <depend>bazel-extend-tools-dev</depend>
+    <depend type="binary" repo_name="common" lib_names="common">common-dev</depend>
+    <builder>bazel</builder>
+  </package>

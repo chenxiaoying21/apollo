@@ -188,3 +188,29 @@ py_proto_library(
         "//modules/common_msgs/routing_msgs:routing_py_pb2",
     ],
 )
+
+
+cc_proto_library(
+    name = "planning_command_cc_proto",
+    deps = [
+        ":planning_command_proto",
+    ],
+)
+
+proto_library(
+    name = "planning_command_proto",
+    srcs = ["planning_command.proto"],
+    deps = [
+        "@com_google_protobuf//:any_proto",
+        "//modules/common_msgs/basic_msgs:geometry_proto",
+        "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/common_msgs/basic_msgs:header_proto",
+    ],
+)
+
+py_proto_library(
+    name = "planning_command_py_pb2",
+    deps = [
+        ":planning_command_proto",
+    ],
+)

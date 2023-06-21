@@ -273,7 +273,6 @@ ErrorCode VehicleController<SensorType>::Update(
           mode = Chassis::COMPLETE_AUTO_DRIVE;
           break;
         }
-        case control::DrivingAction::STOP:
         case control::DrivingAction::RESET: {
           // In COMPLETE_MANUAL mode
           break;

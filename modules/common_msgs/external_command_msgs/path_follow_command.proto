@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package apollo.external_command;
+
+import "modules/common_msgs/basic_msgs/header.proto";
+import "modules/common_msgs/external_command_msgs/geometry.proto";
+
+message PathFollowCommand {
+  optional apollo.common.Header header = 1;
+  // Unique identification for command.
+  optional int64 command_id = 2 [default = -1];
+  // Path point to be followed, a valid path should contain >= 2 points. No lane
+  // on the map is followed for this command.
+  repeated Pose way_point = 3;
+  // Left boundary of the path, each boundary point mapped to the path point.
+  repeated Pose left_boundary = 4;
+  // Right boundary of the path, each boundary point mapped to the path point.
+  repeated Pose right_boundary = 5;
+  // Expected speed when executing this command. If "target_speed" > maximum
+  // speed of the vehicle, use maximum speed of the vehicle instead. If it is
+  // not given, the default target speed of system will be used.
+  optional double target_speed = 6;
+}

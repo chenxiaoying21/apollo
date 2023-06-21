@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<apollo::cyber::Node> node(
       apollo::cyber::CreateNode("routing_tester"));
   auto writer = node->CreateWriter<apollo::routing::RoutingRequest>(
-      FLAGS_routing_request_topic);
+      "/apollo/raw_routing_request");
 
   Rate rate(1.0);
   while (apollo::cyber::OK()) {

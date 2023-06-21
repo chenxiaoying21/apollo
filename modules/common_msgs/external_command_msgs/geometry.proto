@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package apollo.external_command;
+
+message Point {
+  // x coordinate.
+  required double x = 1;
+  // y coordinate.
+  required double y = 2;
+}
+
+message Pose {
+  // x coordinate.
+  required double x = 1;
+  // y coordinate.
+  required double y = 2;
+  // Rotation around z axis in Cartesian coordinate system.
+  optional double heading = 3;
+}

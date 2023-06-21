@@ -33,8 +33,10 @@ DEFINE_string(planning_learning_data_topic, "/apollo/planning/learning_data",
               "planning learning data");
 DEFINE_string(planning_trajectory_topic, "/apollo/planning",
               "planning trajectory topic name");
-DEFINE_string(planning_pad_topic, "/apollo/planning/pad",
-              "planning pad topic name");
+DEFINE_string(planning_command, "/apollo/planning/command",
+              "Topic name of input command to planning module.");
+DEFINE_string(planning_command_status, "/apollo/planning/command_status",
+              "Topic name of planning command status.");
 DEFINE_string(monitor_topic, "/apollo/monitor", "Monitor");
 DEFINE_string(pad_topic, "/apollo/control/pad",
               "control pad message topic name");
@@ -52,8 +54,7 @@ DEFINE_string(pointcloud_topic,
 DEFINE_string(pointcloud_16_topic,
               "/apollo/sensor/lidar16/compensator/PointCloud2",
               "16 beam Lidar pointcloud topic name");
-DEFINE_string(pointcloud_16_raw_topic,
-              "/apollo/sensor/lidar16/PointCloud2",
+DEFINE_string(pointcloud_16_raw_topic, "/apollo/sensor/lidar16/PointCloud2",
               "16 beam Lidar raw pointcloud topic name");
 DEFINE_string(pointcloud_16_front_left_raw_topic,
               "/apollo/sensor/lidar16/left/PointCloud2",
@@ -116,10 +117,6 @@ DEFINE_string(traffic_light_detection_topic, "/apollo/perception/traffic_light",
 DEFINE_string(perception_lane_mask_segmentation_topic,
               "/apollo/perception/lane_mask",
               "lane mask segmentation topic name");
-DEFINE_string(routing_request_topic, "/apollo/routing_request",
-              "routing request topic name");
-DEFINE_string(routing_response_topic, "/apollo/routing_response",
-              "routing response topic name");
 DEFINE_string(routing_response_history_topic,
               "/apollo/routing_response_history",
               "routing response history topic name");
