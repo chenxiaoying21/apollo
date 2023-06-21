@@ -56,6 +56,7 @@ install(
     deps = [
         "//modules/tools/control_info:install",
         "//modules/tools/create_map:install",
+        "//modules/tools/data_cleaner:install",
         "//modules/tools/dump_gpsbin:install",
         "//modules/tools/gen_vehicle_protocol:install",
         "//modules/tools/localization:install",
