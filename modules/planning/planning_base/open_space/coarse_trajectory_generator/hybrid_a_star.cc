@@ -22,8 +22,8 @@
 
 #include <limits>
 
+#include "modules/planning/planning_base/common/util/print_debug_info.h"
 #include "modules/planning/planning_base/math/piecewise_jerk/piecewise_jerk_speed_problem.h"
-
 namespace apollo {
 namespace planning {
 
@@ -46,6 +46,14 @@ HybridAStar::HybridAStar(const PlannerOpenSpaceConfig& open_space_conf) {
   step_size_ = planner_open_space_config_.warm_start_config().step_size();
   xy_grid_resolution_ =
       planner_open_space_config_.warm_start_config().xy_grid_resolution();
+  arc_length_ =
+      planner_open_space_config_.warm_start_config().phi_grid_resolution() *
+      vehicle_param_.wheel_base() /
+      std::tan(max_steer_angle_ * 2 / (next_node_num_ / 2 - 1));
+  if (arc_length_ < std::sqrt(2) * xy_grid_resolution_) {
+    arc_length_ = std::sqrt(2) * xy_grid_resolution_;
+  }
+  AINFO << "arc_length" << arc_length_;
   delta_t_ = planner_open_space_config_.delta_t();
   traj_forward_penalty_ =
       planner_open_space_config_.warm_start_config().traj_forward_penalty();
@@ -93,38 +101,20 @@ HybridAStar::HybridAStar(const PlannerOpenSpaceConfig& open_space_conf) {
           .max_acc_jerk();
 }
 
-bool HybridAStar::AnalyticExpansion(std::shared_ptr<Node3d> current_node) {
+bool HybridAStar::AnalyticExpansion(
+    std::shared_ptr<Node3d> current_node,
+    std::shared_ptr<Node3d>& candidate_final_node) {
   std::shared_ptr<ReedSheppPath> reeds_shepp_to_check =
       std::make_shared<ReedSheppPath>();
   if (!reed_shepp_generator_->ShortestRSP(current_node, end_node_,
                                           reeds_shepp_to_check)) {
-    AERROR << "ShortestRSP failed";
     return false;
   }
   if (!RSPCheck(reeds_shepp_to_check)) {
     return false;
   }
-
-  AINFO << "Reach the end configuration with Reed Sharp";
-  AINFO << "current node x" << current_node->GetX() << ","
-        << current_node->GetY();
-  AINFO << "final node x" << end_node_->GetX() << "," << end_node_->GetY();
-  AINFO << "distance "
-        << sqrt(pow((current_node->GetX() - end_node_->GetX()), 2) +
-                pow((current_node->GetY() - end_node_->GetY()), 2));
-  AINFO << "delta phi" << current_node->GetPhi() - end_node_->GetPhi();
-  AINFO << "reed shepp set_type,gear,length";
-  for (size_t i = 0; i < reeds_shepp_to_check->segs_types.size(); i++) {
-    AINFO << reeds_shepp_to_check->segs_types[i] << ", "
-          << reeds_shepp_to_check->gear[i] << ","
-          << reeds_shepp_to_check->segs_lengths[i];
-  }
-  AINFO << reeds_shepp_to_check->x.front() << ","
-        << reeds_shepp_to_check->y.front();
-  AINFO << reeds_shepp_to_check->x.back() << ","
-        << reeds_shepp_to_check->y.back();
   // load the whole RSP as nodes and add to the close set
-  final_node_ = LoadRSPinCS(reeds_shepp_to_check, current_node);
+  candidate_final_node = LoadRSPinCS(reeds_shepp_to_check, current_node);
   return true;
 }
 
@@ -188,7 +178,7 @@ std::shared_ptr<Node3d> HybridAStar::LoadRSPinCS(
       reeds_shepp_to_end->x, reeds_shepp_to_end->y, reeds_shepp_to_end->phi,
       XYbounds_, planner_open_space_config_));
   end_node->SetPre(current_node);
-  close_set_.emplace(end_node->GetIndex(), end_node);
+  end_node->SetTrajCost(current_node->GetTrajCost() + reeds_shepp_to_end->cost);
   return end_node;
 }
 
@@ -212,7 +202,6 @@ std::shared_ptr<Node3d> HybridAStar::Next_node_generator(
   }
   // take above motion primitive to generate a curve driving the car to a
   // different grid
-  double arc = std::sqrt(2) * xy_grid_resolution_;
   std::vector<double> intermediate_x;
   std::vector<double> intermediate_y;
   std::vector<double> intermediate_phi;
@@ -222,15 +211,17 @@ std::shared_ptr<Node3d> HybridAStar::Next_node_generator(
   intermediate_x.push_back(last_x);
   intermediate_y.push_back(last_y);
   intermediate_phi.push_back(last_phi);
-  for (size_t i = 0; i < arc / step_size_; ++i) {
-    const double next_x = last_x + traveled_distance * std::cos(last_phi);
-    const double next_y = last_y + traveled_distance * std::sin(last_phi);
-    const double next_phi = common::math::NormalizeAngle(
-        last_phi +
-        traveled_distance / vehicle_param_.wheel_base() * std::tan(steering));
+  for (size_t i = 0; i < arc_length_ / step_size_; ++i) {
+    const double next_phi = last_phi + traveled_distance /
+                                           vehicle_param_.wheel_base() *
+                                           std::tan(steering);
+    const double next_x =
+        last_x + traveled_distance * std::cos((last_phi + next_phi) / 2.0);
+    const double next_y =
+        last_y + traveled_distance * std::sin((last_phi + next_phi) / 2.0);
     intermediate_x.push_back(next_x);
     intermediate_y.push_back(next_y);
-    intermediate_phi.push_back(next_phi);
+    intermediate_phi.push_back(common::math::NormalizeAngle(next_phi));
     last_x = next_x;
     last_y = next_y;
     last_phi = next_phi;
@@ -291,6 +282,12 @@ bool HybridAStar::GetResult(HybridAStartResult* result) {
   std::vector<double> hybrid_a_x;
   std::vector<double> hybrid_a_y;
   std::vector<double> hybrid_a_phi;
+  AINFO << "switch node:" << current_node->GetXs().back() << ", "
+        << current_node->GetYs().back();
+  AINFO << "switch node:" << current_node->GetXs().front() << ", "
+        << current_node->GetYs().front();
+  AINFO << "cost: " << final_node_->GetCost() << ","
+        << final_node_->GetTrajCost();
   while (current_node->GetPreNode() != nullptr) {
     std::vector<double> x = current_node->GetXs();
     std::vector<double> y = current_node->GetYs();
@@ -697,6 +694,7 @@ bool HybridAStar::Plan(
   close_set_.clear();
   open_pq_ = decltype(open_pq_)();
   final_node_ = nullptr;
+  PrintCurves print_curves;
   std::vector<std::vector<common::math::LineSegment2d>>
       obstacles_linesegments_vec;
   for (const auto& obstacle_vertices : obstacles_vertices_vec) {
@@ -710,15 +708,12 @@ bool HybridAStar::Plan(
     obstacles_linesegments_vec.emplace_back(obstacle_linesegments);
   }
   obstacles_linesegments_vec_ = std::move(obstacles_linesegments_vec);
-  std::stringstream ssm;
-  ssm << "roi boundary" << std::endl;
   for (auto vec : obstacles_linesegments_vec_) {
     for (auto linesg : vec) {
-      ssm << linesg.start().x() << "," << linesg.start().y() << std::endl;
-      ssm << linesg.end().x() << "," << linesg.end().y() << std::endl;
+      print_curves.AddPoint("roi_boundary", linesg.start());
+      print_curves.AddPoint("roi_boundary", linesg.end());
     }
   }
-  ssm << "--vehicle start box" << std::endl;
   Vec2d sposition(sx, sy);
   Vec2d svec_to_center((vehicle_param_.front_edge_to_center() -
                         vehicle_param_.back_edge_to_center()) /
@@ -728,10 +723,9 @@ bool HybridAStar::Plan(
                            2.0);
   Vec2d scenter(sposition + svec_to_center.rotate(sphi));
   Box2d sbox(scenter, sphi, vehicle_param_.length(), vehicle_param_.width());
-  for (auto corner : sbox.GetAllCorners())
-    ssm << corner.x() << "," << corner.y() << std::endl;
-  ssm << "--vehicle end box" << std::endl;
+  print_curves.AddPoint("vehicle_start_box", sbox.GetAllCorners());
   Vec2d eposition(ex, ey);
+  print_curves.AddPoint("end_position", eposition);
   Vec2d evec_to_center((vehicle_param_.front_edge_to_center() -
                         vehicle_param_.back_edge_to_center()) /
                            2.0,
@@ -740,13 +734,7 @@ bool HybridAStar::Plan(
                            2.0);
   Vec2d ecenter(eposition + evec_to_center.rotate(ephi));
   Box2d ebox(ecenter, ephi, vehicle_param_.length(), vehicle_param_.width());
-  for (auto corner : ebox.GetAllCorners())
-    ssm << corner.x() << "," << corner.y() << std::endl;
-  // load XYbounds
-  ssm << "--" << std::endl;
-  ssm << "XYbounds" << std::endl;
-  ssm << XYbounds[0] << ", " << XYbounds[1] << std::endl;
-  ssm << XYbounds[2] << ", " << XYbounds[3] << std::endl;
+  print_curves.AddPoint("vehicle_end_box", ebox.GetAllCorners());
   XYbounds_ = XYbounds;
   // load nodes and obstacles
   start_node_.reset(
@@ -755,7 +743,6 @@ bool HybridAStar::Plan(
       new Node3d({ex}, {ey}, {ephi}, XYbounds_, planner_open_space_config_));
   AINFO << "start node" << sx << "," << sy << "," << sphi;
   AINFO << "end node " << ex << "," << ey << "," << ephi;
-  AINFO << ssm.str();
   if (!ValidityCheck(start_node_)) {
     AERROR << "start_node in collision with obstacles";
     AERROR << start_node_->GetX() << "," << start_node_->GetY() << ","
@@ -771,67 +758,92 @@ bool HybridAStar::Plan(
                                                   obstacles_linesegments_vec_);
   ADEBUG << "map time " << Clock::NowInSeconds() - map_time;
   // load open set, pq
-  open_set_.emplace(start_node_->GetIndex(), start_node_);
-  open_pq_.emplace(start_node_->GetIndex(), start_node_->GetCost());
+  open_set_.insert(start_node_->GetIndex());
+  open_pq_.emplace(start_node_, start_node_->GetCost());
   // Hybrid A* begins
   size_t explored_node_num = 0;
+  size_t available_result_num = 0;
   double astar_start_time = Clock::NowInSeconds();
   double heuristic_time = 0.0;
   double rs_time = 0.0;
-  while (!open_pq_.empty()) {
-    // take out the lowest cost neighboring node
-    const std::string current_id = open_pq_.top().first;
+  double node_generator_time = 0.0;
+  double validity_check_time = 0.0;
+  size_t max_explored_num = 10000;
+  static constexpr int kMaxNodeNum = 200000;
+  std::vector<std::shared_ptr<Node3d>> candidate_final_nodes;
+  while (!open_pq_.empty() && open_pq_.size() < kMaxNodeNum &&
+         (available_result_num == 0 || explored_node_num < max_explored_num)) {
+    std::shared_ptr<Node3d> current_node = open_pq_.top().first;
     open_pq_.pop();
-    std::shared_ptr<Node3d> current_node = open_set_[current_id];
-    // check if an analystic curve could be connected from current
-    // configuration to the end configuration without collision. if so, search
-    // ends.
     const double rs_start_time = Clock::NowInSeconds();
-    if (AnalyticExpansion(current_node)) {
-      break;
+    std::shared_ptr<Node3d> final_node = nullptr;
+    if (AnalyticExpansion(current_node, final_node)) {
+      if (final_node_ == nullptr ||
+          final_node_->GetTrajCost() > final_node->GetTrajCost()) {
+        final_node_ = final_node;
+      }
+      available_result_num++;
     }
+    explored_node_num++;
     const double rs_end_time = Clock::NowInSeconds();
     rs_time += rs_end_time - rs_start_time;
-    close_set_.emplace(current_node->GetIndex(), current_node);
-    for (size_t i = 0; i < next_node_num_; ++i) {
+    close_set_.insert(current_node->GetIndex());
+    size_t begin_index = 0;
+    size_t end_index = next_node_num_;
+    std::unordered_set<std::string> temp_set;
+    for (size_t i = begin_index; i < end_index; ++i) {
+      const double gen_node_time = Clock::NowInSeconds();
       std::shared_ptr<Node3d> next_node = Next_node_generator(current_node, i);
+      node_generator_time += Clock::NowInSeconds() - gen_node_time;
+
       // boundary check failure handle
       if (next_node == nullptr) {
         continue;
       }
       // check if the node is already in the close set
-      if (close_set_.find(next_node->GetIndex()) != close_set_.end()) {
+      if (close_set_.count(next_node->GetIndex()) > 0) {
         continue;
       }
       // collision check
+      const double validity_check_start_time = Clock::NowInSeconds();
       if (!ValidityCheck(next_node)) {
         continue;
       }
-      if (open_set_.find(next_node->GetIndex()) == open_set_.end()) {
-        explored_node_num++;
+      validity_check_time += Clock::NowInSeconds() - validity_check_start_time;
+      if (open_set_.count(next_node->GetIndex()) == 0) {
         const double start_time = Clock::NowInSeconds();
         CalculateNodeCost(current_node, next_node);
         const double end_time = Clock::NowInSeconds();
         heuristic_time += end_time - start_time;
-        open_set_.emplace(next_node->GetIndex(), next_node);
-        open_pq_.emplace(next_node->GetIndex(), next_node->GetCost());
+        temp_set.insert(next_node->GetIndex());
+        open_pq_.emplace(next_node, next_node->GetCost());
       }
     }
+    open_set_.insert(temp_set.begin(), temp_set.end());
   }
+  AINFO << "explored node num is " << explored_node_num
+        << "available_result_num " << available_result_num;
+  AINFO << "cal node time is " << heuristic_time << "validity_check_time "
+        << validity_check_time << "node_generator_time " << node_generator_time;
+  AINFO << "reed shepp time is " << rs_time;
+  AINFO << "hybrid astar total time is "
+        << Clock::NowInSeconds() - astar_start_time;
   if (final_node_ == nullptr) {
     AERROR << "Hybrid A searching return null ptr(open_set ran out)";
-    AINFO << ssm.str();
+    print_curves.PrintToLog();
     return false;
   }
+  print_curves.AddPoint("rs_point", final_node_->GetXs().front(),
+                        final_node_->GetYs().front());
   if (!GetResult(result)) {
     AERROR << "GetResult failed";
+    print_curves.PrintToLog();
     return false;
   }
-  ADEBUG << "explored node num is " << explored_node_num;
-  ADEBUG << "heuristic time is " << heuristic_time;
-  ADEBUG << "reed shepp time is " << rs_time;
-  ADEBUG << "hybrid astar total time is "
-         << Clock::NowInSeconds() - astar_start_time;
+  for (size_t i = 0; i < result->x.size(); i++) {
+    print_curves.AddPoint("warm_path", result->x[i], result->y[i]);
+  }
+  print_curves.PrintToLog();
   return true;
 }
 }  // namespace planning
