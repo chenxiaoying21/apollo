@@ -38,11 +38,11 @@ using apollo::hdmap::EndWayPointFile;
 using apollo::hdmap::ParkGoRoutingFile;
 using apollo::relative_map::NavigationInfo;
 using apollo::routing::LaneWaypoint;
-using apollo::temp_routing_converter::RoutingRequest;
 using apollo::task_manager::CycleRoutingTask;
 using apollo::task_manager::ParkGoRoutingTask;
 using apollo::task_manager::ParkingRoutingTask;
 using apollo::task_manager::Task;
+using apollo::temp_routing_converter::RoutingRequest;
 
 using Json = nlohmann::json;
 using google::protobuf::util::JsonStringToMessage;
@@ -237,10 +237,12 @@ void SimulationWorldUpdater::RegisterMessageHandlers() {
         bool succeed = ConstructParkingRoutingTask(json, parking_routing_task);
         // For test routing
         auto routing_request = std::make_shared<RoutingRequest>();
+        routing_request->CopyFrom(parking_routing_task->routing_request());
         if (succeed) {
           task->set_task_name("parking_routing_task");
           task->set_task_type(apollo::task_manager::TaskType::PARKING_ROUTING);
           sim_world_service_.PublishTask(task);
+          sim_world_service_.PublishRoutingRequest(routing_request);
           AINFO << task->DebugString();
           sim_world_service_.PublishMonitorMessage(
               MonitorMessageItem::INFO, "parking routing task sent.");
@@ -733,8 +735,8 @@ bool SimulationWorldUpdater::ValidateCoordinate(const nlohmann::json &json) {
 }
 
 void SimulationWorldUpdater::Start() {
-  timer_.reset(new cyber::Timer(
-      kSimWorldTimeIntervalMs, [this]() { this->OnTimer(); }, false));
+  timer_.reset(new cyber::Timer(kSimWorldTimeIntervalMs,
+                                [this]() { this->OnTimer(); }, false));
   timer_->Start();
 }
 

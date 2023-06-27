@@ -17230,7 +17230,7 @@
                   "id": 8
                 },
                 "routing": {
-                  "type": "apollo.temp_routing_converter.RoutingResponse",
+                  "type": "apollo.routing.RoutingResponse",
                   "id": 9
                 },
                 "initPoint": {
@@ -17415,7 +17415,7 @@
             "CloudReferenceLineRoutingRequest": {
               "fields": {
                 "routing": {
-                  "type": "apollo.temp_routing_converter.RoutingResponse",
+                  "type": "apollo.routing.RoutingResponse",
                   "id": 1
                 }
               }

@@ -29,6 +29,7 @@
 #include "modules/external_command/command_processor/command_processor_base/proto/command_processor_config.pb.h"
 #include "cyber/cyber.h"
 #include "modules/common/adapters/adapter_gflags.h"
+#include "modules/common/util/message_util.h"
 #include "modules/external_command/command_processor/command_processor_base/command_processor_base.h"
 #include "modules/external_command/command_processor/command_processor_base/util/lane_way_tool.h"
 #include "modules/external_command/command_processor/command_processor_base/util/message_reader.h"
@@ -210,6 +211,8 @@ void MotionCommandProcessorBase<T>::OnCommand(
   }
   planning_command->set_command_id(command->command_id());
   // Send routing response to planning module.
+  std::string module_name = "external_command";
+  common::util::FillHeader(module_name, planning_command.get());
   planning_command_writer_->Write(planning_command);
   status->set_status(CommandStatusType::RUNNING);
 }
