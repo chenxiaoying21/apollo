@@ -25,6 +25,7 @@
 #include "modules/drivers/canbus/can_client/can_client_factory.h"
 
 using apollo::common::ErrorCode;
+using apollo::control::ChassisCommand;
 using apollo::control::ControlCommand;
 using apollo::cyber::Time;
 using apollo::cyber::class_loader::ClassLoader;
@@ -86,6 +87,11 @@ bool CanbusComponent::Init() {
   control_cmd_reader_config.pending_queue_size =
       FLAGS_control_cmd_pending_queue_size;
 
+  cyber::ReaderConfig chassis_cmd_reader_config;
+  chassis_cmd_reader_config.channel_name = FLAGS_chassis_command_topic;
+  chassis_cmd_reader_config.pending_queue_size =
+      FLAGS_control_cmd_pending_queue_size;
+
   if (FLAGS_receive_guardian) {
     guardian_cmd_reader_ = node_->CreateReader<GuardianCommand>(
         guardian_cmd_reader_config,
@@ -99,6 +105,12 @@ bool CanbusComponent::Init() {
         [this](const std::shared_ptr<ControlCommand> &cmd) {
           ADEBUG << "Received control data: run canbus callback.";
           OnControlCommand(*cmd);
+        });
+    chassis_command_reader_ = node_->CreateReader<ChassisCommand>(
+        chassis_cmd_reader_config,
+        [this](const std::shared_ptr<ChassisCommand> &cmd) {
+          ADEBUG << "Received control data: run canbus callback.";
+          OnChassisCommand(*cmd);
         });
   }
 
@@ -159,6 +171,28 @@ void CanbusComponent::OnControlCommand(const ControlCommand &control_command) {
          << " micro seconds";
 
   vehicle_object_->UpdateCommand(&control_command);
+}
+
+void CanbusComponent::OnChassisCommand(const ChassisCommand &chassis_command) {
+  int64_t current_timestamp = Time::Now().ToMicrosecond();
+  // if command coming too soon, just ignore it.
+  if (current_timestamp - last_timestamp_ < FLAGS_min_cmd_interval * 1000) {
+    ADEBUG << "Control command comes too soon. Ignore.\n Required "
+              "FLAGS_min_cmd_interval["
+           << FLAGS_min_cmd_interval << "], actual time interval["
+           << current_timestamp - last_timestamp_ << "].";
+    return;
+  }
+
+  last_timestamp_ = current_timestamp;
+  ADEBUG << "Control_sequence_number:"
+         << chassis_command.header().sequence_num() << ", Time_of_delay:"
+         << current_timestamp -
+                static_cast<int64_t>(chassis_command.header().timestamp_sec() *
+                                     1e6)
+         << " micro seconds";
+
+  vehicle_object_->UpdateCommand(&chassis_command);
 }
 
 void CanbusComponent::OnGuardianCommand(
