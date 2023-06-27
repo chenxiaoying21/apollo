@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "modules/common_msgs/external_command_msgs/command_status.pb.h"
 #include "modules/common_msgs/planning_msgs/planning_command.pb.h"
@@ -186,6 +186,11 @@ void MotionCommandProcessorBase<T>::OnCommand(
   // Search routing.
   std::shared_ptr<apollo::planning::PlanningCommand> planning_command =
       std::make_shared<apollo::planning::PlanningCommand>();
+  std::string module_name = "UNKNOWN";
+  if (command->has_header()) {
+    module_name = command->header().module_name();
+  }
+  common::util::FillHeader(module_name, planning_command.get());
   if (nullptr != routing_request) {
     auto routing_response =
         std::make_shared<apollo::routing::RoutingResponse>();

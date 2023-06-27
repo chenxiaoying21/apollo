@@ -36,6 +36,7 @@ cc_library(
         "//modules/external_command/command_processor/command_processor_base/util:message_reader",
         "//modules/routing:routing",
         "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
+        "//modules/common/util:message_util",
         ":command_processor_base_lib",
     ],
     alwayslink=True

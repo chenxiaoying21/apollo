@@ -21,6 +21,7 @@
 #include "modules/external_command/command_processor/speed_command_processor/speed_command_processor.h"
 
 #include "modules/external_command/command_processor/command_processor_base/proto/command_processor_config.pb.h"
+#include "modules/common/util/message_util.h"
 #include "modules/external_command/command_processor/command_processor_base/util/message_reader.h"
 
 namespace apollo {
@@ -66,6 +67,11 @@ void SpeedCommandProcessor::OnCommand(
     const std::shared_ptr<SpeedCommand>& command,
     std::shared_ptr<CommandStatus>& status) {
   auto planning_command = std::make_shared<apollo::planning::PlanningCommand>();
+  std::string module_name = "UNKNOWN";
+  if (command->has_header()) {
+    module_name = command->header().module_name();
+  }
+  common::util::FillHeader(module_name, planning_command.get());
   auto custom_command = planning_command->mutable_custom_command();
   custom_command->PackFrom(*command);
   planning_command_writer_->Write(planning_command);
