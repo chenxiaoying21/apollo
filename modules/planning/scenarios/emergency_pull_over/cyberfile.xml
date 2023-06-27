@@ -2,11 +2,11 @@
     <name>planning-scenario-emergency-pull-over</name>
     <version>1.0.0.0</version>
     <description>
-     emergency_pull_over scenario
+     emergency pull over scenario
     </description>
     <maintainer email="apollo-support">apollo-support@baidu.com</maintainer>
     <type>module</type>
-    <src_path>//modules/planning/scenarios/emergency_pull_over_scenario</src_path>
+    <src_path>//modules/planning/scenarios/emergency_pull_over</src_path>
     <license>BSD</license>
     <author>Apollo</author>
     <depend>bazel-extend-tools-dev</depend>
