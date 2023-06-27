@@ -193,15 +193,13 @@ install(
     ),
     targets = [
         ":libplanning_component.so",
-        "//modules/planning/planning_base/common:libplanning_gflags.so"
+	"//modules/planning/planning_base/common:libplanning_gflags.so"
     ],
     deps = [
         ":pb_planning",
         ":planning_testdata_install",
         "//modules/planning/planning_base/proto:py_pb_planning",
-        "//modules/planning/scenarios:install",
         "//modules/planning/planning_base/common:install", 
-        "//modules/planning/tasks:install",
         "//modules/planning/planning_base/proto:pb_hdrs_planning",
     ],
 )
