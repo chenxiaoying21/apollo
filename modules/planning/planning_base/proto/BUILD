@@ -130,6 +130,7 @@ proto_library(
         "//modules/common_msgs/basic_msgs:geometry_proto",
         ":planning_config_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/common_msgs/external_command_msgs:lane_follow_command_proto"
     ],
 )
 

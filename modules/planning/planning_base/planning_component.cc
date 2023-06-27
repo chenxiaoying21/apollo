@@ -61,15 +61,6 @@ bool PlanningComponent::Init() {
 
   planning_base_->Init(config_);
 
-  routing_reader_ = node_->CreateReader<RoutingResponse>(
-      config_.topic_config().routing_response_topic(),
-      [this](const std::shared_ptr<RoutingResponse>& routing) {
-        AINFO << "Received routing data: run routing callback."
-              << routing->header().DebugString();
-        std::lock_guard<std::mutex> lock(mutex_);
-        routing_.CopyFrom(*routing);
-      });
-
   planning_command_reader_ = node_->CreateReader<PlanningCommand>(
       config_.topic_config().planning_command_topic(),
       [this](const std::shared_ptr<PlanningCommand>& planning_command) {
@@ -115,9 +106,10 @@ bool PlanningComponent::Init() {
   planning_writer_ = node_->CreateWriter<ADCTrajectory>(
       config_.topic_config().planning_trajectory_topic());
 
-  rerouting_writer_ = node_->CreateWriter<RoutingRequest>(
-      config_.topic_config().routing_request_topic());
-
+  rerouting_client_ =
+      node_->CreateClient<apollo::external_command::LaneFollowCommand,
+                          external_command::CommandStatus>(
+          config_.topic_config().routing_request_topic());
   planning_learning_data_writer_ = node_->CreateWriter<PlanningLearningData>(
       config_.topic_config().planning_learning_data_topic());
   command_status_writer_ = node_->CreateWriter<external_command::CommandStatus>(
@@ -244,9 +236,13 @@ void PlanningComponent::CheckRerouting() {
   if (!rerouting->need_rerouting()) {
     return;
   }
-  common::util::FillHeader(node_->Name(), rerouting->mutable_routing_request());
+  common::util::FillHeader(node_->Name(),
+                           rerouting->mutable_lane_follow_command());
+  auto lane_follow_command_ptr =
+      std::make_shared<apollo::external_command::LaneFollowCommand>(
+          rerouting->lane_follow_command());
+  rerouting_client_->SendRequest(lane_follow_command_ptr);
   rerouting->set_need_rerouting(false);
-  rerouting_writer_->Write(rerouting->routing_request());
 }
 
 bool PlanningComponent::CheckInput() {

@@ -96,37 +96,25 @@ bool Frame::Rerouting(PlanningContext *planning_context) {
     AERROR << "Invalid HD Map.";
     return false;
   }
-  auto request = local_view_.routing->routing_request();
-  request.clear_header();
-
-  auto point = common::util::PointFactory::ToPointENU(vehicle_state_);
-  double s = 0.0;
-  double l = 0.0;
-  hdmap::LaneInfoConstPtr lane;
-  if (hdmap_->GetNearestLaneWithHeading(point, 5.0, vehicle_state_.heading(),
-                                        M_PI / 3.0, &lane, &s, &l) != 0) {
-    AERROR << "Failed to find nearest lane from map at position: "
-           << point.DebugString() << ", heading:" << vehicle_state_.heading();
-    return false;
-  }
-  request.clear_waypoint();
-  auto *start_point = request.add_waypoint();
-  start_point->set_id(lane->id().id());
-  start_point->set_s(s);
-  start_point->mutable_pose()->CopyFrom(point);
-  for (const auto &waypoint : future_route_waypoints_) {
-    // reference_line_provider_->FutureRouteWaypoints()) {
-    request.add_waypoint()->CopyFrom(waypoint);
-  }
-  if (request.waypoint_size() <= 1) {
-    AERROR << "Failed to find future waypoints";
-    return false;
-  }
-
   auto *rerouting =
       planning_context->mutable_planning_status()->mutable_rerouting();
   rerouting->set_need_rerouting(true);
-  *rerouting->mutable_routing_request() = request;
+  auto *lane_follow_command = rerouting->mutable_lane_follow_command();
+  if (future_route_waypoints_.size() < 1) {
+    AERROR << "Failed to find future waypoints";
+    return false;
+  }
+  for (size_t i = 0; i < future_route_waypoints_.size() - 1; i++) {
+    // reference_line_provider_->FutureRouteWaypoints()) {
+    auto waypoint = lane_follow_command->add_way_point();
+    waypoint->set_x(future_route_waypoints_[i].pose().x());
+    waypoint->set_y(future_route_waypoints_[i].pose().y());
+    waypoint->set_heading(future_route_waypoints_[i].heading());
+  }
+  auto *end_pose = lane_follow_command->mutable_end_pose();
+  end_pose->set_x(future_route_waypoints_.back().pose().x());
+  end_pose->set_y(future_route_waypoints_.back().pose().y());
+  end_pose->set_heading(future_route_waypoints_.back().heading());
 
   monitor_logger_buffer_.INFO("Planning send Rerouting request");
   return true;

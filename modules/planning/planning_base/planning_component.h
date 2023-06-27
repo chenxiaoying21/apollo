@@ -20,12 +20,12 @@
 
 #include "modules/common_msgs/chassis_msgs/chassis.pb.h"
 #include "modules/common_msgs/external_command_msgs/command_status.pb.h"
+#include "modules/common_msgs/external_command_msgs/lane_follow_command.pb.h"
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
 #include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
 #include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
-#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/common_msgs/storytelling_msgs/story.pb.h"
 #include "modules/planning/planning_base/proto/learning_data.pb.h"
 #include "modules/planning/planning_base/proto/planning_config.pb.h"
@@ -63,7 +63,10 @@ class PlanningComponent final
  private:
   std::shared_ptr<cyber::Reader<perception::TrafficLightDetection>>
       traffic_light_reader_;
-  std::shared_ptr<cyber::Reader<routing::RoutingResponse>> routing_reader_;
+  std::shared_ptr<
+      apollo::cyber::Client<apollo::external_command::LaneFollowCommand,
+                            apollo::external_command::CommandStatus>>
+      rerouting_client_;
   std::shared_ptr<cyber::Reader<planning::PadMessage>> pad_msg_reader_;
   std::shared_ptr<cyber::Reader<relative_map::MapMsg>> relative_map_reader_;
   std::shared_ptr<cyber::Reader<storytelling::Stories>> story_telling_reader_;
