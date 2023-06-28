@@ -122,8 +122,6 @@ bool ValetParkingScenario::CheckDistanceToParkingSpot(
     const Path& nearby_path, const double parking_start_range,
     const PathOverlap& parking_space_overlap) {
   // TODO(Jinyun) parking overlap s are wrong on map, not usable
-  double parking_space_center_s =
-      (parking_space_overlap.start_s + parking_space_overlap.end_s) / 2.0;
   const hdmap::HDMap* hdmap = hdmap::HDMapUtil::BaseMapPtr();
   hdmap::Id id;
   double center_point_s, center_point_l;

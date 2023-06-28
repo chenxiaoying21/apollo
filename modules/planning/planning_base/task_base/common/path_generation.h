@@ -70,7 +70,7 @@ class PathGeneration : public Task {
    * @param path_data PathData which the point is on
    * @param point_index index of the point on PathData
    * @param sl_boundary output SLBoundary of the point
-   * 
+   *
    * @return True if SLBoundary is found
    */
   bool GetSLBoundary(const PathData& path_data, int point_index,
