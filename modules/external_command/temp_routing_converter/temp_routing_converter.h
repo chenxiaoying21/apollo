@@ -20,9 +20,9 @@
 
 #pragma once
 
-#include <vector>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "cyber/component/component.h"
 
@@ -63,9 +63,7 @@ class TempRoutingConverter : public cyber::Component<> {
       const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest>&
           routing_request);
 
-  void OnRoutingResponse(
-      const std::shared_ptr<apollo::temp_routing_converter::RoutingResponse>&
-          routing_response);
+  void OnPlanningCommand(const std::shared_ptr<apollo::planning::PlanningCommand>& planning_cmd);
 
   template <typename T>
   void CopyRoutingRequest(
@@ -80,9 +78,6 @@ class TempRoutingConverter : public cyber::Component<> {
 
   std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_reader_;
-  std::shared_ptr<
-      cyber::Reader<apollo::temp_routing_converter::RoutingResponse>>
-      routing_response_reader_;
 
   // Coverted from RoutingRequest without parking id.
   std::shared_ptr<
@@ -95,8 +90,11 @@ class TempRoutingConverter : public cyber::Component<> {
                             apollo::external_command::CommandStatus>>
       valet_parking_command_client_;
   // Coverted from RoutingResponse.
-  std::shared_ptr<cyber::Writer<apollo::planning::PlanningCommand>>
-      planning_command_writer_;
+  std::shared_ptr<cyber::Reader<apollo::planning::PlanningCommand>>
+      planning_command_reader_;
+  std::shared_ptr<
+      cyber::Writer<apollo::temp_routing_converter::RoutingResponse>>
+      routing_response_writer_;
   uint64_t command_id_;
   const hdmap::HDMap* hdmap_;
 };

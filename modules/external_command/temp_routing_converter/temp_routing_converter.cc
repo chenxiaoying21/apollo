@@ -57,12 +57,6 @@ bool TempRoutingConverter::Init() {
         ADEBUG << "Received routing request: run callback.";
         OnRoutingRequest(routing_request);
       });
-  routing_response_reader_ = node_->CreateReader<RoutingResponse>(
-      config.routing_response_topic(),
-      [this](const std::shared_ptr<RoutingResponse>& routing_response) {
-        ADEBUG << "Received routing response: run callback.";
-        OnRoutingResponse(routing_response);
-      });
   lane_follow_command_client_ =
       node_->CreateClient<apollo::external_command::LaneFollowCommand,
                           apollo::external_command::CommandStatus>(
@@ -71,8 +65,15 @@ bool TempRoutingConverter::Init() {
       node_->CreateClient<apollo::external_command::ValetParkingCommand,
                           apollo::external_command::CommandStatus>(
           config.valet_parking_command_topic());
-  planning_command_writer_ =
-      node_->CreateWriter<PlanningCommand>(config.planning_command_topic());
+  planning_command_reader_ = node_->CreateReader<PlanningCommand>(
+      config.planning_command_topic(),
+      [this](const std::shared_ptr<PlanningCommand>& planning_cmd) {
+        AINFO << "Received routing response: run callback.";
+        OnPlanningCommand(planning_cmd);
+      });
+
+  routing_response_writer_ =
+      node_->CreateWriter<RoutingResponse>(config.routing_response_topic());
   return true;
 }
 
@@ -116,49 +117,17 @@ void TempRoutingConverter::OnRoutingRequest(
   }
 }
 
-void TempRoutingConverter::OnRoutingResponse(
-    const std::shared_ptr<RoutingResponse>& routing_response) {
-  auto planning_command = std::make_shared<PlanningCommand>();
-  planning_command->set_command_id(++command_id_);
-  auto lane_follow_command = planning_command->mutable_lane_follow_command();
-  // Copy header.
-  if (routing_response->has_header()) {
-    planning_command->mutable_header()->CopyFrom(routing_response->header());
-    lane_follow_command->mutable_header()->CopyFrom(routing_response->header());
+void TempRoutingConverter::OnPlanningCommand(
+    const std::shared_ptr<PlanningCommand>& planning_command) {
+  if (planning_command->has_lane_follow_command()) {
+    auto response = std::make_shared<RoutingResponse>();
+    auto origin_response = planning_command->lane_follow_command();
+    response->mutable_road()->CopyFrom(origin_response.road());
+    response->mutable_measurement()->CopyFrom(origin_response.measurement());
+    response->set_map_version(origin_response.map_version());
+    response->mutable_status()->CopyFrom(origin_response.status());
+    // routing_response_writer_->Write(response);
   }
-  // Copy road.
-  lane_follow_command->mutable_road()->CopyFrom(routing_response->road());
-  // Copy measurement.
-  if (routing_response->has_measurement()) {
-    lane_follow_command->mutable_measurement()->CopyFrom(
-        routing_response->measurement());
-  }
-  // Copy RoutingRequest.
-  auto input_routing_request = routing_response->routing_request();
-  if (routing_response->has_routing_request()) {
-    auto output_routing_request =
-        lane_follow_command->mutable_routing_request();
-    if (input_routing_request.has_header()) {
-      output_routing_request->mutable_header()->CopyFrom(
-          input_routing_request.header());
-    }
-    output_routing_request->mutable_waypoint()->CopyFrom(
-        input_routing_request.waypoint());
-    output_routing_request->mutable_blacklisted_road()->CopyFrom(
-        input_routing_request.blacklisted_road());
-    output_routing_request->set_broadcast(input_routing_request.broadcast());
-  }
-  // Copy map version
-  lane_follow_command->set_map_version(routing_response->map_version());
-  lane_follow_command->mutable_status()->CopyFrom(routing_response->status());
-  // Process parkingInfo.
-  if (input_routing_request.has_parking_info()) {
-    auto parking_command = planning_command->mutable_parking_command();
-    parking_command->mutable_header()->CopyFrom(routing_response->header());
-    parking_command->set_parking_spot_id(
-        input_routing_request.parking_info().parking_space_id());
-  }
-  planning_command_writer_->Write(planning_command);
 }
 
 void TempRoutingConverter::Convert(
