@@ -233,6 +233,10 @@ bool ReusePath::IsCollisionFree(ReferenceLineInfo* const reference_line_info) {
   }
   const DiscretizedPath& history_path =
       history_frame->current_frame_planned_path();
+  if (history_path.empty()) {
+    AINFO << "No history path skip reuse";
+    return false;
+  }
   // path end point
   common::SLPoint path_end_position_sl;
   common::math::Vec2d path_end_position = {history_path.back().x(),
@@ -291,8 +295,7 @@ bool ReusePath::IsCollisionFree(ReferenceLineInfo* const reference_line_info) {
 // check the length of the path
 bool ReusePath::NotShortPath(const DiscretizedPath& current_path) {
   // TODO(shu): use gflag
-  static constexpr double kShortPathThreshold = 60;
-  return current_path.size() >= kShortPathThreshold;
+  return current_path.size() >= config_.short_path_threshold();
 }
 
 bool ReusePath::TrimHistoryPath(Frame* frame,
