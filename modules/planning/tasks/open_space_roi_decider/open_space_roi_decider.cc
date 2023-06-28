@@ -20,10 +20,9 @@
 
 #include "modules/planning/tasks/open_space_roi_decider/open_space_roi_decider.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
-
-#include "open_space_roi_decider.h"
 #include "modules/common/util/point_factory.h"
 #include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/planning_base/open_space/utils/open_space_roi_util.h"

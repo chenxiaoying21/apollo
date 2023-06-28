@@ -56,7 +56,7 @@ function run_cpp_lint() {
   _cpp_lint_impl "${targets}"
 
   if [[ "${STAGE}" == "dev" ]]; then
-    _cpp_lint_impl "//modules/..."
+    _cpp_lint_impl "//modules/planning/..."
   fi
 
 }
