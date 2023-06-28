@@ -264,7 +264,6 @@ const routing::RoutingResponse &PncMap::routing_response() const {
 bool PncMap::ValidateRouting(const RoutingResponse &routing) {
   const int num_road = routing.road_size();
   if (num_road == 0) {
-    AERROR << "Route is empty.";
     return false;
   }
   if (!routing.has_routing_request() ||
