@@ -211,8 +211,6 @@ void MotionCommandProcessorBase<T>::OnCommand(
   }
   planning_command->set_command_id(command->command_id());
   // Send routing response to planning module.
-  std::string module_name = "external_command";
-  common::util::FillHeader(module_name, planning_command.get());
   planning_command_writer_->Write(planning_command);
   status->set_status(CommandStatusType::RUNNING);
 }
