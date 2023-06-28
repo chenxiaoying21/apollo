@@ -632,7 +632,7 @@ bool IterativeAnchoringSmoother::SmoothSpeed(const double init_a,
   const size_t num_of_knots = static_cast<size_t>(total_t / delta_t) + 1;
 
   PiecewiseJerkSpeedProblem piecewise_jerk_problem(
-      num_of_knots, delta_t, {0.0, std::abs(init_v), std::abs(init_a)});
+      num_of_knots, delta_t, {0.0, std::abs(init_v), 0.0});
 
   auto s_curve_config =
       planner_open_space_config_.iterative_anchoring_smoother_config()
@@ -660,14 +660,22 @@ bool IterativeAnchoringSmoother::SmoothSpeed(const double init_a,
                                    std::move(x_ref));
   piecewise_jerk_problem.set_weight_ddx(s_curve_config.acc_weight());
   piecewise_jerk_problem.set_weight_dddx(s_curve_config.jerk_weight());
-  piecewise_jerk_problem.set_x_bounds(std::move(x_bounds));
-  piecewise_jerk_problem.set_dx_bounds(std::move(dx_bounds));
-  piecewise_jerk_problem.set_ddx_bounds(std::move(ddx_bounds));
+  piecewise_jerk_problem.set_x_bounds(x_bounds);
+  piecewise_jerk_problem.set_dx_bounds(dx_bounds);
+  piecewise_jerk_problem.set_ddx_bounds(ddx_bounds);
   piecewise_jerk_problem.set_dddx_bound(max_acc_jerk);
 
   // Solve the problem
   if (!piecewise_jerk_problem.Optimize()) {
     AERROR << "Piecewise jerk speed optimizer failed!";
+    AERROR << "init v" << init_v << ",a" << init_a << "jerk bound"
+           << max_acc_jerk;
+    AERROR << "xbounds; dxbounds;ddxbounds";
+    for (size_t i = 0; i < num_of_knots; i++) {
+      AERROR << x_bounds[i].first << ", " << x_bounds[i].second << ";"
+             << dx_bounds[i].first << "," << dx_bounds[i].second << ";"
+             << ddx_bounds[i].first << "," << ddx_bounds[i].second;
+    }
     return false;
   }
 
