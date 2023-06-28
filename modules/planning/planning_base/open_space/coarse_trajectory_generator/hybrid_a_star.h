@@ -25,6 +25,7 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -69,7 +70,7 @@ class HybridAStar {
 
  private:
   bool AnalyticExpansion(std::shared_ptr<Node3d> current_node,
-                         std::shared_ptr<Node3d>& candidate_final_node);
+                         std::shared_ptr<Node3d>* candidate_final_node);
   // check collision and validity
   bool ValidityCheck(std::shared_ptr<Node3d> node);
   // check Reeds Shepp path collision and validity
