@@ -13,9 +13,15 @@ message FreeSpaceCommand {
   required Pose parking_spot_pose = 3;
   // Region where openspace trajectory will be searched. Junction containing
   // "parking_spot_pose" will be searched on map if "parking_roi" is not given.
-  repeated Point parking_roi = 4;
+  //polygon points should be clockwise if inner polygon can drive. 
+  // otherwise polygon points should be anticlockwise if outer polygon can drive
+  repeated RoiPolygon parking_roi = 4;
   // Expected speed when executing this command. If "target_speed" > maximum
   // speed of the vehicle, use maximum speed of the vehicle instead. If it is
   // not given, the default target speed of system will be used.
   optional double target_speed = 5;
+}
+
+message RoiPolygon {
+  repeated Point point = 1;
 }
