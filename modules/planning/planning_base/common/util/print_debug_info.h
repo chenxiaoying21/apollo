@@ -29,7 +29,7 @@ namespace planning {
 class PrintPoints {
  public:
   PrintPoints() {}
-  explicit PrintPoints(std::string id) : id_(id){};
+  explicit PrintPoints(std::string id) : id_(id) {}
   /**
    * @brief set curve id
    */

@@ -25,8 +25,6 @@
 #include <numeric>
 #include <utility>
 
-#include "open_space_roi_util.h"
-
 #include "modules/common/util/point_factory.h"
 
 namespace apollo {
