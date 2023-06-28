@@ -94,6 +94,7 @@ class OpenSpaceRoiUtil {
   static void TransformByOriginPoint(const Vec2d& origin_point,
                                      const double& origin_heading,
                                      OpenSpaceInfo* open_space_info);
+  static bool IsPolygonClockwise(const std::vector<Vec2d>& polygon);
 };
 
 }  // namespace planning

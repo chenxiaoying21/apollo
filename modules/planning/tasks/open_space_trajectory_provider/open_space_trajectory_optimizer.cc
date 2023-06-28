@@ -66,7 +66,7 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
     return Status(ErrorCode::PLANNING_ERROR,
                   "OpenSpaceTrajectoryOptimizer input data not ready");
   }
-
+  CHECK(!stitching_trajectory.empty());
   // Generate Stop trajectory if init point close to destination
   if (IsInitPointNearDestination(stitching_trajectory.back(), end_pose,
                                  rotate_angle, translate_origin)) {

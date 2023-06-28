@@ -287,24 +287,22 @@ void OpenSpaceRoiUtil::TransformByOriginPoint(const Vec2d &origin_point,
   auto xy_boundary = open_space_info->mutable_ROI_xy_boundary();
   GetRoiXYBoundary(*obstacles_vertices_vec, xy_boundary);
 }
-
-void OpenSpaceRoiUtil::TransformByOriginPoint(const Vec2d &origin_point,
-                                              const double &origin_heading,
-                                              OpenSpaceInfo *open_space_info) {
-  open_space_info->set_origin_heading(origin_heading);
-  *open_space_info->mutable_origin_point() = origin_point;
-  auto obstacles_vertices_vec =
-      open_space_info->mutable_obstacles_vertices_vec();
-  TransformByOriginPoint(origin_point, origin_heading, obstacles_vertices_vec);
-  auto end_pose_vec = open_space_info->mutable_open_space_end_pose();
-  Vec2d end_pose(end_pose_vec->at(0), end_pose_vec->at(1));
-  TransformByOriginPoint(origin_point, origin_heading, &end_pose);
-  end_pose_vec->at(0) = end_pose.x();
-  end_pose_vec->at(1) = end_pose.y();
-  end_pose_vec->at(2) -= origin_heading;
-  auto xy_boundary = open_space_info->mutable_ROI_xy_boundary();
-  GetRoiXYBoundary(*obstacles_vertices_vec, xy_boundary);
+bool OpenSpaceRoiUtil::IsPolygonClockwise(const std::vector<Vec2d> &polygon) {
+  double s = 0;
+  for (size_t i = 0; i < polygon.size(); i++) {
+    if (i + 1 < polygon.size()) {
+      s += polygon.at(i).x() * polygon.at(i + 1).y() -
+           polygon.at(i).y() * polygon.at(i + 1).x();
+    } else {
+      s += polygon.at(i).x() * polygon.at(0).y() -
+           polygon.at(i).y() * polygon.at(0).x();
+    }
+  }
+  if (s < 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
-
 }  // namespace planning
 }  // namespace apollo

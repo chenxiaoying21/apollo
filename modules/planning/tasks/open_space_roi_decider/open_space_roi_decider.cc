@@ -1754,18 +1754,7 @@ bool OpenSpaceRoiDecider::GetNearbyPath(
 }
 bool OpenSpaceRoiDecider::AdjustPointsOrderToClockwise(
     std::vector<Vec2d> *polygon) {
-  double s = 0;
-  for (size_t i = 0; i < polygon->size(); i++) {
-    AINFO << polygon->at(i).x() << "," << polygon->at(i).y();
-    if (i + 1 < polygon->size()) {
-      s += polygon->at(i).x() * polygon->at(i + 1).y() -
-           polygon->at(i).y() * polygon->at(i + 1).x();
-    } else {
-      s += polygon->at(i).x() * polygon->at(0).y() -
-           polygon->at(i).y() * polygon->at(0).x();
-    }
-  }
-  if (s > 0) {
+  if (!OpenSpaceRoiUtil::IsPolygonClockwise(*polygon)) {
     // counter clockwise reverse it
     AINFO << "reverse";
     std::reverse(polygon->begin(), polygon->end());
