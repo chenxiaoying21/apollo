@@ -1176,7 +1176,6 @@ bool OpenSpaceRoiDecider::GetParkingSpot(Frame *const frame,
       frame->open_space_info().target_parking_spot_id();
   hdmap::Id parking_spot_id = hdmap::MakeMapId(parking_spot_id_string);
   auto parking_spot = hdmap_->GetParkingSpaceById(parking_spot_id);
-  AERROR << "nearby_path_";
   if (!nearby_path_) {
     GetNearbyPath(frame->local_view().planning_command->lane_follow_command(),
                   parking_spot, &nearby_path_);
@@ -1191,8 +1190,6 @@ bool OpenSpaceRoiDecider::GetParkingSpot(Frame *const frame,
   center_point /= 4.0;
   double lane_heading = 0;
   parking_info->center_point = center_point;
-  AERROR << center_point.x() << ", " << center_point.y() << "nearby_path_"
-         << nearby_path_;
   nearby_path_->GetHeadingAlongPath(center_point, &lane_heading);
   double s, l;
   nearby_path_->GetProjection(center_point, &s, &l);
@@ -1748,14 +1745,13 @@ bool OpenSpaceRoiDecider::GetNearbyPath(
     segments_vector.push_back(nearest_lanesegment);
     *nearby_path = std::make_shared<Path>(segments_vector);
   }
-  AERROR << "nearby_path" << nearby_path;
   return true;
 }
 bool OpenSpaceRoiDecider::AdjustPointsOrderToClockwise(
     std::vector<Vec2d> *polygon) {
   if (!OpenSpaceRoiUtil::IsPolygonClockwise(*polygon)) {
     // counter clockwise reverse it
-    AINFO << "point is anticlockwise,reverse";
+    ADEBUG << "point is anticlockwise,reverse";
     std::reverse(polygon->begin(), polygon->end());
     return true;
   } else {

@@ -55,7 +55,6 @@ bool ParkAndGoScenario::IsTransferable(const Scenario* const other_scenario,
   if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }
-  AINFO << frame.reference_line_info().size();
   bool park_and_go = false;
   const auto& scenario_config = context_.scenario_config;
   const auto vehicle_state_provider = injector_->vehicle_state();

@@ -747,10 +747,12 @@ bool HybridAStar::Plan(
     AERROR << "start_node in collision with obstacles";
     AERROR << start_node_->GetX() << "," << start_node_->GetY() << ","
            << start_node_->GetPhi();
+    print_curves.PrintToLog();
     return false;
   }
   if (!ValidityCheck(end_node_)) {
     AERROR << "end_node in collision with obstacles";
+    print_curves.PrintToLog();
     return false;
   }
   double map_time = Clock::NowInSeconds();
