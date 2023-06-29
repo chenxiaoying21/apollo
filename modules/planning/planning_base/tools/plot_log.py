@@ -18,9 +18,17 @@ from matplotlib import ticker
 row = 1
 col = 1
 subplot_map = {"free_space": [0, 0]}
-marker_map = {'roi_boundary': ('-', "free_space"),
-              'vehicle_start_box': ('-', "free_space"),
-              'end_position': ('-', "free_space"),
+# marker_map = {'roi_boundary': ('-', "free_space"),
+#               'vehicle_start_box': ('-', "free_space"),
+#               'end_position': ('-', "free_space"),
+#               'vehicle_end_box': ('-', "free_space"),
+#               'rs_point': ('-', "free_space"),
+#               'warm_path': ('-', "free_space")
+#               }
+
+marker_map = {'ego_box': ('-', "free_space"),
+              'end_box': ('-', "free_space"),
+              'free_space_roi': ('-', "free_space"),
               'vehicle_end_box': ('-', "free_space"),
               'rs_point': ('-', "free_space"),
               'warm_path': ('-', "free_space")
@@ -50,6 +58,7 @@ if __name__ == '__main__':
     file_path = g_argv.log_file_path
     search_time = g_argv.time
     search_seq = g_argv.seq
+    unix_time = g_argv.unix_time
     input = open(file_path, 'r')
     lines = input.readlines()
     line_search_num = 0

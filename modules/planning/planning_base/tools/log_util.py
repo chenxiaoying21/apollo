@@ -206,7 +206,7 @@ class Index(object):
                 return
             self.line_st_num = line_st_num
             self.line_ed_num = line_ed_num
-        plot_frame()
+        self.plot_frame()
         self.reset_mouse_event()
 
     def next1(self, event):
@@ -226,7 +226,7 @@ class Index(object):
                 return
             self.line_st_num = line_st_num
             self.line_ed_num = line_ed_num
-        plot_frame()
+        self.plot_frame()
         self.reset_mouse_event()
 
     def prev1(self, event):
