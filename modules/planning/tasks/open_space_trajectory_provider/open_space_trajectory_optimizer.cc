@@ -220,12 +220,12 @@ Status OpenSpaceTrajectoryOptimizer::Plan(
       const auto smoother_end_timestamp = std::chrono::system_clock::now();
       std::chrono::duration<double> smoother_diff =
           smoother_end_timestamp - smoother_start_timestamp;
-      ADEBUG << "Open space trajectory smoothing total time: "
-             << smoother_diff.count() * 1000.0 << " ms at the " << i
-             << "th trajectory.";
-      ADEBUG << "The " << i << "th trajectory pre-smoothing size is "
-             << xWS_vec[i].cols() << "; post-smoothing size is "
-             << state_result_ds_vec[i].cols();
+      AINFO << "Open space trajectory smoothing total time: "
+            << smoother_diff.count() * 1000.0 << " ms at the " << i
+            << "th trajectory.";
+      AINFO << "The " << i << "th trajectory pre-smoothing size is "
+            << xWS_vec[i].cols() << "; post-smoothing size is "
+            << state_result_ds_vec[i].cols();
     }
 
     // Retrive the trajectory in one piece
