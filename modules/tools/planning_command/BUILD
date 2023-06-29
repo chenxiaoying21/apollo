@@ -1,0 +1,34 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+load("//tools/install:install.bzl", "install")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(
+    name = "planning_command",
+    srcs = ["planning_command.py"],
+    deps = [
+        "//cyber/python/cyber_py3:cyber",
+        "//cyber/python/cyber_py3:cyber_time",
+        "//modules/common_msgs/planning_msgs:planning_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:valet_parking_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:free_space_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:geometry_py_pb2",
+        "//modules/common_msgs/routing_msgs:routing_py_pb2",
+        "//modules/common_msgs/external_command_msgs:command_status_py_pb2",
+        "//modules/tools/common:proto_utils"
+    ],
+)
+py_binary(
+    name = "zhuanhuan",
+    srcs = ["zhuanhuan.py"],
+    deps = [
+        "//cyber/python/cyber_py3:cyber",
+        "//cyber/python/cyber_py3:cyber_time",
+        "//modules/common_msgs/planning_msgs:planning_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:valet_parking_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:free_space_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:geometry_py_pb2",
+        "//modules/common_msgs/routing_msgs:routing_py_pb2",
+        "//modules/tools/common:proto_utils"
+    ],
+)
