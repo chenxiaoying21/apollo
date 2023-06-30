@@ -201,6 +201,10 @@ install(
         "//modules/planning/planning_base/proto:py_pb_planning",
         "//modules/planning/planning_base/common:install", 
         "//modules/planning/planning_base/proto:pb_hdrs_planning",
+        "//modules/planning/planning_base/traffic_rules_base/proto:py_pb_planning",
+        "//modules/planning/planning_base/traffic_rules_base/proto:pb_hdrs_planning",
+        "//modules/planning/planning_base/scenario_base/proto:py_pb_planning",
+        "//modules/planning/planning_base/scenario_base/proto:pb_hdrs_planning",
     ],
 )
 

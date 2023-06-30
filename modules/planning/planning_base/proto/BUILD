@@ -42,6 +42,7 @@ install_files(
     files = [
         ":st_drivable_boundary_cc_proto",
         ":planning_semantic_map_config_cc_proto",
+	":planning_config_cc_proto",
         ":traffic_rule_config_cc_proto",
         ":planning_status_cc_proto",
         ":lattice_structure_cc_proto",
