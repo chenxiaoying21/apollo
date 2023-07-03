@@ -27,10 +27,20 @@ PiecewiseJerkSpeedProblem::PiecewiseJerkSpeedProblem(
     const std::array<double, 3>& x_init)
     : PiecewiseJerkProblem(num_of_knots, delta_s, x_init) {
   penalty_dx_.resize(num_of_knots_, 0.0);
+  dx_ref_.resize(num_of_knots_, 0.0);
+  weight_dx_ref_.resize(num_of_knots_, 0.0);
 }
 
 void PiecewiseJerkSpeedProblem::set_dx_ref(const double weight_dx_ref,
                                            const double dx_ref) {
+  weight_dx_ref_.resize(num_of_knots_, weight_dx_ref);
+  dx_ref_.resize(num_of_knots_, dx_ref);
+  has_dx_ref_ = true;
+}
+
+void PiecewiseJerkSpeedProblem::set_dx_ref(
+    const std::vector<double>& weight_dx_ref,
+    const std::vector<double>& dx_ref) {
   weight_dx_ref_ = weight_dx_ref;
   dx_ref_ = dx_ref;
   has_dx_ref_ = true;
@@ -65,14 +75,15 @@ void PiecewiseJerkSpeedProblem::CalculateKernel(std::vector<c_float>* P_data,
   // x(i)'^2 * (w_dx_ref + penalty_dx)
   for (int i = 0; i < n - 1; ++i) {
     columns[n + i].emplace_back(n + i,
-                                (weight_dx_ref_ + penalty_dx_[i]) /
+                                (weight_dx_ref_[i] + penalty_dx_[i]) /
                                     (scale_factor_[1] * scale_factor_[1]));
     ++value_index;
   }
   // x(n-1)'^2 * (w_dx_ref + penalty_dx + w_end_dx)
   columns[2 * n - 1].emplace_back(
-      2 * n - 1, (weight_dx_ref_ + penalty_dx_[n - 1] + weight_end_state_[1]) /
-                     (scale_factor_[1] * scale_factor_[1]));
+      2 * n - 1,
+      (weight_dx_ref_[n - 1] + penalty_dx_[n - 1] + weight_end_state_[1]) /
+          (scale_factor_[1] * scale_factor_[1]));
   ++value_index;
 
   auto delta_s_square = delta_s_ * delta_s_;
@@ -127,7 +138,7 @@ void PiecewiseJerkSpeedProblem::CalculateOffset(std::vector<c_float>* q) {
       q->at(i) += -2.0 * weight_x_ref_ * x_ref_[i] / scale_factor_[0];
     }
     if (has_dx_ref_) {
-      q->at(n + i) += -2.0 * weight_dx_ref_ * dx_ref_ / scale_factor_[1];
+      q->at(n + i) += -2.0 * weight_dx_ref_[i] * dx_ref_[i] / scale_factor_[1];
     }
   }
 
