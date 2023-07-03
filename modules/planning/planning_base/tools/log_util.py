@@ -79,7 +79,6 @@ def search_current(lines, line_search_num):
     start_line_num = -1
     end_line_num = -1
     seq_id = '-1'
-    print("111")
     for i in range(line_search_num, 0, -1):
         if 'Planning start frame sequence id' in lines[i]:
             seq_id = get_string_between(lines[i], 'sequence id = [', ']')
@@ -181,13 +180,16 @@ class MouseEventManager(object):
 class Index(object):
     """button callback function"""
 
-    def __init__(self, fig, ax, line_st_num, line_ed_num, lines, marker_map):
+    def __init__(self, fig, ax, line_st_num, line_ed_num, lines, config):
         self.ax = ax
         self.fig = fig
         self.line_st_num = line_st_num
         self.line_ed_num = line_ed_num
         self.lines = lines
-        self.marker_map = marker_map
+        self.config = config
+        self.line_map = {}
+        for line in config["line"]:
+            self.line_map[line["label"]] = line
         self.reset_mouse_event()
 
     def reset_mouse_event(self):
@@ -206,7 +208,7 @@ class Index(object):
                 return
             self.line_st_num = line_st_num
             self.line_ed_num = line_ed_num
-        self.plot_frame()
+        self.plot_frame("frame: " + seq_id)
         self.reset_mouse_event()
 
     def next1(self, event):
@@ -226,7 +228,7 @@ class Index(object):
                 return
             self.line_st_num = line_st_num
             self.line_ed_num = line_ed_num
-        self.plot_frame()
+        self.plot_frame("frame: " + seq_id)
         self.reset_mouse_event()
 
     def prev1(self, event):
@@ -238,24 +240,30 @@ class Index(object):
     def exit(self, event):
         sys.exit(0)
 
-    def plot_frame(self):
+    def plot_frame(self, fig_name):
         print('plot line start num: ' + str(self.line_st_num + 1))
         print('plot line end num: ' + str(self.line_ed_num + 1))
         data = {}
-        for key in self.marker_map:
+        self.fig.suptitle(fig_name)
+        for key in self.line_map:
             data[key] = []
+        for item in self.config["subplot"]:
+            key = item["title"]
+            self.ax[key].clear()
+            self.ax[key].set_xlabel(item["x_label"])
+            self.ax[key].set_ylabel(item["y_label"])
+            self.ax[key].set_title(item["title"])
         for i in range(self.line_st_num, self.line_ed_num):
             line = self.lines[i]
-            for key in self.marker_map:
+            for key in self.line_map:
                 name = "print_" + key + ":"
                 if name in line:
                     get_data_from_line(line, data[key])
-        for key in self.marker_map:
-            print(self.marker_map[key][1])
-            subplot_name = self.marker_map[key][1]
+        for key in self.line_map:
+            subplot_name = self.line_map[key]["subplot"]
             if len(data[key]) > 0:
                 self.ax[subplot_name].plot(
-                    data[key][0], data[key][1], self.marker_map[key][0], label=key)
+                    data[key][0], data[key][1], self.line_map[key]["marker"], label=key)
                 self.ax[subplot_name].legend()
                 self.ax[subplot_name].grid(True)
             # ax.set_aspect(1)

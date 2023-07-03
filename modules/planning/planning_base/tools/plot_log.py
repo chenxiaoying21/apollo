@@ -14,25 +14,7 @@ import log_util
 from matplotlib.widgets import Button
 from matplotlib.gridspec import GridSpec
 from matplotlib import ticker
-
-row = 1
-col = 1
-subplot_map = {"free_space": [0, 0]}
-# marker_map = {'roi_boundary': ('-', "free_space"),
-#               'vehicle_start_box': ('-', "free_space"),
-#               'end_position': ('-', "free_space"),
-#               'vehicle_end_box': ('-', "free_space"),
-#               'rs_point': ('-', "free_space"),
-#               'warm_path': ('-', "free_space")
-#               }
-
-marker_map = {'ego_box': ('-', "free_space"),
-              'end_box': ('-', "free_space"),
-              'free_space_roi': ('-', "free_space"),
-              'vehicle_end_box': ('-', "free_space"),
-              'rs_point': ('-', "free_space"),
-              'warm_path': ('-', "free_space")
-              }
+import json
 
 
 def plot_frame(fig, ax, lines, line_st_num, line_ed_num):
@@ -42,6 +24,8 @@ def plot_frame(fig, ax, lines, line_st_num, line_ed_num):
 if __name__ == '__main__':
     global g_argv
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', action='store', dest='log_config_path',
+                        required=True, help='log config path')
     parser.add_argument('-f', action='store', dest='log_file_path',
                         required=True, help='log file path')
     parser.add_argument('-t', action='store', dest='time',
@@ -52,7 +36,11 @@ if __name__ == '__main__':
                         required=False, help='sequence number to search')
     g_argv = parser.parse_args()
     print('Please wait for loading data...')
-
+    print(os.getcwd())
+    config = {}
+    with open(g_argv.log_config_path) as fp:
+        config = json.load(fp)
+        print(type(config))
     # load log file
     print(g_argv)
     file_path = g_argv.log_file_path
@@ -74,6 +62,7 @@ if __name__ == '__main__':
     else:
         print('search all file')
     print("line_search_num:", line_search_num)
+    seq_id = 0
     if line_search_num == 0:
         line_st_num = 0
         line_ed_num = len(lines)
@@ -84,23 +73,26 @@ if __name__ == '__main__':
     if line_st_num < 0 or line_ed_num < 0:
         print('[ERROR] search reach last line, may reach last frame, quit!')
         sys.exit(0)
+    row = config["row"]
+    col = config["col"]
     fig, axes = plt.subplots(row, col, figsize=[9, 15])
     # fig = plt.figure(figsize=[9, 15])
     # gs = GridSpec(1, 1, figure=fig)
     ax = {}
-    for key in subplot_map:
-        print(subplot_map[key])
+    for item in config["subplot"]:
+        print(item)
+        key = item["title"]
         if row == 1 and col == 1:
             ax[key] = axes
         elif row == 1:
-            ax[key] = axes[subplot_map[key][1]]
+            ax[key] = axes[item["col"]]
         elif col == 1:
-            ax[key] = axes[subplot_map[key][0]]
+            ax[key] = axes[item["row"]]
         else:
-            ax[key] = axes[subplot_map[key][0]][subplot_map[key][1]]
+            ax[key] = axes[item["col"]][item["row"]]
     callback = log_util.Index(fig, ax, line_st_num,
-                              line_ed_num, lines, marker_map)
-    callback.plot_frame()
+                              line_ed_num, lines, config)
+    callback.plot_frame("frame:" + str(seq_id))
     prev1frame = plt.axes([0.2, 0.01, 0.1, 0.05])
     prev10frame = plt.axes([0.3, 0.01, 0.1, 0.05])
     next1frame = plt.axes([0.4, 0.01, 0.1, 0.05])
