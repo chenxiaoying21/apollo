@@ -101,14 +101,17 @@ void TempRoutingConverter::OnRoutingRequest(
     auto lane_follow_command = std::make_shared<LaneFollowCommand>();
     // Copy the way points from RoutingRequest.
     int way_point_size = routing_request->waypoint().size();
+    AINFO << routing_request->DebugString();
     CHECK_GT(way_point_size, 0);
     if (way_point_size > 1) {
+      routing_request->mutable_waypoint()->DeleteSubrange(0, 1);
       CopyRoutingRequest<LaneFollowCommand>(
           routing_request, 0, way_point_size - 1, lane_follow_command.get());
     }
     // Copy the end point.
     Convert(routing_request->waypoint().Get(way_point_size - 1),
             lane_follow_command->mutable_end_pose());
+    AINFO << routing_request->DebugString();
     auto response =
         lane_follow_command_client_->SendRequest(lane_follow_command);
     if (nullptr == response) {
