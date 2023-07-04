@@ -109,6 +109,7 @@ void TempRoutingConverter::OnRoutingRequest(
           routing_request, 0, way_point_size - 1, lane_follow_command.get());
     }
     // Copy the end point.
+    lane_follow_command->mutable_header()->CopyFrom(routing_request->header());
     Convert(routing_request->waypoint().Get(way_point_size - 1),
             lane_follow_command->mutable_end_pose());
     AINFO << routing_request->DebugString();

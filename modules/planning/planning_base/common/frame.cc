@@ -88,7 +88,7 @@ bool Frame::Rerouting(PlanningContext *planning_context) {
     AERROR << "Rerouting not supported in navigation mode";
     return false;
   }
-  if (local_view_.routing == nullptr) {
+  if (local_view_.planning_command == nullptr) {
     AERROR << "No previous routing available";
     return false;
   }
@@ -420,7 +420,8 @@ void Frame::RecordInputDebug(planning_internal::Debug *debug) {
 
   if (!FLAGS_use_navigation_mode) {
     auto debug_routing = planning_debug_data->mutable_routing();
-    debug_routing->CopyFrom(*local_view_.routing);
+    debug_routing->CopyFrom(
+        local_view_.planning_command->lane_follow_command());
   }
 
   planning_debug_data->mutable_prediction_header()->CopyFrom(

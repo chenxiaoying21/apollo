@@ -134,14 +134,6 @@ bool PlanningComponent::Proc(
   local_view_.localization_estimate = localization_estimate;
   {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (!local_view_.routing ||
-        hdmap::PncMap::IsNewRouting(*local_view_.routing, routing_)) {
-      local_view_.routing =
-          std::make_shared<routing::RoutingResponse>(routing_);
-    }
-  }
-  {
-    std::lock_guard<std::mutex> lock(mutex_);
     if (!local_view_.planning_command ||
         local_view_.planning_command->header().sequence_num() !=
             planning_command_.header().sequence_num()) {
@@ -173,7 +165,6 @@ bool PlanningComponent::Proc(
     // data process for online training
     message_process_.OnChassis(*local_view_.chassis);
     message_process_.OnPrediction(*local_view_.prediction_obstacles);
-    message_process_.OnRoutingResponse(*local_view_.routing);
     message_process_.OnStoryTelling(*local_view_.stories);
     message_process_.OnTrafficLightDetection(*local_view_.traffic_light);
     message_process_.OnLocalization(*local_view_.localization_estimate);

@@ -23,10 +23,10 @@
 #include "modules/common_msgs/perception_msgs/traffic_light_detection.pb.h"
 #include "modules/common_msgs/planning_msgs/navigation.pb.h"
 #include "modules/common_msgs/planning_msgs/pad_msg.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/common_msgs/storytelling_msgs/story.pb.h"
-#include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -41,7 +41,6 @@ struct LocalView {
   std::shared_ptr<canbus::Chassis> chassis;
   std::shared_ptr<localization::LocalizationEstimate> localization_estimate;
   std::shared_ptr<perception::TrafficLightDetection> traffic_light;
-  std::shared_ptr<routing::RoutingResponse> routing;
   std::shared_ptr<relative_map::MapMsg> relative_map;
   std::shared_ptr<PadMessage> pad_msg;
   std::shared_ptr<storytelling::Stories> stories;
