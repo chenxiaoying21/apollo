@@ -11,7 +11,7 @@ PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\""]
 install(
     name = "install",
     library_dest = "map/lib",
-    targets = [":libpnc_map.so"],
+    targets = [":libpnc_map_base.so"],
     visibility = ["//visibility:public"],
 )
 
@@ -78,10 +78,10 @@ cc_library(
 )
 
 cc_binary(
-    name = "libpnc_map.so",
+    name = "libpnc_map_base.so",
     srcs = [
-        "pnc_map.cc",
-        "pnc_map.h",
+        "pnc_map_base.cc",
+        "pnc_map_base.h",
     ],
     linkshared = True,
     linkstatic = True,
@@ -89,49 +89,31 @@ cc_binary(
         "-DMODULE_NAME=\\\"planning\\\"",
     ],
     deps = [
-        ":path",
         ":route_segments",
-        "//cyber",
-        "//modules/common_msgs/map_msgs:map_id_cc_proto",
-        "//modules/common_msgs/routing_msgs:routing_cc_proto",
-        "//modules/common/configs:config_gflags",
-        "//modules/common/util:util_tool",
+        "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
         "//modules/common/util",
+        "//modules/common/configs:config_gflags",
         "//modules/common/vehicle_state/proto:vehicle_state_cc_proto",
-        "//modules/map/hdmap:hdmap_util",
-        "//modules/map/hdmap",
-        "@com_google_absl//:absl",
-        "@com_google_googletest//:gtest",
-        "@com_google_protobuf//:protobuf",
     ],
 )
 
 cc_library(
     name = "pnc_map",
-    srcs = ["libpnc_map.so"],
+    srcs = ["libpnc_map_base.so"],
     hdrs = [
+        "pnc_map_base.h",
         "path.h",
-        "pnc_map.h",
         "route_segments.h",
     ],
     copts = [
         "-DMODULE_NAME=\\\"planning\\\"",
     ],
     deps = [
-        "//cyber",
-        "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
-        "//modules/common_msgs/map_msgs:map_lane_cc_proto",
-        "//modules/common_msgs/routing_msgs:routing_cc_proto",
-        "//modules/common/configs:config_gflags",
-        "//modules/common/math",
-        "//modules/common/util:util_tool",
+        ":route_segments",
+        "//modules/common_msgs/planning_msgs:planning_command_cc_proto",
         "//modules/common/util",
+        "//modules/common/configs:config_gflags",
         "//modules/common/vehicle_state/proto:vehicle_state_cc_proto",
-        "//modules/map/hdmap:hdmap_util",
-        "//modules/map/hdmap",
-        "@com_google_absl//:absl",
-        "@com_google_googletest//:gtest",
-        "@com_google_protobuf//:protobuf",
     ],
 )
 
@@ -152,22 +134,6 @@ cc_test(
         "//modules/common_msgs/routing_msgs:routing_cc_proto",
         "@com_google_googletest//:gtest_main",
     ],
-)
-
-cc_test(
-    name = "pnc_map_test",
-    size = "small",
-    srcs = ["pnc_map_test.cc"],
-    data = [
-        ":testdata",
-        "//modules/map/data:map_sunnyvale_loop",
-    ],
-    deps = [
-        ":pnc_map",
-        "//modules/common/util",
-        "@com_google_googletest//:gtest_main",
-    ],
-    linkstatic = True,
 )
 
 cc_test(

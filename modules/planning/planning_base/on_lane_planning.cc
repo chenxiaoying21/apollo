@@ -128,8 +128,12 @@ Status OnLanePlanning::Init(const PlanningConfig& config) {
   ACHECK(hdmap_) << "Failed to load map";
 
   // instantiate reference line provider
+  const ReferenceLineConfig* reference_line_config = nullptr;
+  if (config_.has_reference_line_config()) {
+    reference_line_config = &config_.reference_line_config();
+  }
   reference_line_provider_ = std::make_unique<ReferenceLineProvider>(
-      injector_->vehicle_state(), hdmap_);
+      injector_->vehicle_state(), reference_line_config);
   reference_line_provider_->Start();
 
   // dispatch planner
@@ -172,12 +176,13 @@ Status OnLanePlanning::InitFrame(const uint32_t sequence_num,
   reference_line_provider_->GetReferenceLines(&reference_lines, &segments);
   DCHECK_EQ(reference_lines.size(), segments.size());
 
-  auto forward_limit =
-      hdmap::PncMap::LookForwardDistance(vehicle_state.linear_velocity());
+  auto forward_limit = planning::PncMapBase::LookForwardDistance(
+      vehicle_state.linear_velocity());
 
   for (auto& ref_line : reference_lines) {
     if (!ref_line.Segment(Vec2d(vehicle_state.x(), vehicle_state.y()),
-                          FLAGS_look_backward_distance, forward_limit)) {
+                          planning::FLAGS_look_backward_distance,
+                          forward_limit)) {
       const std::string msg = "Fail to shrink reference line.";
       AERROR << msg;
       return Status(ErrorCode::PLANNING_ERROR, msg);
@@ -185,7 +190,7 @@ Status OnLanePlanning::InitFrame(const uint32_t sequence_num,
   }
   for (auto& seg : segments) {
     if (!seg.Shrink(Vec2d(vehicle_state.x(), vehicle_state.y()),
-                    FLAGS_look_backward_distance, forward_limit)) {
+                    planning::FLAGS_look_backward_distance, forward_limit)) {
       const std::string msg = "Fail to shrink routing segments.";
       AERROR << msg;
       return Status(ErrorCode::PLANNING_ERROR, msg);
@@ -282,8 +287,8 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
     if (local_view_.planning_command->has_lane_follow_command()) {
-      reference_line_provider_->UpdateRoutingResponse(
-          local_view_.planning_command->lane_follow_command());
+      reference_line_provider_->UpdatePlanningCommand(
+          *(local_view_.planning_command));
     } else {
       reference_line_provider_->Reset();
     }

@@ -15,8 +15,8 @@
  *****************************************************************************/
 
 #include <memory>
-#include <string>
 #include <set>
+#include <string>
 
 #include "gtest/gtest.h"
 
@@ -82,8 +82,7 @@ class PlanningTestBase : public ::testing::Test {
   bool RunPlanning(const std::string& test_case_name, int case_num,
                    bool no_trajectory_point);
 
-  std::shared_ptr<TrafficRule> GetTrafficRuleConfig(
-      const std::string& rule_id);
+  std::shared_ptr<TrafficRule> GetTrafficRuleConfig(const std::string& rule_id);
 
  protected:
   void TrimPlanning(ADCTrajectory* origin, bool no_trajectory_point);

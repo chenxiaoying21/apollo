@@ -33,7 +33,6 @@
 #include "modules/common/math/vec2d.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/common/indexed_queue.h"
 #include "modules/planning/planning_base/common/obstacle.h"
 #include "modules/planning/planning_base/common/planning_gflags.h"

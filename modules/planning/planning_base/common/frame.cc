@@ -32,7 +32,6 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/common/feature_output.h"
 #include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/planning_base/common/planning_gflags.h"
@@ -105,7 +104,6 @@ bool Frame::Rerouting(PlanningContext *planning_context) {
     return false;
   }
   for (size_t i = 0; i < future_route_waypoints_.size() - 1; i++) {
-    // reference_line_provider_->FutureRouteWaypoints()) {
     auto waypoint = lane_follow_command->add_way_point();
     waypoint->set_x(future_route_waypoints_[i].pose().x());
     waypoint->set_y(future_route_waypoints_[i].pose().y());

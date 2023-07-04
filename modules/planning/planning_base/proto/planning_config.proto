@@ -53,6 +53,11 @@ message TopicConfig {
   optional string planning_command_topic = 13;
 }
 
+// Config of reference line provider.
+message ReferenceLineConfig {
+  repeated string pnc_map_class = 2;
+}
+
 message PlanningConfig {
   enum PlanningLearningMode {
     NO_LEARNING = 0;
@@ -65,9 +70,10 @@ message PlanningConfig {
 
   optional TopicConfig topic_config = 1;
   optional PlanningLearningMode learning_mode = 2;
+  optional ReferenceLineConfig reference_line_config = 3;
   oneof planning_config {
-    RtkPlanningConfig rtk_planning_config = 3;
-    StandardPlanningConfig standard_planning_config = 4;
-    NavigationPlanningConfig navigation_planning_config = 5;
+    RtkPlanningConfig rtk_planning_config = 4;
+    StandardPlanningConfig standard_planning_config = 5;
+    NavigationPlanningConfig navigation_planning_config = 6;
   }
 }

@@ -21,7 +21,3 @@ message FreeSpaceCommand {
   // not given, the default target speed of system will be used.
   optional double target_speed = 5;
 }
-
-message RoiPolygon {
-  repeated Point point = 1;
-}

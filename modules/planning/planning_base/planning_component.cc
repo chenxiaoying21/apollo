@@ -21,7 +21,6 @@
 #include "modules/common/util/message_util.h"
 #include "modules/common/util/util.h"
 #include "modules/map/hdmap/hdmap_util.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/common/history.h"
 #include "modules/planning/planning_base/common/planning_context.h"
 #include "modules/planning/planning_base/navi_planning.h"
@@ -165,6 +164,10 @@ bool PlanningComponent::Proc(
     // data process for online training
     message_process_.OnChassis(*local_view_.chassis);
     message_process_.OnPrediction(*local_view_.prediction_obstacles);
+    if (local_view_.planning_command->has_lane_follow_command()) {
+      message_process_.OnRoutingResponse(
+          local_view_.planning_command->lane_follow_command());
+    }
     message_process_.OnStoryTelling(*local_view_.stories);
     message_process_.OnTrafficLightDetection(*local_view_.traffic_light);
     message_process_.OnLocalization(*local_view_.localization_estimate);

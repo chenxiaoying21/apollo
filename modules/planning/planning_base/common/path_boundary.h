@@ -36,7 +36,8 @@ class PathBoundary {
    * @param delta_s The distance between two point in s-axis
    * @param path_bound tuple first is s, second is l_min, third is l_max
    *    **/
-  PathBoundary(const double delta_s,
+  PathBoundary(
+      const double delta_s,
       const std::vector<std::tuple<double, double, double>>& path_bound);
   virtual ~PathBoundary() = default;
 

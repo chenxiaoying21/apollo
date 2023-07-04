@@ -28,7 +28,6 @@
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/scenario_base/scenario.h"
 
 namespace apollo {

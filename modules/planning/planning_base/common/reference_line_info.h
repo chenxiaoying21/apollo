@@ -35,7 +35,6 @@
 #include "modules/planning/planning_base/proto/lattice_structure.pb.h"
 
 #include "modules/map/hdmap/hdmap_common.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/common/path/path_data.h"
 #include "modules/planning/planning_base/common/path_boundary.h"
 #include "modules/planning/planning_base/common/path_decision.h"
@@ -44,6 +43,7 @@
 #include "modules/planning/planning_base/common/speed/speed_data.h"
 #include "modules/planning/planning_base/common/st_graph_data.h"
 #include "modules/planning/planning_base/common/trajectory/discretized_trajectory.h"
+#include "modules/map/pnc_map/route_segments.h"
 
 namespace apollo {
 namespace planning {

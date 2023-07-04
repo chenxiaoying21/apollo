@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *****************************************************************************/
-
-#include "modules/map/pnc_map/pnc_map.h"
-
-#include "gflags/gflags.h"
 #include "gtest/gtest.h"
+#include "gflags/gflags.h"
 
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "cyber/common/file.h"
 #include "modules/common/util/string_util.h"
 #include "modules/map/hdmap/hdmap.h"
 #include "modules/map/hdmap/hdmap_util.h"
-#include "modules/common_msgs/routing_msgs/routing.pb.h"
+
+#define private public
+#define protected public
+
+#include "modules/planning/pnc_map/lane_follow_map/lane_follow_map.h"
 
 DECLARE_double(min_length_for_lane_change);
 
@@ -46,12 +48,15 @@ class PncMapTest : public ::testing::Test {
       AERROR << "Failed to load map: " << FLAGS_test_map_file;
       ACHECK(false);
     }
-    pnc_map_.reset(new PncMap(&hdmap_));
-    if (!cyber::common::GetProtoFromFile(FLAGS_test_routing_file, &routing_)) {
+    pnc_map_.reset(new planning::LaneFollowMap());
+    pnc_map_->hdmap_ = &hdmap_;
+    if (!cyber::common::GetProtoFromFile(
+            FLAGS_test_routing_file,
+            planning_command_.mutable_lane_follow_command())) {
       AERROR << "Failed to load routing: " << FLAGS_test_routing_file;
       ACHECK(false);
     }
-    pnc_map_->UpdateRoutingResponse(routing_);
+    pnc_map_->UpdatePlanningCommand(planning_command_);
   }
 
   static double RouteLength(const RouteSegments& segments) {
@@ -62,20 +67,20 @@ class PncMapTest : public ::testing::Test {
     return s;
   }
 
-  static routing::RoutingResponse routing_;
-  static std::unique_ptr<PncMap> pnc_map_;
+  static planning::PlanningCommand planning_command_;
+  static std::unique_ptr<planning::LaneFollowMap> pnc_map_;
   static hdmap::HDMap hdmap_;
 };
 
-std::unique_ptr<PncMap> PncMapTest::pnc_map_;
+std::unique_ptr<planning::LaneFollowMap> PncMapTest::pnc_map_;
 hdmap::HDMap PncMapTest::hdmap_;
-routing::RoutingResponse PncMapTest::routing_;
+planning::PlanningCommand PncMapTest::planning_command_;
 
 TEST_F(PncMapTest, UpdateRouting) {
-  pnc_map_->routing_.clear_header();
-  EXPECT_TRUE(pnc_map_->IsNewRouting(routing_));
-  EXPECT_TRUE(pnc_map_->UpdateRoutingResponse(routing_));
-  EXPECT_FALSE(pnc_map_->IsNewRouting(routing_));
+  pnc_map_->last_command_.clear_header();
+  EXPECT_TRUE(pnc_map_->IsNewPlanningCommand(planning_command_));
+  EXPECT_TRUE(pnc_map_->UpdatePlanningCommand(planning_command_));
+  EXPECT_FALSE(pnc_map_->IsNewPlanningCommand(planning_command_));
 }
 
 TEST_F(PncMapTest, GetNearestPointFromRouting) {
@@ -207,7 +212,7 @@ TEST_F(PncMapTest, SearchForwardIndex_SearchBackwardIndex) {
 }
 
 TEST_F(PncMapTest, GetNeighborPassages) {
-  const auto& road0 = routing_.road(0);
+  const auto& road0 = planning_command_.lane_follow_command().road(0);
   {
     auto result = pnc_map_->GetNeighborPassages(road0, 0);
     EXPECT_EQ(2, result.size());

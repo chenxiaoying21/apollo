@@ -15,7 +15,7 @@
  *****************************************************************************/
 
 /**
- * @file:
+ * @file lane_follow_map.h
  **/
 
 #pragma once
@@ -25,62 +25,58 @@
 #include <unordered_set>
 #include <vector>
 
-#include "gtest/gtest_prod.h"
-
-#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
+#include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/map/hdmap/hdmap.h"
 #include "modules/map/pnc_map/path.h"
+#include "modules/map/pnc_map/pnc_map_base.h"
 #include "modules/map/pnc_map/route_segments.h"
 
-DECLARE_double(look_backward_distance);
-DECLARE_double(look_forward_short_distance);
-DECLARE_double(look_forward_long_distance);
-
 namespace apollo {
-namespace hdmap {
+namespace planning {
 
-class PncMap {
+class LaneFollowMap : public PncMapBase {
  public:
-  virtual ~PncMap() = default;
-  explicit PncMap(const HDMap *hdmap);
+  LaneFollowMap();
 
-  const hdmap::HDMap *hdmap() const;
+  virtual ~LaneFollowMap() = default;
 
-  bool UpdateRoutingResponse(const routing::RoutingResponse &routing_response);
+  bool CanProcess(const planning::PlanningCommand &command) const override;
 
-  const routing::RoutingResponse &routing_response() const;
-
-  static double LookForwardDistance(const double velocity);
-
-  bool GetRouteSegments(const common::VehicleState &vehicle_state,
-                        const double backward_length,
-                        const double forward_length,
-                        std::list<RouteSegments> *const route_segments);
+  bool UpdatePlanningCommand(const planning::PlanningCommand &command) override;
   /**
    * @brief use heuristic forward length and backward length
    */
-  bool GetRouteSegments(const common::VehicleState &vehicle_state,
-                        std::list<RouteSegments> *const route_segments);
+  bool GetRouteSegments(
+      const common::VehicleState &vehicle_state,
+      std::list<apollo::hdmap::RouteSegments> *const route_segments) override;
 
-  /**
-   * Check if the routing is the same as existing one in PncMap
-   */
-  bool IsNewRouting(const routing::RoutingResponse &routing_response) const;
-  static bool IsNewRouting(const routing::RoutingResponse &prev,
-                           const routing::RoutingResponse &routing_response);
+  bool ExtendSegments(
+      const apollo::hdmap::RouteSegments &segments, double start_s,
+      double end_s,
+      apollo::hdmap::RouteSegments *const truncated_segments) const override;
 
-  bool ExtendSegments(const RouteSegments &segments,
-                      const common::PointENU &point, double look_forward,
-                      double look_backward, RouteSegments *extended_segments);
-
-  bool ExtendSegments(const RouteSegments &segments, double start_s,
-                      double end_s,
-                      RouteSegments *const truncated_segments) const;
-
-  std::vector<routing::LaneWaypoint> FutureRouteWaypoints() const;
+  std::vector<routing::LaneWaypoint> FutureRouteWaypoints() const override;
 
  private:
+  /**
+   * @brief Check if the command can be processed by this map.
+   * @param command The command to be checked.
+   * @return True if the command can be processed.
+   */
+  bool IsValid(const planning::PlanningCommand &command) const override;
+
+  bool GetRouteSegments(
+      const common::VehicleState &vehicle_state, const double backward_length,
+      const double forward_length,
+      std::list<apollo::hdmap::RouteSegments> *const route_segments);
+
+  bool ExtendSegments(const apollo::hdmap::RouteSegments &segments,
+                      const common::PointENU &point, double look_forward,
+                      double look_backward,
+                      apollo::hdmap::RouteSegments *extended_segments);
+
   bool UpdateVehicleState(const common::VehicleState &vehicle_state);
   /**
    * @brief Find the waypoint index of a routing waypoint. It updates
@@ -88,26 +84,27 @@ class PncMap {
    * @return index out of range if cannot find waypoint on routing, otherwise
    *   an index in range [0, route_indices.size());
    */
-  int GetWaypointIndex(const LaneWaypoint &waypoint) const;
+  int GetWaypointIndex(const apollo::hdmap::LaneWaypoint &waypoint) const;
 
   bool GetNearestPointFromRouting(const common::VehicleState &point,
-                                  LaneWaypoint *waypoint) const;
+                                  apollo::hdmap::LaneWaypoint *waypoint) const;
 
   bool PassageToSegments(routing::Passage passage,
-                         RouteSegments *segments) const;
+                         apollo::hdmap::RouteSegments *segments) const;
 
   bool ProjectToSegments(const common::PointENU &point_enu,
-                         const RouteSegments &segments,
-                         LaneWaypoint *waypoint) const;
+                         const apollo::hdmap::RouteSegments &segments,
+                         apollo::hdmap::LaneWaypoint *waypoint) const;
 
-  static bool ValidateRouting(const routing::RoutingResponse &routing);
+  static void AppendLaneToPoints(
+      apollo::hdmap::LaneInfoConstPtr lane, const double start_s,
+      const double end_s,
+      std::vector<apollo::hdmap::MapPathPoint> *const points);
 
-  static void AppendLaneToPoints(LaneInfoConstPtr lane, const double start_s,
-                                 const double end_s,
-                                 std::vector<MapPathPoint> *const points);
-
-  LaneInfoConstPtr GetRoutePredecessor(LaneInfoConstPtr lane) const;
-  LaneInfoConstPtr GetRouteSuccessor(LaneInfoConstPtr lane) const;
+  apollo::hdmap::LaneInfoConstPtr GetRoutePredecessor(
+      apollo::hdmap::LaneInfoConstPtr lane) const;
+  apollo::hdmap::LaneInfoConstPtr GetRouteSuccessor(
+      apollo::hdmap::LaneInfoConstPtr lane) const;
 
   /**
    * Return the neighbor passages from passage with index start_passage on road.
@@ -124,14 +121,16 @@ class PncMap {
    * @return empty LaneWaypoint if the lane id cannot be found on map, otherwise
    * return a valid LaneWaypoint with lane ptr and s.
    */
-  LaneWaypoint ToLaneWaypoint(const routing::LaneWaypoint &waypoint) const;
+  apollo::hdmap::LaneWaypoint ToLaneWaypoint(
+      const routing::LaneWaypoint &waypoint) const;
 
   /**
    * @brief convert a routing segment to lane segment
    * @return empty LaneSegmetn if the lane id cannot be found on map, otherwise
    * return a valid LaneSegment with lane ptr, start_s and end_s
    */
-  LaneSegment ToLaneSegment(const routing::LaneSegment &segment) const;
+  apollo::hdmap::LaneSegment ToLaneSegment(
+      const routing::LaneSegment &segment) const;
 
   /**
    * @brief Update routing waypoint index to the next waypoint that ADC need to
@@ -149,16 +148,16 @@ class PncMap {
    * @return empty vector if not found, otherwise return a vector { road_index,
    * passage_index, lane_index}
    */
-  int SearchForwardWaypointIndex(int start, const LaneWaypoint &waypoint) const;
-  int SearchBackwardWaypointIndex(int start,
-                                  const LaneWaypoint &waypoint) const;
+  int SearchForwardWaypointIndex(
+      int start, const apollo::hdmap::LaneWaypoint &waypoint) const;
+  int SearchBackwardWaypointIndex(
+      int start, const apollo::hdmap::LaneWaypoint &waypoint) const;
 
   void UpdateRoutingRange(int adc_index);
 
  private:
-  routing::RoutingResponse routing_;
   struct RouteIndex {
-    LaneSegment segment;
+    apollo::hdmap::LaneSegment segment;
     std::array<int, 3> index;
   };
   std::vector<RouteIndex> route_indices_;
@@ -172,9 +171,9 @@ class PncMap {
    * The routing request waypoints
    */
   struct WaypointIndex {
-    LaneWaypoint waypoint;
+    apollo::hdmap::LaneWaypoint waypoint;
     int index;
-    WaypointIndex(const LaneWaypoint &waypoint, int index)
+    WaypointIndex(const apollo::hdmap::LaneWaypoint &waypoint, int index)
         : waypoint(waypoint), index(index) {}
   };
 
@@ -201,7 +200,7 @@ class PncMap {
   /**
    * The waypoint of the autonomous driving car
    */
-  LaneWaypoint adc_waypoint_;
+  apollo::hdmap::LaneWaypoint adc_waypoint_;
 
   /**
    * @brief Indicates whether the adc should start consider destination.
@@ -212,15 +211,10 @@ class PncMap {
    * for the last time.
    */
   bool stop_for_destination_ = false;
-
-  FRIEND_TEST(PncMapTest, UpdateRouting);
-  FRIEND_TEST(PncMapTest, GetNearestPointFromRouting);
-  FRIEND_TEST(PncMapTest, UpdateWaypointIndex);
-  FRIEND_TEST(PncMapTest, UpdateNextRoutingWaypointIndex);
-  FRIEND_TEST(PncMapTest, GetNeighborPassages);
-  FRIEND_TEST(PncMapTest, NextWaypointIndex);
-  FRIEND_TEST(PncMapTest, SearchForwardIndex_SearchBackwardIndex);
 };
 
-}  // namespace hdmap
+CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::LaneFollowMap,
+                                     PncMapBase)
+
+}  // namespace planning
 }  // namespace apollo

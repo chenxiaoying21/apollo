@@ -1,0 +1,3 @@
+<library path="modules/planning/pnc_map/path_follow_map/libpath_follow_map.so">
+    <class type="apollo::planning::PathFollowMap" base_class="PncMapBase"></class>
+</library>
