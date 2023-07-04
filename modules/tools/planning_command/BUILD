@@ -12,6 +12,7 @@ py_binary(
         "//modules/common_msgs/planning_msgs:planning_command_py_pb2",
         "//modules/common_msgs/external_command_msgs:valet_parking_command_py_pb2",
         "//modules/common_msgs/external_command_msgs:free_space_command_py_pb2",
+        "//modules/common_msgs/external_command_msgs:action_command_py_pb2",
         "//modules/common_msgs/external_command_msgs:geometry_py_pb2",
         "//modules/common_msgs/routing_msgs:routing_py_pb2",
         "//modules/common_msgs/external_command_msgs:command_status_py_pb2",
