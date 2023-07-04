@@ -39,8 +39,6 @@ class EmergencyPullOverStageApproach : public Stage {
 
  private:
   StageResult FinishStage();
-
-  ScenarioEmergencyPullOverConfig scenario_config_;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(
