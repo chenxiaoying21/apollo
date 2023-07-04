@@ -106,13 +106,13 @@ void TempRoutingConverter::OnRoutingRequest(
     if (way_point_size > 1) {
       routing_request->mutable_waypoint()->DeleteSubrange(0, 1);
       CopyRoutingRequest<LaneFollowCommand>(
-          routing_request, 0, way_point_size - 1, lane_follow_command.get());
+          routing_request, 0, way_point_size - 2, lane_follow_command.get());
     }
     // Copy the end point.
     lane_follow_command->mutable_header()->CopyFrom(routing_request->header());
     Convert(routing_request->waypoint().Get(way_point_size - 1),
             lane_follow_command->mutable_end_pose());
-    AINFO << routing_request->DebugString();
+    AINFO << lane_follow_command->DebugString();
     auto response =
         lane_follow_command_client_->SendRequest(lane_follow_command);
     if (nullptr == response) {
