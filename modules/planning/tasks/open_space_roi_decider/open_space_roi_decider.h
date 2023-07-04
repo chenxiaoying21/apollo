@@ -39,7 +39,6 @@
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap_util.h"
 #include "modules/map/pnc_map/path.h"
-#include "modules/map/pnc_map/pnc_map.h"
 #include "modules/planning/planning_base/common/frame.h"
 #include "modules/planning/planning_base/common/indexed_queue.h"
 #include "modules/planning/planning_base/common/obstacle.h"

@@ -15,6 +15,10 @@ topic_config {
 }
 # NO_LEARNING / E2E / HYBRID / RL_TEST / E2E_TEST / HYBRID_TEST
 learning_mode: NO_LEARNING
+reference_line_config {
+  pnc_map_class: "apollo::planning::LaneFollowMap"
+  pnc_map_class: "apollo::planning::PathFollowMap"
+}
 standard_planning_config {
   planner_type: PUBLIC_ROAD
   planner_public_road_config {

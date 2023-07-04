@@ -181,7 +181,6 @@ cc_library(
         "//modules/common_msgs/basic_msgs:pnc_point_cc_proto",
         "//modules/common/util",
         "//modules/common/vehicle_state:vehicle_state_provider",
-        "//modules/map/pnc_map",
         "//modules/common_msgs/map_msgs:map_cc_proto",
         "//modules/planning/planning_base/common/path:path_data",
         "//modules/planning/planning_base/common/speed:speed_data",

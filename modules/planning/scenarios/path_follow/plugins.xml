@@ -1,0 +1,3 @@
+<library path="modules/planning/scenarios/path_follow/libpath_follow_scenario.so">
+    <class type="apollo::planning::PathFollowScenario" base_class="Scenario"></class>
+</library>

@@ -37,7 +37,7 @@
 #include "modules/common/util/factory.h"
 #include "modules/common/util/util.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
-#include "modules/map/pnc_map/pnc_map.h"
+#include "modules/map/pnc_map/pnc_map_base.h"
 #include "modules/planning/planning_base/common/indexed_queue.h"
 #include "modules/planning/planning_base/math/smoothing_spline/spline_2d_solver.h"
 #include "modules/planning/planning_base/reference_line/discrete_points_reference_line_smoother.h"
@@ -60,9 +60,10 @@ namespace planning {
 class ReferenceLineProvider {
  public:
   ReferenceLineProvider() = default;
+
   ReferenceLineProvider(
       const common::VehicleStateProvider* vehicle_state_provider,
-      const hdmap::HDMap* base_map,
+      const ReferenceLineConfig* reference_line_config,
       const std::shared_ptr<relative_map::MapMsg>& relative_map = nullptr);
 
   /**
@@ -70,7 +71,12 @@ class ReferenceLineProvider {
    */
   ~ReferenceLineProvider();
 
-  bool UpdateRoutingResponse(const routing::RoutingResponse& routing);
+  /**
+   * @brief Update when new PlanningCommand is received.
+   * @param command New PlanningCommand.
+   * @return True if no error occurs.
+   **/
+  bool UpdatePlanningCommand(const planning::PlanningCommand& command);
 
   void UpdateVehicleState(const common::VehicleState& vehicle_state);
 
@@ -89,8 +95,9 @@ class ReferenceLineProvider {
 
  private:
   /**
-   * @brief Use PncMap to create reference line and the corresponding segments
-   * based on routing and current position. This is a thread safe function.
+   * @brief Use LaneFollowMap to create reference line and the corresponding
+   * segments based on routing and current position. This is a thread safe
+   * function.
    * @return true if !reference_lines.empty() && reference_lines.size() ==
    *                 segments.size();
    **/
@@ -163,7 +170,10 @@ class ReferenceLineProvider {
   ReferenceLineSmootherConfig smoother_config_;
 
   std::mutex pnc_map_mutex_;
-  std::unique_ptr<hdmap::PncMap> pnc_map_;
+  // The loaded pnc map plugin which can create referene line from
+  // PlanningCommand.
+  std::vector<std::shared_ptr<planning::PncMapBase>> pnc_map_list_;
+  std::shared_ptr<planning::PncMapBase> current_pnc_map_;
 
   // Used in Navigation mode
   std::shared_ptr<relative_map::MapMsg> relative_map_;
@@ -172,9 +182,9 @@ class ReferenceLineProvider {
   common::VehicleState vehicle_state_;
 
   std::mutex routing_mutex_;
-  routing::RoutingResponse routing_;
-  bool has_routing_ = false;
-  bool has_new_routing_ = false;
+  planning::PlanningCommand planning_command_;
+  bool has_planning_command_ = false;
+
   std::mutex reference_lines_mutex_;
   std::list<ReferenceLine> reference_lines_;
   std::list<hdmap::RouteSegments> route_segments_;

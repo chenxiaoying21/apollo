@@ -121,10 +121,15 @@ void NaviPlanning::RunOnce(const LocalView& local_view,
 
   // recreate reference line provider in every cycle
   hdmap_ = HDMapUtil::BaseMapPtr(*local_view.relative_map);
+  const ReferenceLineConfig* reference_line_config = nullptr;
+  if (config_.has_reference_line_config()) {
+    reference_line_config = &config_.reference_line_config();
+  }
   // Prefer "std::make_unique" to direct use of "new".
   // Refer to "https://herbsutter.com/gotw/_102/" for details.
   reference_line_provider_ = std::make_unique<ReferenceLineProvider>(
-      injector_->vehicle_state(), hdmap_, local_view_.relative_map);
+      injector_->vehicle_state(), reference_line_config,
+      local_view_.relative_map);
 
   // localization
   ADEBUG << "Get localization: "

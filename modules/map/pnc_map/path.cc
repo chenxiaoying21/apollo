@@ -29,9 +29,6 @@
 #include "modules/common/math/polygon2d.h"
 #include "modules/common/util/string_util.h"
 
-// https://nacto.org/publication/urban-street-design-guide/street-design-elements/lane-width/
-DEFINE_double(default_lane_width, 3.048, "default lane width is about 10 feet");
-
 namespace apollo {
 namespace hdmap {
 

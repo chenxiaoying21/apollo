@@ -31,7 +31,7 @@
 #include "modules/dreamview/proto/simulation_world.pb.h"
 #include "modules/external_command/temp_routing_converter/proto/routing.pb.h"
 
-#include "modules/map/pnc_map/pnc_map.h"
+#include "modules/map/pnc_map/path.h"
 
 /**
  * @namespace apollo::dreamview

@@ -17,3 +17,10 @@ message Pose {
   // Rotation around z axis in Cartesian coordinate system.
   optional double heading = 3;
 }
+
+// Region of interest in form of polygon.
+// If the points of polygon is in anticlockwise, ROI is drivable area; otherwise if
+// they are in clockwise, ROI is prohibited driving area.
+message RoiPolygon {
+  repeated Point point = 1;
+}

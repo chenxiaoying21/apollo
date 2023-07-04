@@ -14,6 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
 #include <algorithm>
 #include <functional>
 #include <limits>
@@ -26,7 +27,6 @@
 #include "modules/common/math/linear_interpolation.h"
 #include "modules/common/util/util.h"
 #include "modules/planning/planning_base/common/planning_gflags.h"
-#include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
 
 namespace apollo {
 namespace planning {

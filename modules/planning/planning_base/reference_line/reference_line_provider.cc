@@ -26,6 +26,7 @@
 #include <utility>
 
 #include "cyber/common/file.h"
+#include "cyber/plugin_manager/plugin_manager.h"
 #include "cyber/task/task.h"
 #include "cyber/time/clock.h"
 #include "modules/common/configs/vehicle_config_helper.h"
@@ -52,21 +53,19 @@ using apollo::cyber::Clock;
 using apollo::hdmap::HDMapUtil;
 using apollo::hdmap::LaneWaypoint;
 using apollo::hdmap::MapPathPoint;
-using apollo::hdmap::PncMap;
 using apollo::hdmap::RouteSegments;
 
 ReferenceLineProvider::~ReferenceLineProvider() {}
 
 ReferenceLineProvider::ReferenceLineProvider(
     const common::VehicleStateProvider *vehicle_state_provider,
-    const hdmap::HDMap *base_map,
+    const ReferenceLineConfig *reference_line_config,
     const std::shared_ptr<relative_map::MapMsg> &relative_map)
     : vehicle_state_provider_(vehicle_state_provider) {
+  current_pnc_map_ = nullptr;
   if (!FLAGS_use_navigation_mode) {
-    pnc_map_ = std::make_unique<hdmap::PncMap>(base_map);
     relative_map_ = nullptr;
   } else {
-    pnc_map_ = nullptr;
     relative_map_ = relative_map;
   }
 
@@ -84,23 +83,54 @@ ReferenceLineProvider::ReferenceLineProvider(
     ACHECK(false) << "unknown smoother config "
                   << smoother_config_.DebugString();
   }
+  // Load pnc map plugins.
+  pnc_map_list_.clear();
+  // Set "apollo::planning::LaneFollowMap" as default if pnc_map_class is empty.
+  if (nullptr == reference_line_config ||
+      reference_line_config->pnc_map_class().empty()) {
+    const auto &pnc_map =
+        apollo::cyber::plugin_manager::PluginManager::Instance()
+            ->CreateInstance<planning::PncMapBase>(
+                "apollo::planning::LaneFollowMap");
+    pnc_map_list_.emplace_back(pnc_map);
+  } else {
+    const auto &pnc_map_names = reference_line_config->pnc_map_class();
+    for (const auto &map_name : pnc_map_names) {
+      const auto &pnc_map =
+          apollo::cyber::plugin_manager::PluginManager::Instance()
+              ->CreateInstance<planning::PncMapBase>(map_name);
+      pnc_map_list_.emplace_back(pnc_map);
+    }
+  }
+
   is_initialized_ = true;
 }
 
-bool ReferenceLineProvider::UpdateRoutingResponse(
-    const routing::RoutingResponse &routing) {
+bool ReferenceLineProvider::UpdatePlanningCommand(
+    const planning::PlanningCommand &command) {
   std::lock_guard<std::mutex> routing_lock(routing_mutex_);
-  routing_ = routing;
-  has_routing_ = true;
-  has_new_routing_ = true;
+  current_pnc_map_ = nullptr;
+  for (const auto &pnc_map : pnc_map_list_) {
+    if (pnc_map->CanProcess(command)) {
+      current_pnc_map_ = pnc_map;
+      break;
+    }
+  }
+  if (nullptr == current_pnc_map_) {
+    AERROR << "Cannot find pnc map to process input command!"
+           << command.DebugString();
+    return false;
+  }
+  planning_command_ = command;
+  has_planning_command_ = true;
   return true;
 }
 
 std::vector<routing::LaneWaypoint>
 ReferenceLineProvider::FutureRouteWaypoints() {
-  if (!FLAGS_use_navigation_mode) {
+  if (!FLAGS_use_navigation_mode && nullptr != current_pnc_map_) {
     std::lock_guard<std::mutex> lock(pnc_map_mutex_);
-    return pnc_map_->FutureRouteWaypoints();
+    return current_pnc_map_->FutureRouteWaypoints();
   }
 
   // return an empty routing::LaneWaypoint vector in Navigation mode.
@@ -137,11 +167,11 @@ void ReferenceLineProvider::Stop() {
 
 void ReferenceLineProvider::Reset() {
   std::lock_guard<std::mutex> lock(routing_mutex_);
-  has_routing_ = false;
+  has_planning_command_ = false;
   reference_lines_.clear();
   route_segments_.clear();
   is_reference_line_updated_ = false;
-  routing_.Clear();
+  planning_command_.Clear();
 }
 
 void ReferenceLineProvider::UpdateReferenceLine(
@@ -204,7 +234,7 @@ void ReferenceLineProvider::GenerateThread() {
     static constexpr int32_t kSleepTime = 50;  // milliseconds
     cyber::SleepFor(std::chrono::milliseconds(kSleepTime));
     const double start_time = Clock::NowInSeconds();
-    if (!has_routing_) {
+    if (!has_planning_command_) {
       continue;
     }
     std::list<ReferenceLine> reference_lines;
@@ -237,7 +267,7 @@ bool ReferenceLineProvider::GetReferenceLines(
     std::list<hdmap::RouteSegments> *segments) {
   CHECK_NOTNULL(reference_lines);
   CHECK_NOTNULL(segments);
-  if (!has_routing_) {
+  if (!has_planning_command_) {
     return true;
   }
   if (FLAGS_use_navigation_mode) {
@@ -548,7 +578,7 @@ bool ReferenceLineProvider::CreateRouteSegments(
     std::list<hdmap::RouteSegments> *segments) {
   {
     std::lock_guard<std::mutex> lock(pnc_map_mutex_);
-    if (!pnc_map_->GetRouteSegments(vehicle_state, segments)) {
+    if (!current_pnc_map_->GetRouteSegments(vehicle_state, segments)) {
       AERROR << "Failed to extract segments from routing";
       return false;
     }
@@ -574,25 +604,26 @@ bool ReferenceLineProvider::CreateReferenceLine(
     vehicle_state = vehicle_state_;
   }
 
-  routing::RoutingResponse routing;
+  planning::PlanningCommand command;
   {
     std::lock_guard<std::mutex> lock(routing_mutex_);
-    routing = routing_;
+    command = planning_command_;
   }
-  if (routing.road_size() == 0) {
-    return true;
+  if (nullptr == current_pnc_map_) {
+    AERROR << "Current pnc map is null! " << command.DebugString();
+    return false;
   }
-  bool is_new_routing = false;
+  bool is_new_command = false;
   {
     // Update routing in pnc_map
     std::lock_guard<std::mutex> lock(pnc_map_mutex_);
-    if (has_new_routing_) {
-      if (!pnc_map_->UpdateRoutingResponse(routing)) {
-        AERROR << "Failed to update routing in pnc map";
+    if (current_pnc_map_->IsNewPlanningCommand(command)) {
+      is_new_command = true;
+      if (!current_pnc_map_->UpdatePlanningCommand(command)) {
+        AERROR << "Failed to update routing in pnc map: "
+               << command.DebugString();
         return false;
       }
-      has_new_routing_ = false;
-      is_new_routing = true;
     }
   }
 
@@ -600,7 +631,7 @@ bool ReferenceLineProvider::CreateReferenceLine(
     AERROR << "Failed to create reference line from routing";
     return false;
   }
-  if (is_new_routing || !FLAGS_enable_reference_line_stitching) {
+  if (is_new_command || !FLAGS_enable_reference_line_stitching) {
     for (auto iter = segments->begin(); iter != segments->end();) {
       reference_lines->emplace_back();
       if (!SmoothRouteSegment(*iter, &reference_lines->back())) {
@@ -666,7 +697,7 @@ bool ReferenceLineProvider::ExtendReferenceLine(const VehicleState &state,
   const double prev_segment_length = RouteSegments::Length(*prev_segment);
   const double remain_s = prev_segment_length - sl_point.s();
   const double look_forward_required_distance =
-      PncMap::LookForwardDistance(state.linear_velocity());
+      planning::PncMapBase::LookForwardDistance(state.linear_velocity());
   if (remain_s > look_forward_required_distance) {
     *segments = *prev_segment;
     segments->SetProperties(segment_properties);
@@ -683,8 +714,8 @@ bool ReferenceLineProvider::ExtendReferenceLine(const VehicleState &state,
       prev_segment_length + FLAGS_look_forward_extend_distance;
   RouteSegments shifted_segments;
   std::unique_lock<std::mutex> lock(pnc_map_mutex_);
-  if (!pnc_map_->ExtendSegments(*prev_segment, future_start_s, future_end_s,
-                                &shifted_segments)) {
+  if (!current_pnc_map_->ExtendSegments(*prev_segment, future_start_s,
+                                        future_end_s, &shifted_segments)) {
     lock.unlock();
     AERROR << "Failed to shift route segments forward";
     return SmoothRouteSegment(*segments, reference_line);
@@ -729,11 +760,11 @@ bool ReferenceLineProvider::Shrink(const common::SLPoint &sl,
   double new_backward_distance = sl.s();
   double new_forward_distance = reference_line->Length() - sl.s();
   bool need_shrink = false;
-  if (sl.s() > FLAGS_look_backward_distance * 1.5) {
+  if (sl.s() > planning::FLAGS_look_backward_distance * 1.5) {
     ADEBUG << "reference line back side is " << sl.s()
            << ", shrink reference line: origin length: "
            << reference_line->Length();
-    new_backward_distance = FLAGS_look_backward_distance;
+    new_backward_distance = planning::FLAGS_look_backward_distance;
     need_shrink = true;
   }
   // check heading
