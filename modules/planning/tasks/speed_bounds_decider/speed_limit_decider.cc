@@ -22,11 +22,11 @@
 
 #include <algorithm>
 #include <limits>
-
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
 #include "modules/common_msgs/planning_msgs/decision.pb.h"
 #include "cyber/common/log.h"
 #include "modules/common/configs/vehicle_config_helper.h"
+#include "modules/planning/planning_base/common/util/print_debug_info.h"
 
 namespace apollo {
 namespace planning {
@@ -49,7 +49,7 @@ Status SpeedLimitDecider::GetSpeedLimits(
 
   const auto& discretized_path = path_data_.discretized_path();
   const auto& frenet_path = path_data_.frenet_frame_path();
-
+  PrintCurves print_curve;
   for (uint32_t i = 0; i < discretized_path.size(); ++i) {
     const double path_s = discretized_path.at(i).s();
     const double reference_line_s = frenet_path.at(i).s();
@@ -63,14 +63,16 @@ Status SpeedLimitDecider::GetSpeedLimits(
     // (1) speed limit from map
     double speed_limit_from_reference_line =
         reference_line_.GetSpeedLimitFromS(reference_line_s);
-
+    print_curve.AddPoint("speed_limit_from_ref", path_s,
+                         speed_limit_from_reference_line);
     // (2) speed limit from path curvature
     //  -- 2.1: limit by centripetal force (acceleration)
     const double speed_limit_from_centripetal_acc =
         std::sqrt(speed_bounds_config_.max_centric_acceleration_limit() /
                   std::fmax(std::fabs(discretized_path.at(i).kappa()),
                             speed_bounds_config_.minimal_kappa()));
-
+    print_curve.AddPoint("speed_limit_from_centripetal_acc", path_s,
+                         speed_limit_from_centripetal_acc);
     // (3) speed limit from nudge obstacles
     // TODO(all): in future, expand the speed limit not only to obstacles with
     // nudge decisions.
@@ -157,8 +159,15 @@ Status SpeedLimitDecider::GetSpeedLimits(
                     std::min({speed_limit_from_reference_line,
                               speed_limit_from_centripetal_acc}));
     }
+    if (speed_limit_from_nearby_obstacles <
+        std::numeric_limits<double>::max()) {
+      print_curve.AddPoint("speed_limit_from_nearby_obstacles", path_s,
+                           speed_limit_from_nearby_obstacles);
+    }
     speed_limit_data->AppendSpeedLimit(path_s, curr_speed_limit);
+    print_curve.AddPoint("curr_speed_limit", path_s, curr_speed_limit);
   }
+  print_curve.PrintToLog();
   return Status::OK();
 }
 

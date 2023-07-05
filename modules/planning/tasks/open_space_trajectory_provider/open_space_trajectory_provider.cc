@@ -166,7 +166,6 @@ Status OpenSpaceTrajectoryProvider::Process() {
     } else {
       std::lock_guard<std::mutex> lock(open_space_mutex_);
       data_ready_.store(false);
-      AINFO << "SKIP BECAUSE HAS PLAN";
     }
 
     // Check vehicle state

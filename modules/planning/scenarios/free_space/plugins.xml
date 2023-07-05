@@ -1,0 +1,3 @@
+<library path="modules/planning/scenarios/free_space/libfree_space_scenario.so">
+    <class type="apollo::planning::FreeSpaceScenario" base_class="Scenario"></class>
+</library>

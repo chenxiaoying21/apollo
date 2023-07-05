@@ -39,7 +39,7 @@ Status PlanningBase::Init(const PlanningConfig& config) {
 
 bool PlanningBase::IsPlanningFinished() {
   if (nullptr == frame_ || frame_->reference_line_info().empty() ||
-      nullptr == local_view_.routing) {
+      nullptr == local_view_.planning_command) {
     return true;
   }
   const auto& reference_line_info = frame_->reference_line_info().front();
@@ -55,14 +55,18 @@ bool PlanningBase::IsPlanningFinished() {
     return true;
   }
   // Get the latest RoutingRequest
-  auto& routing_request = local_view_.routing->routing_request();
-  if (routing_request.waypoint().empty()) {
-    return true;
+  auto& planning_command = local_view_.planning_command;
+  if (!planning_command->has_lane_follow_command()) {
+    return false;
   }
   // If the lane id of RoutingRequest end point and the last way point of
   // ReferenceLineInfo is the same, ReferenceLineInfo is on the last passage.
   const std::string& end_lane_id_of_routing_request =
-      routing_request.waypoint().rbegin()->id();
+      planning_command->lane_follow_command()
+          .routing_request()
+          .waypoint()
+          .rbegin()
+          ->id();
   bool is_reference_line_on_last_passage = false;
   for (const auto& way_point : lane_way_points) {
     if (way_point.lane->id().id() == end_lane_id_of_routing_request) {
@@ -102,7 +106,7 @@ void PlanningBase::FillPlanningPb(const double timestamp,
         local_view_.prediction_obstacles->header().radar_timestamp());
   }
   trajectory_pb->mutable_routing_header()->CopyFrom(
-      local_view_.routing->header());
+      local_view_.planning_command->header());
 }
 
 }  // namespace planning

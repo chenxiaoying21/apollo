@@ -41,12 +41,11 @@ StageResult EmergencyPullOverStageApproach::Process(
     const TrajectoryPoint& planning_init_point, Frame* frame) {
   ADEBUG << "stage: Approach";
   CHECK_NOTNULL(frame);
-
-  scenario_config_.CopyFrom(
-      GetContextAs<EmergencyPullOverContext>()->scenario_config);
+  auto scenario_context = GetContextAs<EmergencyPullOverContext>();
+  const auto& scenario_config = scenario_context->scenario_config;
 
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
-
+  reference_line_info.SetCruiseSpeed(scenario_context->target_slow_down_speed);
   // set vehicle signal
   reference_line_info.SetTurnSignal(VehicleSignal::TURN_RIGHT);
 
@@ -60,7 +59,7 @@ StageResult EmergencyPullOverStageApproach::Process(
     const auto& reference_line = reference_line_info.reference_line();
     common::SLPoint pull_over_sl;
     reference_line.XYToSL(pull_over_status.position(), &pull_over_sl);
-    const double stop_distance = scenario_config_.stop_distance();
+    const double stop_distance = scenario_config.stop_distance();
     stop_line_s =
         pull_over_sl.s() + stop_distance +
         VehicleConfigHelper::GetConfig().vehicle_param().front_edge_to_center();

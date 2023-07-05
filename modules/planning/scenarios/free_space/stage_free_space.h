@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright 2019 The Apollo Authors. All Rights Reserved.
+ * Copyright 2023 The Apollo Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +21,29 @@
 #pragma once
 
 #include <memory>
-
-#include "modules/planning/planning_base/proto/planning_config.pb.h"
+#include <string>
 #include "cyber/plugin_manager/plugin_manager.h"
 #include "modules/planning/planning_base/scenario_base/stage.h"
-#include "modules/planning/scenarios/emergency_pull_over/emergency_pull_over_scenario.h"
+#include "modules/planning/scenarios/free_space/free_space_scenario.h"
 
 namespace apollo {
 namespace planning {
 
-struct EmergencyPullOverContext;
-
-class EmergencyPullOverStageApproach : public Stage {
+class StageFreeSpace : public Stage {
  public:
+  bool Init(const StagePipeline& config,
+            const std::shared_ptr<DependencyInjector>& injector,
+            const std::string& config_dir, void* context);
+
   StageResult Process(const common::TrajectoryPoint& planning_init_point,
                       Frame* frame) override;
 
  private:
   StageResult FinishStage();
+  ScenarioFreeSpaceConfig scenario_config_;
 };
 
-CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(
-    apollo::planning::EmergencyPullOverStageApproach, Stage)
+CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::StageFreeSpace, Stage)
 
 }  // namespace planning
 }  // namespace apollo

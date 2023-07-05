@@ -191,6 +191,7 @@ void MotionCommandProcessorBase<T>::OnCommand(
   if (command->has_header()) {
     module_name = command->header().module_name();
   }
+  AINFO << routing_request->DebugString();
   common::util::FillHeader(module_name, planning_command.get());
   if (nullptr != routing_request) {
     auto routing_response =
@@ -201,6 +202,7 @@ void MotionCommandProcessorBase<T>::OnCommand(
                           command->DebugString());
       return;
     }
+    AINFO << routing_response->DebugString();
     planning_command->mutable_lane_follow_command()->CopyFrom(
         *routing_response);
   }

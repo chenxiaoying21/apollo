@@ -138,8 +138,6 @@ bool PlanningTestBase::FeedTestData() {
   local_view_.chassis = std::make_shared<Chassis>(chassis);
   local_view_.localization_estimate =
       std::make_shared<LocalizationEstimate>(localization);
-  local_view_.routing =
-      std::make_shared<routing::RoutingResponse>(routing_response);
   local_view_.traffic_light =
       std::make_shared<TrafficLightDetection>(traffic_light_detection);
 

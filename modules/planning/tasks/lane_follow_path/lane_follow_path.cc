@@ -82,10 +82,14 @@ bool LaneFollowPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
     return false;
   }
   std::string borrow_lane_type;
+  bool is_include_adc = config_.is_extend_lane_bounds_to_include_adc() &&
+                        !injector_->planning_context()
+                             ->planning_status()
+                             .path_decider()
+                             .is_in_path_lane_borrow_scenario();
   // 2. Decide a rough boundary based on lane info and ADC's position
   if (!PathBoundsDeciderUtil::GetBoundaryFromSelfLane(
-          *reference_line_info_, init_sl_state_,
-          config_.is_extend_lane_bounds_to_include_adc(),
+          *reference_line_info_, init_sl_state_, is_include_adc,
           config_.extend_buffer(), &path_bound)) {
     AERROR << "Failed to decide a rough boundary based on lane and adc.";
     return false;
@@ -110,7 +114,7 @@ bool LaneFollowPath::DecidePathBounds(std::vector<PathBoundary>* boundary) {
     counter++;
   }
   ADEBUG << "Completed generating path boundaries.";
-  if (config_.is_extend_lane_bounds_to_include_adc()) {
+  if (is_include_adc) {
     CHECK_LE(init_sl_state_.second[0], std::get<2>(path_bound[0]));
     CHECK_GE(init_sl_state_.second[0], std::get<1>(path_bound[0]));
   }
@@ -143,8 +147,9 @@ bool LaneFollowPath::OptimizePath(
     const double jerk_bound = PathOptimizerUtil::EstimateJerkBoundary(
         std::fmax(init_sl_state_.first[1], 1.0));
     std::vector<double> ref_l(path_boundary_size, 0);
-    std::vector<double> weight_ref_l(path_boundary_size,
-                                     config.path_reference_l_weight());
+    std::vector<double> weight_ref_l(path_boundary_size, 0);
+    PathOptimizerUtil::UpdatePathRefWithBound(
+        path_boundary, config.path_reference_l_weight(), &ref_l, &weight_ref_l);
     bool res_opt = PathOptimizerUtil::OptimizePath(
         init_sl_state_, end_state, ref_l, weight_ref_l, path_boundary,
         ddl_bounds, jerk_bound, config, &opt_l, &opt_dl, &opt_ddl);

@@ -55,9 +55,8 @@ using CrosswalkToStop =
 using CrosswalkStopTimer =
     std::unordered_map<std::string, std::unordered_map<std::string, double>>;
 
-bool Crosswalk::Init(
-    const std::string& name,
-    const std::shared_ptr<DependencyInjector>& injector) {
+bool Crosswalk::Init(const std::string& name,
+                     const std::shared_ptr<DependencyInjector>& injector) {
   if (!TrafficRule::Init(name, injector)) {
     return false;
   }
@@ -154,10 +153,9 @@ void Crosswalk::MakeDecisions(Frame* const frame,
       // update stop timestamp on static pedestrian for watch timer
       const bool is_on_lane =
           reference_line.IsOnLane(obstacle->PerceptionSLBoundary());
-      const double kStartWatchTimerDistance = 40.0;
       if (stop && !is_on_lane &&
           crosswalk_overlap->start_s - adc_front_edge_s <=
-              kStartWatchTimerDistance) {
+              config_.start_watch_timer_distance()) {
         // check on stop timer for static pedestrians/bicycles
         // if NOT on_lane ahead of adc
         const double kMaxStopSpeed = 0.3;
@@ -209,12 +207,10 @@ void Crosswalk::MakeDecisions(Frame* const frame,
            << "] start_s[" << crosswalk_overlap->start_s << "]";
     std::string virtual_obstacle_id =
         CROSSWALK_VO_ID_PREFIX + crosswalk_overlap->object_id;
-    util::BuildStopDecision(virtual_obstacle_id, crosswalk_overlap->start_s,
-                            config_.stop_distance(),
-                            StopReasonCode::STOP_REASON_CROSSWALK,
-                            crosswalk_to_stop.second,
-                            Getname(),
-                            frame, reference_line_info);
+    util::BuildStopDecision(
+        virtual_obstacle_id, crosswalk_overlap->start_s,
+        config_.stop_distance(), StopReasonCode::STOP_REASON_CROSSWALK,
+        crosswalk_to_stop.second, Getname(), frame, reference_line_info);
 
     if (crosswalk_to_stop.first->start_s < min_s) {
       firsts_crosswalk_to_stop =
@@ -291,8 +287,7 @@ bool Crosswalk::CheckStopForObstacle(
   Vec2d point(perception_obstacle.position().x(),
               perception_obstacle.position().y());
   const Polygon2d crosswalk_exp_poly =
-      crosswalk_ptr->polygon().ExpandByDistance(
-          config_.expand_s_distance());
+      crosswalk_ptr->polygon().ExpandByDistance(config_.expand_s_distance());
   bool in_expanded_crosswalk = crosswalk_exp_poly.IsPointIn(point);
 
   if (!in_expanded_crosswalk) {
@@ -333,8 +328,7 @@ bool Crosswalk::CheckStopForObstacle(
       ADEBUG << "need_stop(>=l2): obstacle_id[" << obstacle_id << "] type["
              << obstacle_type_name << "] crosswalk_id[" << crosswalk_id << "]";
     }
-  } else if (obstacle_l_distance <=
-             config_.stop_strict_l_distance()) {
+  } else if (obstacle_l_distance <= config_.stop_strict_l_distance()) {
     if (is_on_road) {
       // (2) when l_distance <= strict_l_distance + on_road
       //     always STOP

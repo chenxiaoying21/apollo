@@ -63,7 +63,8 @@ class TempRoutingConverter : public cyber::Component<> {
       const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest>&
           routing_request);
 
-  void OnPlanningCommand(const std::shared_ptr<apollo::planning::PlanningCommand>& planning_cmd);
+  void OnPlanningCommand(
+      const std::shared_ptr<apollo::planning::PlanningCommand>& planning_cmd);
 
   template <typename T>
   void CopyRoutingRequest(

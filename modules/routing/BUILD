@@ -30,6 +30,7 @@ cc_binary(
     ],
     linkshared = True,
     linkstatic = True,
+    copts = ROUTING_COPTS,
     deps = [
         "//modules/common/adapters:adapter_gflags",
         "//modules/common/monitor_log",

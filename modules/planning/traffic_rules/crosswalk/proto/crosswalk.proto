@@ -27,4 +27,6 @@ message CrosswalkConfig {
   // ego-vehicle can move on and ignore the bicycles/pedestrians if
   // bicycles/pedestrians remain static longer than "stop_timeout".
   optional double stop_timeout = 8 [default = 10.0];  // second
+
+  optional double start_watch_timer_distance = 9 [default=40.0];
 }
