@@ -174,7 +174,7 @@ class ReferenceLineProvider {
   std::mutex routing_mutex_;
   routing::RoutingResponse routing_;
   bool has_routing_ = false;
-
+  bool has_new_routing_ = false;
   std::mutex reference_lines_mutex_;
   std::list<ReferenceLine> reference_lines_;
   std::list<hdmap::RouteSegments> route_segments_;

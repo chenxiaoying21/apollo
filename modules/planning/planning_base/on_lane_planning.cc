@@ -278,7 +278,7 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
   reference_line_provider_->UpdateVehicleState(vehicle_state);
   if (util::IsDifferentRouting(last_command_, *local_view_.planning_command)) {
     last_command_ = *local_view_.planning_command;
-    AINFO << "last_command_:" << last_command_.ShortDebugString();
+    AINFO << "new_command:" << last_command_.DebugString();
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
     if (local_view_.planning_command->has_lane_follow_command()) {
@@ -357,10 +357,12 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
   }
 
   status = Plan(start_timestamp, stitching_trajectory, ptr_trajectory_pb);
-
+  PrintCurves print_curve;
   for (const auto& p : ptr_trajectory_pb->trajectory_point()) {
-    ADEBUG << p.DebugString();
+    print_curve.AddPoint("trajxy", p.path_point().x(), p.path_point().y());
+    print_curve.AddPoint("theta-t", p.relative_time(), p.path_point().theta());
   }
+  print_curve.PrintToLog();
   const auto end_system_timestamp =
       std::chrono::duration<double>(
           std::chrono::system_clock::now().time_since_epoch())

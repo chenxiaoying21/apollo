@@ -92,6 +92,7 @@ bool ReferenceLineProvider::UpdateRoutingResponse(
   std::lock_guard<std::mutex> routing_lock(routing_mutex_);
   routing_ = routing;
   has_routing_ = true;
+  has_new_routing_ = true;
   return true;
 }
 
@@ -552,7 +553,9 @@ bool ReferenceLineProvider::CreateRouteSegments(
       return false;
     }
   }
-
+  for (auto &seg : *segments) {
+    ADEBUG << seg.DebugString();
+  }
   if (FLAGS_prioritize_change_lane) {
     PrioritizeChangeLane(segments);
   }
@@ -583,12 +586,13 @@ bool ReferenceLineProvider::CreateReferenceLine(
   {
     // Update routing in pnc_map
     std::lock_guard<std::mutex> lock(pnc_map_mutex_);
-    if (pnc_map_->IsNewRouting(routing)) {
-      is_new_routing = true;
+    if (has_new_routing_) {
       if (!pnc_map_->UpdateRoutingResponse(routing)) {
         AERROR << "Failed to update routing in pnc map";
         return false;
       }
+      has_new_routing_ = false;
+      is_new_routing = true;
     }
   }
 
