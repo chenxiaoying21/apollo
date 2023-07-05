@@ -1,6 +1,6 @@
 # Define all coms in DAG streaming.
 module_config {
-  module_library : "/apollo/bazel-bin/modules/external_command_demo/libexternal_command_demo_component.so"
+  module_library : "/apollo/bazel-bin/modules/external_command/external_command_demo/libexternal_command_demo_component.so"
   timer_components {
     class_name : "ExternalCommandDemo"
     config {

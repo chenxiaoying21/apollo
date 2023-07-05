@@ -16,43 +16,40 @@
 
 #include <poll.h>
 
-#include "modules/external_command/external_command_demo/external_command_demo.h"
+#include "modules/external_command/external_command_demo/external_command_wrapper_demo.h"
 
 using apollo::external_command::CommandStatus;
 
-ExternalCommandDemo::ExternalCommandDemo()
+ExternalCommandWrapperDemo::ExternalCommandWrapperDemo()
     : command_id_(0), module_name_("demo") {}
 
-bool ExternalCommandDemo::Init() {
-  action_command_client_ =
-      node_->CreateClient<apollo::external_command::ActionCommand,
-                          CommandStatus>("/apollo/external_command/action");
-  chassis_command_client_ =
-      node_->CreateClient<apollo::external_command::ChassisCommand,
-                          CommandStatus>("/apollo/external_command/chassis");
-  free_space_command_client_ =
-      node_->CreateClient<apollo::external_command::FreeSpaceCommand,
-                          CommandStatus>("/apollo/external_command/free_space");
-  lane_follow_command_client_ =
-      node_->CreateClient<apollo::external_command::LaneFollowCommand,
-                          CommandStatus>(
-          "/apollo/external_command/lane_follow");
-  path_follow_command_client_ =
-      node_->CreateClient<apollo::external_command::PathFollowCommand,
-                          CommandStatus>(
-          "/apollo/external_command/path_follow");
-  speed_command_client_ =
-      node_
-          ->CreateClient<apollo::external_command::SpeedCommand, CommandStatus>(
-              "/apollo/external_command/speed");
+bool ExternalCommandWrapperDemo::Init() {
+  action_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::ActionCommand, CommandStatus>>(
+      node_, "/apollo/external_command/action");
+  chassis_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::ChassisCommand, CommandStatus>>(
+      node_, "/apollo/external_command/chassis");
+  free_space_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::FreeSpaceCommand, CommandStatus>>(
+      node_, "/apollo/external_command/free_space");
+  lane_follow_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::LaneFollowCommand, CommandStatus>>(
+      node_, "/apollo/external_command/lane_follow");
+  path_follow_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::PathFollowCommand, CommandStatus>>(
+      node_, "/apollo/external_command/path_follow");
+  speed_command_client_ = std::make_shared<apollo::common::ClientWrapper<
+      apollo::external_command::SpeedCommand, CommandStatus>>(
+      node_, "/apollo/external_command/speed");
   valet_parking_command_client_ =
-      node_->CreateClient<apollo::external_command::ValetParkingCommand,
-                          CommandStatus>(
-          "/apollo/external_command/valet_parking");
+      std::make_shared<apollo::common::ClientWrapper<
+          apollo::external_command::ValetParkingCommand, CommandStatus>>(
+          node_, "/apollo/external_command/valet_parking");
   return true;
 }
 
-bool ExternalCommandDemo::Proc() {
+bool ExternalCommandWrapperDemo::Proc() {
   int8_t revent = 0;  // short
   struct pollfd fd = {STDIN_FILENO, POLLIN, revent};
   switch (poll(&fd, 1, 100)) {
@@ -60,6 +57,7 @@ bool ExternalCommandDemo::Proc() {
       AERROR << "Failed to read keyboard";
       return false;
     case 0:
+      // std::cout << "No input" << std::endl;
       return true;
     default:
       std::string input_command_string = "";
@@ -132,7 +130,7 @@ bool ExternalCommandDemo::Proc() {
   return true;
 }
 
-void ExternalCommandDemo::SendActionCommand(
+void ExternalCommandWrapperDemo::SendActionCommand(
     apollo::external_command::ActionCommandType action_command_type) {
   auto command = std::make_shared<apollo::external_command::ActionCommand>();
   FillCommandHeader(command);
@@ -148,7 +146,7 @@ void ExternalCommandDemo::SendActionCommand(
   }
 }
 
-void ExternalCommandDemo::SendSpeedCommand(double speed) {
+void ExternalCommandWrapperDemo::SendSpeedCommand(double speed) {
   auto command = std::make_shared<apollo::external_command::SpeedCommand>();
   FillCommandHeader(command);
   command->set_target_speed(speed);
@@ -162,7 +160,7 @@ void ExternalCommandDemo::SendSpeedCommand(double speed) {
   }
 }
 
-void ExternalCommandDemo::SendSpeedFactorCommand(double speed_factor) {
+void ExternalCommandWrapperDemo::SendSpeedFactorCommand(double speed_factor) {
   auto command = std::make_shared<apollo::external_command::SpeedCommand>();
   FillCommandHeader(command);
   command->set_target_speed_factor(speed_factor);
@@ -177,7 +175,7 @@ void ExternalCommandDemo::SendSpeedFactorCommand(double speed_factor) {
   }
 }
 
-void ExternalCommandDemo::SendLaneFollowCommand(
+void ExternalCommandWrapperDemo::SendLaneFollowCommand(
     const apollo::external_command::Pose& end, double target_speed) {
   auto command =
       std::make_shared<apollo::external_command::LaneFollowCommand>();
@@ -197,7 +195,7 @@ void ExternalCommandDemo::SendLaneFollowCommand(
   }
 }
 
-void ExternalCommandDemo::SendValetParkingCommand(
+void ExternalCommandWrapperDemo::SendValetParkingCommand(
     const std::string& parking_spot_id, double target_speed) {
   auto command =
       std::make_shared<apollo::external_command::ValetParkingCommand>();
