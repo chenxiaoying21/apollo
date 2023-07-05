@@ -40,10 +40,11 @@ using apollo::common::util::FillHeader;
 using apollo::cyber::Clock;
 using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
+using apollo::planning::PlanningCommand;
 using apollo::prediction::PredictionObstacles;
 using apollo::relative_map::NavigationInfo;
-using apollo::temp_routing_converter::RoutingResponse;
 using apollo::temp_routing_converter::RoutingRequest;
+using apollo::temp_routing_converter::RoutingResponse;
 using Json = nlohmann::json;
 
 namespace {
@@ -85,9 +86,9 @@ void SimPerfectControl::InitTimerAndIO() {
       [this](const std::shared_ptr<RoutingRequest> &routing_request) {
         this->OnRoutingRequest(routing_request);
       });
-  routing_response_reader_ = node_->CreateReader<RoutingResponse>(
-      "/apollo/routing_response",
-      [this](const std::shared_ptr<RoutingResponse> &routing) {
+  planning_command_reader_ = node_->CreateReader<PlanningCommand>(
+      "/apollo/planning/command",
+      [this](const std::shared_ptr<PlanningCommand> &routing) {
         this->OnRoutingResponse(routing);
       });
   navigation_reader_ = node_->CreateReader<NavigationInfo>(
@@ -241,14 +242,11 @@ void SimPerfectControl::OnReceiveNavigationInfo(
 }
 
 void SimPerfectControl::OnRoutingResponse(
-    const std::shared_ptr<RoutingResponse> &routing) {
+    const std::shared_ptr<PlanningCommand> &routing) {
   std::lock_guard<std::mutex> lock(mutex_);
   if (!enabled_) {
     return;
   }
-
-  CHECK_GE(routing->routing_request().waypoint_size(), 2)
-      << "routing should have at least two waypoints";
 
   current_routing_header_ = routing->header();
 
