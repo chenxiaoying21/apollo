@@ -58,6 +58,9 @@ bool ValetParkingScenario::Init(std::shared_ptr<DependencyInjector> injector,
 bool ValetParkingScenario::IsTransferable(const Scenario* const other_scenario,
                                           const Frame& frame) {
   // TODO(all) Implement available parking spot detection by preception results
+  if (!frame.local_view().planning_command->has_parking_command()) {
+    return false;
+  }
   if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }

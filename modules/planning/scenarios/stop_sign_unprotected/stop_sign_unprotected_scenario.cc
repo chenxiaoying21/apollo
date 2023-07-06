@@ -97,6 +97,9 @@ int StopSignUnprotectedScenario::GetAssociatedLanes(
 
 bool StopSignUnprotectedScenario::IsTransferable(
     const Scenario* const other_scenario, const Frame& frame) {
+  if (!frame.local_view().planning_command->has_lane_follow_command()) {
+    return false;
+  }
   if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }

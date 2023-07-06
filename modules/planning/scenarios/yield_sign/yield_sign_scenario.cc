@@ -56,6 +56,9 @@ bool YieldSignScenario::Init(std::shared_ptr<DependencyInjector> injector,
 
 bool YieldSignScenario::IsTransferable(const Scenario* other_scenario,
                                        const Frame& frame) {
+  if (!frame.local_view().planning_command->has_lane_follow_command()) {
+    return false;
+  }
   if (other_scenario == nullptr || frame.reference_line_info().empty()) {
     return false;
   }
