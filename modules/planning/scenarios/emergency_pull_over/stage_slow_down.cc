@@ -52,7 +52,7 @@ StageResult EmergencyPullOverStageSlowDown::Process(
                             scenario_config_.slow_down_deceleration_time());
   }
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
-  reference_line_info.SetCruiseSpeed(target_slow_down_speed);
+  reference_line_info.LimitCruiseSpeed(target_slow_down_speed);
 
   StageResult result = ExecuteTaskOnReferenceLine(planning_init_point, frame);
   if (result.HasError()) {

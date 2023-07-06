@@ -78,7 +78,7 @@ StageResult BareIntersectionUnprotectedStageApproach::Process(
   }
 
   // set cruise_speed to slow down
-  frame->mutable_reference_line_info()->front().SetCruiseSpeed(
+  frame->mutable_reference_line_info()->front().LimitCruiseSpeed(
       scenario_config_.approach_cruise_speed());
 
   // set right_of_way_status
@@ -178,7 +178,7 @@ StageResult BareIntersectionUnprotectedStageApproach::FinishStage(
 
   // reset cruise_speed
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
-  reference_line_info.SetCruiseSpeed(FLAGS_default_cruise_speed);
+  reference_line_info.LimitCruiseSpeed(FLAGS_default_cruise_speed);
 
   return StageResult(StageStatusType::FINISHED);
 }

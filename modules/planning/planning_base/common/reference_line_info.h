@@ -35,6 +35,7 @@
 #include "modules/planning/planning_base/proto/lattice_structure.pb.h"
 
 #include "modules/map/hdmap/hdmap_common.h"
+#include "modules/map/pnc_map/route_segments.h"
 #include "modules/planning/planning_base/common/path/path_data.h"
 #include "modules/planning/planning_base/common/path_boundary.h"
 #include "modules/planning/planning_base/common/path_decision.h"
@@ -43,7 +44,6 @@
 #include "modules/planning/planning_base/common/speed/speed_data.h"
 #include "modules/planning/planning_base/common/st_graph_data.h"
 #include "modules/planning/planning_base/common/trajectory/discretized_trajectory.h"
-#include "modules/map/pnc_map/route_segments.h"
 
 namespace apollo {
 namespace planning {
@@ -91,7 +91,19 @@ class ReferenceLineInfo {
   void SetLatticeCruiseSpeed(double speed);
   const PlanningTarget& planning_target() const { return planning_target_; }
 
-  void SetCruiseSpeed(double speed) { cruise_speed_ = speed; }
+  void SetCruiseSpeed(double speed) {
+    cruise_speed_ = speed;
+    base_cruise_speed_ = speed;
+  }
+  /**
+   * @brief Limit the cruise speed based on the "base_cruise_speed_". If the new
+   *setting speed > "base_cruise_speed_", it will be ignored.
+   * @param speed The new speed.
+   **/
+  void LimitCruiseSpeed(double speed);
+
+  double GetBaseCruiseSpeed() const;
+
   double GetCruiseSpeed() const;
 
   hdmap::LaneInfoConstPtr LocateLaneInfo(const double s) const;
@@ -350,6 +362,7 @@ class ReferenceLineInfo {
   common::VehicleSignal vehicle_signal_;
 
   double cruise_speed_ = 0.0;
+  double base_cruise_speed_ = 0.0;
 
   bool path_reusable_ = false;
 
