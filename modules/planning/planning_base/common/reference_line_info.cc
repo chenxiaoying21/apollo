@@ -137,6 +137,18 @@ void ReferenceLineInfo::SetCandidatePathBoundaries(
   candidate_path_boundaries_ = std::move(path_boundaries);
 }
 
+void ReferenceLineInfo::LimitCruiseSpeed(double speed) {
+  if (base_cruise_speed_ <= speed) {
+    return;
+  }
+  cruise_speed_ = speed;
+}
+
+double ReferenceLineInfo::GetBaseCruiseSpeed() const {
+  return base_cruise_speed_ > 0.0 ? base_cruise_speed_
+                                  : FLAGS_default_cruise_speed;
+}
+
 double ReferenceLineInfo::GetCruiseSpeed() const {
   return cruise_speed_ > 0.0 ? cruise_speed_ : FLAGS_default_cruise_speed;
 }

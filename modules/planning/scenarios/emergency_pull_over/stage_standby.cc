@@ -51,7 +51,7 @@ StageResult EmergencyPullOverStageStandby::Process(
   reference_line_info.SetTurnSignal(VehicleSignal::TURN_NONE);
 
   // reset cruise_speed
-  reference_line_info.SetCruiseSpeed(FLAGS_default_cruise_speed);
+  reference_line_info.LimitCruiseSpeed(FLAGS_default_cruise_speed);
 
   // add a stop fence
   const auto& pull_over_status =
