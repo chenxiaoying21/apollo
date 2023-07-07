@@ -50,8 +50,9 @@ class ExternalCommandWrapperDemo final : public apollo::cyber::TimerComponent {
 
   void SendSpeedFactorCommand(double speed_factor);
 
-  void SendLaneFollowCommand(const apollo::external_command::Pose& end,
-                             double target_speed);
+  void SendLaneFollowCommand(
+      const std::vector<apollo::external_command::Pose>& way_points,
+      const apollo::external_command::Pose& end, double target_speed);
 
   void SendValetParkingCommand(const std::string& parking_spot_id,
                                double target_speed);

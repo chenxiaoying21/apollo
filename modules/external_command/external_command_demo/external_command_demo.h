@@ -15,8 +15,8 @@
  *****************************************************************************/
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "modules/common_msgs/external_command_msgs/action_command.pb.h"
 #include "modules/common_msgs/external_command_msgs/chassis_command.pb.h"
@@ -49,8 +49,9 @@ class ExternalCommandDemo final : public apollo::cyber::TimerComponent {
 
   void SendSpeedFactorCommand(double speed_factor);
 
-  void SendLaneFollowCommand(const apollo::external_command::Pose& end,
-                             double target_speed);
+  void SendLaneFollowCommand(
+      const std::vector<apollo::external_command::Pose>& way_points,
+      const apollo::external_command::Pose& end, double target_speed);
 
   void SendValetParkingCommand(const std::string& parking_spot_id,
                                double target_speed);
