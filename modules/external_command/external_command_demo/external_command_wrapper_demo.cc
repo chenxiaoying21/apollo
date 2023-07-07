@@ -113,11 +113,17 @@ bool ExternalCommandWrapperDemo::Proc() {
         double speed_factor = 0.8;
         SendSpeedFactorCommand(speed_factor);
       } else if (input_command_string == "lane") {
+        apollo::external_command::Pose way_point;
+        way_point.set_x(0.0);
+        way_point.set_y(0.0);
+        way_point.set_heading(0.0);
+        std::vector<apollo::external_command::Pose> way_points;
+        way_points.emplace_back(way_point);
         apollo::external_command::Pose end_pose;
-        end_pose.set_x(0.0);
+        end_pose.set_x(10.0);
         end_pose.set_y(0.0);
         end_pose.set_heading(0.0);
-        SendLaneFollowCommand(end_pose, 3.0);
+        SendLaneFollowCommand(way_points, end_pose, 3.0);
       } else if (input_command_string == "path") {
       } else if (input_command_string == "valet_parking") {
         std::string parking_spot_id = "451089045";
@@ -176,10 +182,17 @@ void ExternalCommandWrapperDemo::SendSpeedFactorCommand(double speed_factor) {
 }
 
 void ExternalCommandWrapperDemo::SendLaneFollowCommand(
+    const std::vector<apollo::external_command::Pose>& way_points,
     const apollo::external_command::Pose& end, double target_speed) {
   auto command =
       std::make_shared<apollo::external_command::LaneFollowCommand>();
   FillCommandHeader(command);
+  // Copy way_points
+  for (const auto& point : way_points) {
+    auto way_point = command->add_way_point();
+    way_point->CopyFrom(point);
+  }
+  // Copy end point
   command->mutable_end_pose()->CopyFrom(end);
   if (target_speed > 0.0) {
     command->set_target_speed(target_speed);
