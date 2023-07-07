@@ -503,6 +503,7 @@ bool PncMap::GetNearestPointFromRouting(const VehicleState &state,
   std::vector<LaneWaypoint> valid_way_points;
   for (const auto &lane : valid_lanes) {
     if (range_lane_ids_.count(lane->id().id()) == 0) {
+      ADEBUG << "not in range" << lane->id().id();
       continue;
     }
     double s = 0.0;
@@ -511,6 +512,7 @@ bool PncMap::GetNearestPointFromRouting(const VehicleState &state,
       if (!lane->GetProjection({point.x(), point.y()}, &s, &l)) {
         continue;
       }
+      ADEBUG << lane->id().id() << "," << s << "," << l;
       // Use large epsilon to allow projection diff
       static constexpr double kEpsilon = 0.5;
       if (s > (lane->total_length() + kEpsilon) || (s + kEpsilon) < 0.0) {
@@ -530,48 +532,30 @@ bool PncMap::GetNearestPointFromRouting(const VehicleState &state,
     return false;
   }
 
-  // Choose the lane with the right heading if there is more than one candiate
-  // lanes. If there is no lane with the right heading, choose the closest one.
-  size_t closest_index = 0;
-  int right_heading_index = -1;
-  // The distance as the sum of the lateral and longitude distance, to estimate
-  // the distance from the vehicle to the lane.
+  // find closest lane that satisfy vehicle heading
+  int closest_index = -1;
   double distance = std::numeric_limits<double>::max();
   double lane_heading = 0.0;
   double vehicle_heading = state.heading();
   for (size_t i = 0; i < valid_way_points.size(); i++) {
-    double distance_to_lane = std::fabs(valid_way_points[i].l);
-    if (valid_way_points[i].s > valid_way_points[i].lane->total_length()) {
-      distance_to_lane +=
-          (valid_way_points[i].s - valid_way_points[i].lane->total_length());
-    } else if (valid_way_points[i].s < 0.0) {
-      distance_to_lane -= valid_way_points[i].s;
+    lane_heading = valid_way_points[i].lane->Heading(valid_way_points[i].s);
+    if (std::abs(common::math::AngleDiff(lane_heading, vehicle_heading)) >
+        M_PI_2) {
+      continue;
     }
-    if (distance > distance_to_lane) {
-      distance = distance_to_lane;
+    if (valid_way_points[i].l < distance) {
+      distance = valid_way_points[i].l;
       closest_index = i;
     }
-    lane_heading = valid_way_points[i].lane->Heading(valid_way_points[i].s);
-    if (std::abs(common::math::AngleDiff(lane_heading, vehicle_heading)) <
-        M_PI_2) {
-      // Choose the lane with the closest distance to the vehicle and with the
-      // right heading.
-      if (-1 == right_heading_index || closest_index == i) {
-        waypoint->lane = valid_way_points[i].lane;
-        waypoint->s = valid_way_points[i].s;
-        waypoint->l = valid_way_points[i].l;
-        right_heading_index = i;
-      }
-    }
   }
-  // Use the lane with the closest distance to the current position of the
-  // vehicle.
-  if (-1 == right_heading_index) {
-    waypoint->lane = valid_way_points[closest_index].lane;
-    waypoint->s = valid_way_points[closest_index].s;
-    waypoint->l = valid_way_points[closest_index].l;
-    AWARN << "Find no lane with the right heading, use the cloesest lane!";
+  if (closest_index == -1) {
+    AERROR << "Can not find nearest waypoint. vehicle heading:"
+           << vehicle_heading << "lane heading:" << lane_heading;
+    return false;
   }
+  waypoint->lane = valid_way_points[closest_index].lane;
+  waypoint->s = valid_way_points[closest_index].s;
+  waypoint->l = valid_way_points[closest_index].l;
   return true;
 }
 

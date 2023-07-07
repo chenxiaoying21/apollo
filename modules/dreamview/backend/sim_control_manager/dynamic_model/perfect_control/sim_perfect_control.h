@@ -27,8 +27,8 @@
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/planning_msgs/navigation.pb.h"
 #include "modules/common_msgs/planning_msgs/planning.pb.h"
+#include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 #include "modules/common_msgs/prediction_msgs/prediction_obstacle.pb.h"
-
 #include "cyber/cyber.h"
 #include "modules/dreamview/backend/common/dreamview_gflags.h"
 #include "modules/dreamview/backend/map/map_service.h"
@@ -84,8 +84,7 @@ class SimPerfectControl final : public SimControlBase {
   void OnPlanning(
       const std::shared_ptr<apollo::planning::ADCTrajectory> &trajectory);
   void OnRoutingResponse(
-      const std::shared_ptr<apollo::temp_routing_converter::RoutingResponse>
-          &routing);
+      const std::shared_ptr<apollo::planning::PlanningCommand> &routing);
   void OnRoutingRequest(
       const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest>
           &routing_request);
@@ -143,9 +142,8 @@ class SimPerfectControl final : public SimControlBase {
       localization_reader_;
   std::shared_ptr<cyber::Reader<apollo::planning::ADCTrajectory>>
       planning_reader_;
-  std::shared_ptr<
-      cyber::Reader<apollo::temp_routing_converter::RoutingResponse>>
-      routing_response_reader_;
+  std::shared_ptr<cyber::Reader<apollo::planning::PlanningCommand>>
+      planning_command_reader_;
   std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
       routing_request_reader_;
   std::shared_ptr<cyber::Reader<apollo::relative_map::NavigationInfo>>
