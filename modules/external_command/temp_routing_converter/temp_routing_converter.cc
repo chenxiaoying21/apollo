@@ -107,6 +107,7 @@ void TempRoutingConverter::OnRoutingRequest(
       routing_request->mutable_waypoint()->DeleteSubrange(0, 1);
       CopyRoutingRequest<LaneFollowCommand>(
           routing_request, 0, way_point_size - 2, lane_follow_command.get());
+      --way_point_size;
     }
     // Copy the end point.
     lane_follow_command->mutable_header()->CopyFrom(routing_request->header());
