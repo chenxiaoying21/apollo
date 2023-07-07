@@ -26,6 +26,7 @@
 #include "modules/common_msgs/external_command_msgs/path_follow_command.pb.h"
 #include "modules/common_msgs/external_command_msgs/speed_command.pb.h"
 #include "modules/common_msgs/external_command_msgs/valet_parking_command.pb.h"
+#include "modules/common_msgs/planning_msgs/planning.pb.h"
 #include "cyber/component/timer_component.h"
 #include "cyber/cyber.h"
 #include "modules/common/service_wrapper/client_wrapper.h"
@@ -56,6 +57,15 @@ class ExternalCommandWrapperDemo final : public apollo::cyber::TimerComponent {
 
   void SendValetParkingCommand(const std::string& parking_spot_id,
                                double target_speed);
+
+  static void ReadPlanningDataFromRecord(
+      const std::string& record_file,
+      apollo::planning::ADCTrajectory* planning_trajectory);
+
+  static void Convert(
+      const apollo::planning::ADCTrajectory& planning_trajectory,
+      google::protobuf::RepeatedPtrField<apollo::external_command::Point>*
+          waypoints);
 
   std::shared_ptr<
       apollo::common::ClientWrapper<apollo::external_command::ActionCommand,

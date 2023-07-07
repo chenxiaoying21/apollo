@@ -32,6 +32,7 @@ cc_library(
         "//modules/common_msgs/external_command_msgs:path_follow_command_cc_proto",
         "//modules/common_msgs/external_command_msgs:speed_command_cc_proto",
         "//modules/common_msgs/external_command_msgs:valet_parking_command_cc_proto",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
     ],
 )
 
@@ -59,6 +60,7 @@ cc_library(
         "//modules/common_msgs/external_command_msgs:path_follow_command_cc_proto",
         "//modules/common_msgs/external_command_msgs:speed_command_cc_proto",
         "//modules/common_msgs/external_command_msgs:valet_parking_command_cc_proto",
+        "//modules/common_msgs/planning_msgs:planning_cc_proto",
         "//modules/common/service_wrapper:client_wrapper",
     ],
 )

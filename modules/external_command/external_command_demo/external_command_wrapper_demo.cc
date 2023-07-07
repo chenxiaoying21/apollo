@@ -18,6 +18,8 @@
 
 #include "modules/external_command/external_command_demo/external_command_wrapper_demo.h"
 
+#include "cyber/record/record_reader.h"
+
 using apollo::external_command::CommandStatus;
 
 ExternalCommandWrapperDemo::ExternalCommandWrapperDemo()
@@ -54,10 +56,9 @@ bool ExternalCommandWrapperDemo::Proc() {
   struct pollfd fd = {STDIN_FILENO, POLLIN, revent};
   switch (poll(&fd, 1, 100)) {
     case -1:
-      AERROR << "Failed to read keyboard";
+      std::cout << "Failed to read keyboard" << std::endl;
       return false;
     case 0:
-      // std::cout << "No input" << std::endl;
       return true;
     default:
       std::string input_command_string = "";
@@ -125,6 +126,33 @@ bool ExternalCommandWrapperDemo::Proc() {
         end_pose.set_heading(0.0);
         SendLaneFollowCommand(way_points, end_pose, 3.0);
       } else if (input_command_string == "path") {
+        // Read planning data from record file and use the planning path points
+        // as the path of PathFollowCommand.
+        apollo::planning::ADCTrajectory record_planning_data;
+        ReadPlanningDataFromRecord("/apollo/data/bag/demo.record",
+                                   &record_planning_data);
+        // Get the path points from record planning data.
+        std::shared_ptr<apollo::external_command::PathFollowCommand>
+            path_follow_command =
+                std::make_shared<apollo::external_command::PathFollowCommand>();
+        Convert(record_planning_data, path_follow_command->mutable_way_point());
+        // Set header and command id of PathFollowCommand.
+        FillCommandHeader(path_follow_command);
+        // Set path boundary of path.
+        auto path_boundary = path_follow_command->mutable_boundary_with_width();
+        path_boundary->set_left_path_width(4.5);
+        path_boundary->set_right_path_width(4.0);
+        // Set target speed.
+        path_follow_command->set_target_speed(5.0);
+        auto response =
+            path_follow_command_client_->SendRequest(path_follow_command);
+        if (nullptr == response) {
+          std::cout
+              << "Command sending failed, please check the service is on!\n"
+              << std::endl;
+        } else {
+          std::cout << "******Finish sending command.******\n" << std::endl;
+        }
       } else if (input_command_string == "valet_parking") {
         std::string parking_spot_id = "451089045";
         double target_speed = 6.0;
@@ -225,5 +253,38 @@ void ExternalCommandWrapperDemo::SendValetParkingCommand(
               << std::endl;
   } else {
     std::cout << "******Finish sending command.******\n" << std::endl;
+  }
+}
+
+void ExternalCommandWrapperDemo::ReadPlanningDataFromRecord(
+    const std::string& record_file,
+    apollo::planning::ADCTrajectory* planning_trajectory) {
+  std::cout << "ReadPlanningDataFromRecord: " << record_file << std::endl;
+  apollo::cyber::record::RecordReader reader(record_file);
+  if (!reader.IsValid()) {
+    std::cout << "Fail to open " << record_file << std::endl;
+    return;
+  }
+
+  apollo::cyber::record::RecordMessage message;
+  while (reader.ReadMessage(&message)) {
+    if (message.channel_name == "/apollo/planning") {
+      if (planning_trajectory->ParseFromString(message.content)) {
+        return;
+      }
+    }
+  }
+}
+
+void ExternalCommandWrapperDemo::Convert(
+    const apollo::planning::ADCTrajectory& planning_trajectory,
+    google::protobuf::RepeatedPtrField<apollo::external_command::Point>*
+        waypoints) {
+  waypoints->Clear();
+  const auto& trajectory_points = planning_trajectory.trajectory_point();
+  for (const auto input_point : trajectory_points) {
+    auto output_point = waypoints->Add();
+    output_point->set_x(input_point.path_point().x());
+    output_point->set_y(input_point.path_point().y());
   }
 }
