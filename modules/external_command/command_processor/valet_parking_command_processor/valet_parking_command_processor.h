@@ -34,9 +34,11 @@ class ValetParkingCommandProcessor
     : public MotionCommandProcessorBase<ValetParkingCommand> {
  private:
   /**
-   * @brief Convert "RoutingCommand" to RoutingRequest.
-   * @param command RoutingCommand to be converted.
-   * @return convert result of "RoutingRequest".
+   * @brief Convert moving command to RoutingRequest.
+   * @param command moving command to be converted.
+   * @param routing_request Convert result of RoutingRequest. If there is no
+   * LaneFollow action in moving command, the convert result can be nullptr.
+   * @return Return true if there is error occurs for converting.
    */
   bool Convert(const std::shared_ptr<ValetParkingCommand>& command,
                std::shared_ptr<apollo::routing::RoutingRequest>&

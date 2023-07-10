@@ -69,9 +69,11 @@ class MotionCommandProcessorBase : public CommandProcessorBase {
     return lane_way_tool_;
   }
   /**
-   * @brief Convert "RoutingCommand" to RoutingRequest.
-   * @param command RoutingCommand to be converted.
-   * @return convert result of "RoutingRequest".
+   * @brief Convert moving command to RoutingRequest.
+   * @param command moving command to be converted.
+   * @param routing_request Convert result of RoutingRequest. If there is no
+   * LaneFollow action in moving command, the convert result can be nullptr.
+   * @return Return true if there is error occurs for converting.
    */
   virtual bool Convert(
       const std::shared_ptr<T>& command,
@@ -176,7 +178,7 @@ void MotionCommandProcessorBase<T>::OnCommand(
   last_received_command_.CopyFrom(*command);
   status->set_command_id(command->command_id());
   // Convert command to RoutingRequest.
-  auto routing_request = std::make_shared<apollo::routing::RoutingRequest>();
+  std::shared_ptr<apollo::routing::RoutingRequest> routing_request = nullptr;
   bool convert_result = Convert(command, routing_request);
   if (!convert_result) {
     status->set_status(CommandStatusType::ERROR);
@@ -191,9 +193,9 @@ void MotionCommandProcessorBase<T>::OnCommand(
   if (command->has_header()) {
     module_name = command->header().module_name();
   }
-  AINFO << routing_request->DebugString();
   common::util::FillHeader(module_name, planning_command.get());
   if (nullptr != routing_request) {
+    AINFO << routing_request->DebugString();
     auto routing_response =
         std::make_shared<apollo::routing::RoutingResponse>();
     if (!routing_->Process(routing_request, routing_response.get())) {
