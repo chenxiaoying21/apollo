@@ -27,7 +27,9 @@ namespace apollo {
 namespace planning {
 
 PathFollowMap::PathFollowMap()
-    : lane_info_(nullptr),
+    : end_lane_way_point_(nullptr),
+      lane_info_(nullptr),
+      lane_(nullptr),
       virtual_lane_name_("virtual_lane_path_follow"),
       last_curve_index_of_vehicle_(0) {}
 
@@ -39,29 +41,32 @@ bool PathFollowMap::CanProcess(const planning::PlanningCommand &command) const {
 bool PathFollowMap::UpdatePlanningCommand(
     const planning::PlanningCommand &command) {
   last_curve_index_of_vehicle_ = 0;
+  extra_center_info_.clear();
+  lane_info_ = nullptr;
+  lane_ = nullptr;
   if (!GetPathFollowCommand(command, &last_path_follow_command_)) {
     AERROR << "Unpack command failed!";
     return false;
   }
+  lane_ = std::make_shared<apollo::hdmap::Lane>();
   // Generate RouteSegments(with with virtual lane) from PlanningCommand.
-  apollo::hdmap::Lane lane;
-  lane.mutable_id()->set_id(virtual_lane_name_);
+  lane_->mutable_id()->set_id(virtual_lane_name_);
   // Get center curve.
   GetCurve(last_path_follow_command_.way_point(), true,
-           lane.mutable_central_curve());
+           lane_->mutable_central_curve());
   // PathBoundary is given, get left and right boundary.
   if (last_path_follow_command_.has_path_boundary()) {
     GetBoundary(last_path_follow_command_.path_boundary().left_boundary(),
-                lane.mutable_left_boundary());
+                lane_->mutable_left_boundary());
     GetBoundary(last_path_follow_command_.path_boundary().right_boundary(),
-                lane.mutable_right_boundary());
+                lane_->mutable_right_boundary());
   } else if (last_path_follow_command_.has_boundary_with_width()) {
     // Left and right path width is given, get left and right boundary.
     GetBoundary(
-        lane.central_curve(),
+        lane_->central_curve(),
         last_path_follow_command_.boundary_with_width().left_path_width(),
         last_path_follow_command_.boundary_with_width().right_path_width(),
-        lane.mutable_left_boundary(), lane.mutable_right_boundary());
+        lane_->mutable_left_boundary(), lane_->mutable_right_boundary());
   } else {
     // Path boundary is not given, generate the default path boundary which is
     // barely enough to pass by and the vehicle should stop when there is an
@@ -71,14 +76,25 @@ bool PathFollowMap::UpdatePlanningCommand(
                                     .vehicle_param();
     const double width_buffer = 0.2;
     double default_path_width = vehicle_param.width() / 2.0 + width_buffer;
-    GetBoundary(lane.central_curve(), default_path_width, default_path_width,
-                lane.mutable_left_boundary(), lane.mutable_right_boundary());
+    GetBoundary(lane_->central_curve(), default_path_width, default_path_width,
+                lane_->mutable_left_boundary(),
+                lane_->mutable_right_boundary());
   }
-  lane.set_length(lane.central_curve().segment().Get(0).length());
-  lane.set_type(apollo::hdmap::Lane::NONE);
-  lane.set_turn(apollo::hdmap::Lane::NO_TURN);
-  lane.set_direction(apollo::hdmap::Lane::FORWARD);
-  lane_info_ = std::make_shared<apollo::hdmap::LaneInfo>(lane);
+  lane_->set_length(lane_->central_curve().segment().Get(0).length());
+  lane_->set_type(apollo::hdmap::Lane::NONE);
+  lane_->set_turn(apollo::hdmap::Lane::NO_TURN);
+  lane_->set_direction(apollo::hdmap::Lane::FORWARD);
+  lane_info_ = std::make_shared<apollo::hdmap::LaneInfo>(*lane_);
+  // Set "end_lane_way_point".
+  end_lane_way_point_ = std::make_shared<apollo::routing::LaneWaypoint>();
+  end_lane_way_point_->set_id(virtual_lane_name_);
+  end_lane_way_point_->set_s(lane_->length());
+  if (!extra_center_info_.empty()) {
+    const auto &last_point = extra_center_info_.back();
+    end_lane_way_point_->mutable_pose()->set_x(last_point.x);
+    end_lane_way_point_->mutable_pose()->set_y(last_point.y);
+    end_lane_way_point_->set_heading(std::atan2(last_point.dy, last_point.dx));
+  }
   return true;
 }
 
@@ -120,14 +136,14 @@ bool PathFollowMap::GetRouteSegments(
   last_route_segment.SetStopForDestination(true);
   last_route_segment.SetIsOnSegment(true);
   last_route_segment.SetPreviousAction(apollo::routing::FORWARD);
-  return false;
+  return true;
 }
 
 bool PathFollowMap::ExtendSegments(
     const apollo::hdmap::RouteSegments &segments, double start_s, double end_s,
     apollo::hdmap::RouteSegments *const truncated_segments) const {
   truncated_segments->clear();
-  if (extra_center_info_.empty()) {
+  if (nullptr == lane_info_ || extra_center_info_.empty()) {
     return false;
   }
   if (start_s < 0.0) {
@@ -164,6 +180,11 @@ bool PathFollowMap::IsValid(const planning::PlanningCommand &command) const {
     return false;
   }
   return (path_follow_command.way_point().size() > 1);
+}
+
+void PathFollowMap::GetEndLaneWayPoint(
+    std::shared_ptr<routing::LaneWaypoint> &end_point) const {
+  end_point = end_lane_way_point_;
 }
 
 bool PathFollowMap::GetPathFollowCommand(
@@ -272,6 +293,7 @@ void PathFollowMap::GetBoundary(
   if (point_list.size() < 2) {
     return;
   }
+  CHECK_EQ(point_list.size(), extra_center_info_.size());
   auto info = extra_center_info_.begin();
   double unit_direction_x = 0.0;
   double unit_direction_y = 0.0;
@@ -289,8 +311,7 @@ void PathFollowMap::GetBoundary(
   right_curve_segement->set_s(0.0);
   ::apollo::common::PointENU *last_right_point = nullptr;
   double right_length = 0.0;
-  for (auto point = point_list.begin();
-       point != point_list.end(), info != extra_center_info_.end();
+  for (auto point = point_list.begin(); point != point_list.end();
        ++point, ++info) {
     // Calculate heading of the point and generate the left and right boundary
     // along the perpendicular direction of heading.

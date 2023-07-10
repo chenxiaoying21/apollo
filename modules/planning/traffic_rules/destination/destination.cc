@@ -64,17 +64,19 @@ int Destination::MakeDecisions(Frame* frame,
     return 0;
   }
 
-  const auto& routing =
-      frame->local_view().planning_command->mutable_lane_follow_command();
-  if (routing->routing_request().waypoint_size() < 2) {
+  if (nullptr == frame->local_view().end_lane_way_point) {
     AERROR << "routing_request has no end";
     return -1;
   }
 
+  const auto routing_end = frame->local_view().end_lane_way_point;
+  if (nullptr == routing_end) {
+    AERROR << "routing_request has no end";
+    return -1;
+  }
   common::SLPoint dest_sl;
   const auto& reference_line = reference_line_info->reference_line();
-  const auto& routing_end = *(routing->routing_request().waypoint().rbegin());
-  reference_line.XYToSL(routing_end.pose(), &dest_sl);
+  reference_line.XYToSL(routing_end->pose(), &dest_sl);
   const auto& adc_sl = reference_line_info->AdcSlBoundary();
   const auto& dest =
       injector_->planning_context()->mutable_planning_status()->destination();
@@ -110,10 +112,10 @@ int Destination::MakeDecisions(Frame* frame,
   // build stop decision
   ADEBUG << "BuildStopDecision: destination";
   const double dest_lane_s =
-      std::fmax(0.0, routing_end.s() - FLAGS_virtual_stop_wall_length -
+      std::fmax(0.0, routing_end->s() - FLAGS_virtual_stop_wall_length -
                          config_.stop_distance());
   util::BuildStopDecision(
-      stop_wall_id, routing_end.id(), dest_lane_s, config_.stop_distance(),
+      stop_wall_id, routing_end->id(), dest_lane_s, config_.stop_distance(),
       StopReasonCode::STOP_REASON_DESTINATION, wait_for_obstacle_ids, Getname(),
       frame, reference_line_info);
 

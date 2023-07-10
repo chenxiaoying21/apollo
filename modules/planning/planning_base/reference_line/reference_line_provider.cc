@@ -137,6 +137,15 @@ ReferenceLineProvider::FutureRouteWaypoints() {
   return std::vector<routing::LaneWaypoint>();
 }
 
+void ReferenceLineProvider::GetEndLaneWayPoint(
+    std::shared_ptr<routing::LaneWaypoint> &end_point) const {
+  if (nullptr == current_pnc_map_) {
+    end_point = nullptr;
+    return;
+  }
+  current_pnc_map_->GetEndLaneWayPoint(end_point);
+}
+
 void ReferenceLineProvider::UpdateVehicleState(
     const VehicleState &vehicle_state) {
   std::lock_guard<std::mutex> lock(vehicle_state_mutex_);

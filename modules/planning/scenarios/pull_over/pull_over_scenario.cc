@@ -63,14 +63,14 @@ bool PullOverScenario::IsTransferable(const Scenario* const other_scenario,
   if (!FLAGS_enable_pull_over_at_destination) {
     return false;
   }
-  const auto& routing =
-      frame.local_view().planning_command->mutable_lane_follow_command();
-  const auto& routing_end = *(routing->routing_request().waypoint().rbegin());
-
+  const auto routing_end = frame.local_view().end_lane_way_point;
+  if (nullptr == routing_end) {
+    return false;
+  }
   common::SLPoint dest_sl;
   const auto& reference_line_info = frame.reference_line_info().front();
   const auto& reference_line = reference_line_info.reference_line();
-  reference_line.XYToSL(routing_end.pose(), &dest_sl);
+  reference_line.XYToSL(routing_end->pose(), &dest_sl);
   const double adc_front_edge_s = reference_line_info.AdcSlBoundary().end_s();
 
   const double adc_distance_to_dest = dest_sl.s() - adc_front_edge_s;

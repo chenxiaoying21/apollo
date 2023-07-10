@@ -286,12 +286,12 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     AINFO << "new_command:" << last_command_.DebugString();
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
-    if (local_view_.planning_command->has_lane_follow_command()) {
-      reference_line_provider_->UpdatePlanningCommand(
-          *(local_view_.planning_command));
-    } else {
+    if (!reference_line_provider_->UpdatePlanningCommand(
+            *(local_view_.planning_command))) {
       reference_line_provider_->Reset();
     }
+    reference_line_provider_->GetEndLaneWayPoint(
+        local_view_.end_lane_way_point);
     planner_->Reset(frame_.get());
   }
 

@@ -55,6 +55,9 @@ class PathFollowMap : public PncMapBase {
 
   std::vector<routing::LaneWaypoint> FutureRouteWaypoints() const override;
 
+  void GetEndLaneWayPoint(
+      std::shared_ptr<routing::LaneWaypoint> &end_point) const override;
+
  private:
   /**
    * @brief Record info of center curve to save computation time.
@@ -130,7 +133,9 @@ class PathFollowMap : public PncMapBase {
   size_t FindMapingPointOnLane(double adc_x, double adc_y);
 
   external_command::PathFollowCommand last_path_follow_command_;
+  std::shared_ptr<routing::LaneWaypoint> end_lane_way_point_;
   apollo::hdmap::LaneInfoConstPtr lane_info_;
+  std::shared_ptr<apollo::hdmap::Lane> lane_;
   const std::string virtual_lane_name_;
   // Record s coordinate of center curve to save computation time.
   std::vector<CurveInfo> extra_center_info_;

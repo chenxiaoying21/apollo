@@ -134,8 +134,8 @@ bool PlanningComponent::Proc(
   {
     std::lock_guard<std::mutex> lock(mutex_);
     if (!local_view_.planning_command ||
-        local_view_.planning_command->header().sequence_num() !=
-            planning_command_.header().sequence_num()) {
+        !common::util::IsProtoEqual(local_view_.planning_command->header(),
+                                    planning_command_.header())) {
       local_view_.planning_command =
           std::make_shared<PlanningCommand>(planning_command_);
     }

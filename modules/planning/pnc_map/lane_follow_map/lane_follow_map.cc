@@ -118,6 +118,23 @@ std::vector<routing::LaneWaypoint> LaneFollowMap::FutureRouteWaypoints() const {
       waypoints.begin() + next_routing_waypoint_index_, waypoints.end());
 }
 
+void LaneFollowMap::GetEndLaneWayPoint(
+    std::shared_ptr<routing::LaneWaypoint> &end_point) const {
+  if (!last_command_.has_lane_follow_command() ||
+      !last_command_.lane_follow_command().has_routing_request()) {
+    end_point = nullptr;
+    return;
+  }
+  const auto &routing_request =
+      last_command_.lane_follow_command().routing_request();
+  if (routing_request.waypoint().size() < 1) {
+    end_point = nullptr;
+    return;
+  }
+  end_point = std::make_shared<routing::LaneWaypoint>();
+  end_point->CopyFrom(*(routing_request.waypoint().rbegin()));
+}
+
 bool LaneFollowMap::IsValid(const planning::PlanningCommand &command) const {
   if (!CanProcess(command)) {
     return false;

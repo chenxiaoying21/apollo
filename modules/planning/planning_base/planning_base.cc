@@ -54,19 +54,14 @@ bool PlanningBase::IsPlanningFinished() {
   if (lane_way_points.empty()) {
     return true;
   }
-  // Get the latest RoutingRequest
-  auto& planning_command = local_view_.planning_command;
-  if (!planning_command->has_lane_follow_command()) {
-    return false;
+  // Get the end lane way point.
+  if (nullptr == frame_->local_view().end_lane_way_point) {
+    return true;
   }
   // If the lane id of RoutingRequest end point and the last way point of
   // ReferenceLineInfo is the same, ReferenceLineInfo is on the last passage.
   const std::string& end_lane_id_of_routing_request =
-      planning_command->lane_follow_command()
-          .routing_request()
-          .waypoint()
-          .rbegin()
-          ->id();
+      frame_->local_view().end_lane_way_point->id();
   bool is_reference_line_on_last_passage = false;
   for (const auto& way_point : lane_way_points) {
     if (way_point.lane->id().id() == end_lane_id_of_routing_request) {

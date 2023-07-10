@@ -561,9 +561,7 @@ bool PullOverPath::FindDestinationPullOverS(
   // destination_s based on routing_end
   const auto& reference_line = reference_line_info_->reference_line();
   common::SLPoint destination_sl;
-  const auto& routing =
-      frame_->local_view().planning_command->mutable_lane_follow_command();
-  const auto& routing_end = *(routing->routing_request().waypoint().rbegin());
+  const auto& routing_end = *(frame_->local_view().end_lane_way_point);
   reference_line.XYToSL(routing_end.pose(), &destination_sl);
   const double destination_s = destination_sl.s();
   const double adc_end_s = reference_line_info_->AdcSlBoundary().end_s();

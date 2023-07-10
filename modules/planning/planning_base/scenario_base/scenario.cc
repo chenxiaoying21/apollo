@@ -82,7 +82,7 @@ ScenarioResult Scenario::Process(
   if (current_stage_ == nullptr) {
     current_stage_ = CreateStage(
         *stage_pipeline_map_[scenario_pipeline_config_.stage(0).name()]);
-    AINFO << "Create stage" << current_stage_->Name();
+    AINFO << "Create stage " << current_stage_->Name();
   }
   if (current_stage_->Name().empty()) {
     scenario_result_.SetScenarioStatus(ScenarioStatusType::STATUS_DONE);

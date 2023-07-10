@@ -42,9 +42,6 @@ bool PathFollowScenario::IsTransferable(const Scenario* other_scenario,
   if (!planning_command->custom_command().UnpackTo(&unpacked_command)) {
     return false;
   }
-  if (frame.reference_line_info().empty()) {
-    return false;
-  }
   return true;
 }
 

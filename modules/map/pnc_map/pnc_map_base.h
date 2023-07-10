@@ -27,6 +27,7 @@
 #include "gflags/gflags.h"
 #include "modules/common/vehicle_state/proto/vehicle_state.pb.h"
 #include "modules/common_msgs/planning_msgs/planning_command.pb.h"
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/map/pnc_map/route_segments.h"
 
 namespace apollo {
@@ -72,6 +73,9 @@ class PncMapBase {
       apollo::hdmap::RouteSegments *const truncated_segments) const = 0;
 
   virtual std::vector<routing::LaneWaypoint> FutureRouteWaypoints() const = 0;
+
+  virtual void GetEndLaneWayPoint(
+      std::shared_ptr<routing::LaneWaypoint> &end_point) const = 0;
 
  protected:
   planning::PlanningCommand last_command_;

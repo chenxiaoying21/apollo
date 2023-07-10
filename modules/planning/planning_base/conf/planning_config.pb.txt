@@ -16,8 +16,8 @@ topic_config {
 # NO_LEARNING / E2E / HYBRID / RL_TEST / E2E_TEST / HYBRID_TEST
 learning_mode: NO_LEARNING
 reference_line_config {
-  pnc_map_class: "apollo::planning::LaneFollowMap"
   pnc_map_class: "apollo::planning::PathFollowMap"
+  pnc_map_class: "apollo::planning::LaneFollowMap"
 }
 standard_planning_config {
   planner_type: PUBLIC_ROAD
@@ -69,6 +69,10 @@ standard_planning_config {
     scenario {
       name: "FREE_SPACE"
       type: "FreeSpaceScenario"
+    }
+    scenario {
+      name: "PATH_FOLLOW"
+      type: "PathFollowScenario"
     }
     scenario {
       name: "LANE_FOLLOW"

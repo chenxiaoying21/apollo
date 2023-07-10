@@ -34,9 +34,6 @@ class SpeedSetting : public TrafficRule {
                            ReferenceLineInfo* const reference_line_info);
 
   void Reset() override {}
-
- private:
-
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::SpeedSetting,

@@ -33,6 +33,7 @@
 #include "modules/common_msgs/planning_msgs/navigation.pb.h"
 #include "modules/planning/planning_base/proto/planning_config.pb.h"
 
+#include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "cyber/cyber.h"
 #include "modules/common/util/factory.h"
 #include "modules/common/util/util.h"
@@ -83,7 +84,9 @@ class ReferenceLineProvider {
   bool Start();
 
   void Stop();
+
   void Reset();
+
   bool GetReferenceLines(std::list<ReferenceLine>* reference_lines,
                          std::list<hdmap::RouteSegments>* segments);
 
@@ -92,6 +95,9 @@ class ReferenceLineProvider {
   std::vector<routing::LaneWaypoint> FutureRouteWaypoints();
 
   bool UpdatedReferenceLine() { return is_reference_line_updated_.load(); }
+
+  void GetEndLaneWayPoint(
+      std::shared_ptr<routing::LaneWaypoint>& end_point) const;
 
  private:
   /**

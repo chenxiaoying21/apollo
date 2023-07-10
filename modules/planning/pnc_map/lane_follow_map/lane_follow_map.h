@@ -59,6 +59,9 @@ class LaneFollowMap : public PncMapBase {
 
   std::vector<routing::LaneWaypoint> FutureRouteWaypoints() const override;
 
+  void GetEndLaneWayPoint(
+      std::shared_ptr<routing::LaneWaypoint> &end_point) const override;
+
  private:
   /**
    * @brief Check if the command can be processed by this map.
