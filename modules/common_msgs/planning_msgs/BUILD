@@ -87,6 +87,7 @@ proto_library(
         ":navigation_proto",
         ":sl_boundary_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/common_msgs/routing_msgs:geometry_proto",
     ],
 )
 
@@ -175,7 +176,7 @@ proto_library(
     deps = [
         "//modules/common_msgs/basic_msgs:geometry_proto",
         "//modules/common_msgs/basic_msgs:vehicle_signal_proto",
-        "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/common_msgs/routing_msgs:geometry_proto",
     ],
 )
 

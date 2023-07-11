@@ -42,7 +42,7 @@ using apollo::task_manager::CycleRoutingTask;
 using apollo::task_manager::ParkGoRoutingTask;
 using apollo::task_manager::ParkingRoutingTask;
 using apollo::task_manager::Task;
-using apollo::temp_routing_converter::RoutingRequest;
+using apollo::routing::RoutingRequest;
 
 using Json = nlohmann::json;
 using google::protobuf::util::JsonStringToMessage;

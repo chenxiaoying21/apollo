@@ -30,7 +30,7 @@
 #include "absl/strings/str_cat.h"
 
 #include "modules/common_msgs/task_manager_msgs/task_manager.pb.h"
-#include "modules/external_command/temp_routing_converter/proto/routing.pb.h"
+#include "modules/external_command/old_routing_adpter/proto/routing.pb.h"
 
 #include "cyber/common/log.h"
 #include "cyber/cyber.h"
@@ -100,7 +100,7 @@ class SimulationWorldUpdater {
    */
   bool ConstructRoutingRequest(
       const nlohmann::json &json,
-      apollo::temp_routing_converter::RoutingRequest *routing_request);
+      apollo::routing::RoutingRequest *routing_request);
 
     /**
    * @brief get json which construct routing request needs

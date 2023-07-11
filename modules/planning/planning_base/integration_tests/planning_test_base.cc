@@ -35,7 +35,7 @@ using apollo::cyber::Clock;
 using apollo::localization::LocalizationEstimate;
 using apollo::perception::TrafficLightDetection;
 using apollo::prediction::PredictionObstacles;
-using apollo::routing::RoutingResponse;
+using apollo::new_routing::RoutingResponse;
 
 DEFINE_string(test_data_dir, "", "the test data folder");
 DEFINE_bool(test_update_golden_log, false,

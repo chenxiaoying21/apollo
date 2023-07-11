@@ -301,9 +301,9 @@ void PrintDebugInfo(const std::string& road_id,
 }
 
 bool ResultGenerator::GeneratePassageRegion(
-    const std::string& map_version, const RoutingRequest& request,
+    const std::string& map_version, const new_routing::RoutingRequest& request,
     const std::vector<NodeWithRange>& nodes,
-    const TopoRangeManager& range_manager, RoutingResponse* const result) {
+    const TopoRangeManager& range_manager, new_routing::RoutingResponse* const result) {
   if (!GeneratePassageRegion(nodes, range_manager, result)) {
     return false;
   }
@@ -316,7 +316,7 @@ bool ResultGenerator::GeneratePassageRegion(
 
 bool ResultGenerator::GeneratePassageRegion(
     const std::vector<NodeWithRange>& nodes,
-    const TopoRangeManager& range_manager, RoutingResponse* const result) {
+    const TopoRangeManager& range_manager, new_routing::RoutingResponse* const result) {
   std::vector<PassageInfo> passages;
   if (!ExtractBasicPassages(nodes, &passages)) {
     return false;
@@ -332,7 +332,7 @@ void ResultGenerator::AddRoadSegment(
     const std::vector<PassageInfo>& passages,
     const std::pair<std::size_t, std::size_t>& start_index,
     const std::pair<std::size_t, std::size_t>& end_index,
-    RoutingResponse* result) {
+    new_routing::RoutingResponse* result) {
   auto* road = result->add_road();
 
   road->set_id(passages[start_index.first].nodes[start_index.second].RoadId());
@@ -365,7 +365,7 @@ void ResultGenerator::AddRoadSegment(
 }
 
 void ResultGenerator::CreateRoadSegments(
-    const std::vector<PassageInfo>& passages, RoutingResponse* result) {
+    const std::vector<PassageInfo>& passages, new_routing::RoutingResponse* result) {
   ACHECK(!passages.empty()) << "passages empty";
   NodeWithRange fake_node_range(passages.front().nodes.front());
   bool in_change_lane = false;

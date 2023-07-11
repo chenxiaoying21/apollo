@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package apollo.old_routing_adpter;
+
+message OldRoutingAdapterConfig {
+  // Topic name of routing request.
+  required string routing_request_topic = 1;
+  // Topic name of routing response.
+  required string routing_response_topic = 2;
+  // Topic name of lane follow command.
+  required string lane_follow_command_topic = 3;
+  // Topic name of valet parking command.
+  required string valet_parking_command_topic = 4;
+  // Topic name of planning command.
+  required string planning_command_topic = 5;
+}

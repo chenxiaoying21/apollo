@@ -56,12 +56,12 @@ apollo::common::Status Routing::Start() {
   return apollo::common::Status::OK();
 }
 
-std::vector<RoutingRequest> Routing::FillLaneInfoIfMissing(
-    const RoutingRequest& routing_request) {
-  std::vector<RoutingRequest> fixed_requests;
+std::vector<new_routing::RoutingRequest> Routing::FillLaneInfoIfMissing(
+    const new_routing::RoutingRequest& routing_request) {
+  std::vector<new_routing::RoutingRequest> fixed_requests;
   std::unordered_map<int, std::vector<LaneWaypoint>>
       additional_lane_waypoint_map;
-  RoutingRequest fixed_request(routing_request);
+  new_routing::RoutingRequest fixed_request(routing_request);
   for (int i = 0; i < routing_request.waypoint_size(); ++i) {
     LaneWaypoint lane_waypoint(routing_request.waypoint(i));
     if (lane_waypoint.has_id()) {
@@ -111,7 +111,7 @@ std::vector<RoutingRequest> Routing::FillLaneInfoIfMissing(
     for (size_t i = 0; i < cur_size; ++i) {
       // use index to iterate while keeping push_back
       for (const auto& lane_waypoint : m.second) {
-        RoutingRequest new_request(fixed_requests[i]);
+        new_routing::RoutingRequest new_request(fixed_requests[i]);
         auto waypoint_info = new_request.mutable_waypoint(m.first);
         waypoint_info->set_id(lane_waypoint.id());
         waypoint_info->set_s(lane_waypoint.s());
@@ -126,8 +126,8 @@ std::vector<RoutingRequest> Routing::FillLaneInfoIfMissing(
   return fixed_requests;
 }
 
-bool Routing::Process(const std::shared_ptr<RoutingRequest>& routing_request,
-                      RoutingResponse* const routing_response) {
+bool Routing::Process(const std::shared_ptr<new_routing::RoutingRequest>& routing_request,
+                      new_routing::RoutingResponse* const routing_response) {
   if (nullptr == routing_request) {
     AWARN << "Routing request is empty!";
     return true;
@@ -138,7 +138,7 @@ bool Routing::Process(const std::shared_ptr<RoutingRequest>& routing_request,
   const auto& fixed_requests = FillLaneInfoIfMissing(*routing_request);
   double min_routing_length = std::numeric_limits<double>::max();
   for (const auto& fixed_request : fixed_requests) {
-    RoutingResponse routing_response_temp;
+    new_routing::RoutingResponse routing_response_temp;
     if (navigator_ptr_->SearchRoute(fixed_request, &routing_response_temp)) {
       const double routing_length =
           routing_response_temp.measurement().distance();

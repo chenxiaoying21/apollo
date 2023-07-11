@@ -81,9 +81,9 @@ class SimControlWithModelBase : public SimControlBase {
 
   void OnControlCommand(const apollo::control::ControlCommand& control_command);
   void OnRoutingResponse(
-      const apollo::temp_routing_converter::RoutingResponse& routing);
+      const apollo::routing::RoutingResponse& routing);
   void OnRoutingRequest(
-      const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest>&
+      const std::shared_ptr<apollo::routing::RoutingRequest>&
           routing_request);
   void OnPredictionObstacles(
       const std::shared_ptr<apollo::prediction::PredictionObstacles>&
@@ -103,9 +103,9 @@ class SimControlWithModelBase : public SimControlBase {
   std::shared_ptr<cyber::Reader<apollo::control::ControlCommand>>
       control_command_reader_;
   std::shared_ptr<
-      cyber::Reader<apollo::temp_routing_converter::RoutingResponse>>
+      cyber::Reader<apollo::routing::RoutingResponse>>
       routing_reader_;
-  std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
+  std::shared_ptr<cyber::Reader<apollo::routing::RoutingRequest>>
       routing_request_reader_;
   std::shared_ptr<cyber::Reader<apollo::localization::LocalizationEstimate>>
       localization_reader_;

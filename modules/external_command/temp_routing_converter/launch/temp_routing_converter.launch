@@ -1,7 +1,0 @@
-<cyber>
-    <module>
-        <name>temp_routing_converter</name>
-        <dag_conf>/apollo/modules/external_command/temp_routing_converter/dag/temp_routing_converter.dag</dag_conf>
-        <process_name>temp_routing_converter</process_name>
-    </module>
-</cyber>

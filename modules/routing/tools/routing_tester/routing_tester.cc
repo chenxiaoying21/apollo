@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
   apollo::cyber::Init(argv[0]);
   FLAGS_alsologtostderr = true;
 
-  apollo::routing::RoutingRequest routing_request;
+  apollo::new_routing::RoutingRequest routing_request;
   if (!apollo::cyber::common::GetProtoFromFile(FLAGS_routing_test_file,
                                                &routing_request)) {
     AERROR << "failed to load file: " << FLAGS_routing_test_file;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
   std::shared_ptr<apollo::cyber::Node> node(
       apollo::cyber::CreateNode("routing_tester"));
-  auto writer = node->CreateWriter<apollo::routing::RoutingRequest>(
+  auto writer = node->CreateWriter<apollo::new_routing::RoutingRequest>(
       "/apollo/raw_routing_request");
 
   Rate rate(1.0);

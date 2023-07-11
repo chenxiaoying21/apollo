@@ -18,7 +18,7 @@ proto_library(
     deps = [
         "//modules/common_msgs/basic_msgs:header_proto",
         "//modules/common_msgs/routing_msgs:routing_proto",
-        "//modules/external_command/temp_routing_converter/proto:routing_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_proto",
     ],
 )
 

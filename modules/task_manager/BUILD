@@ -18,7 +18,7 @@ cc_library(
         "//modules/common_msgs/localization_msgs:localization_cc_proto",
         "//modules/task_manager/common:task_manager_gflags",
         "//modules/common_msgs/task_manager_msgs:task_manager_cc_proto",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
     ],
     alwayslink = True,
 )
@@ -51,7 +51,7 @@ cc_library(
         "//cyber",
         "//modules/task_manager/proto:task_manager_config_cc_proto",
         "//modules/common_msgs/planning_msgs:planning_cc_proto",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
     ],
     alwayslink = True,
 )

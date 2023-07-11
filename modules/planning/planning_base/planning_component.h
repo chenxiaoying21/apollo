@@ -73,7 +73,7 @@ class PlanningComponent final
   std::shared_ptr<cyber::Reader<PlanningCommand>> planning_command_reader_;
 
   std::shared_ptr<cyber::Writer<ADCTrajectory>> planning_writer_;
-  std::shared_ptr<cyber::Writer<routing::RoutingRequest>> rerouting_writer_;
+  std::shared_ptr<cyber::Writer<new_routing::RoutingRequest>> rerouting_writer_;
   std::shared_ptr<cyber::Writer<PlanningLearningData>>
       planning_learning_data_writer_;
   std::shared_ptr<cyber::Writer<external_command::CommandStatus>>
@@ -81,7 +81,7 @@ class PlanningComponent final
 
   std::mutex mutex_;
   perception::TrafficLightDetection traffic_light_;
-  routing::RoutingResponse routing_;
+  new_routing::RoutingResponse routing_;
   planning::PadMessage pad_msg_;
   relative_map::MapMsg relative_map_;
   storytelling::Stories stories_;

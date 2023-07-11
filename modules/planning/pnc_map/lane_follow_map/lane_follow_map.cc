@@ -40,7 +40,7 @@ namespace planning {
 using apollo::common::PointENU;
 using apollo::common::VehicleState;
 using apollo::common::util::PointFactory;
-using apollo::routing::RoutingResponse;
+using apollo::new_routing::RoutingResponse;
 
 namespace {
 

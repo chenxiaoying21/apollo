@@ -35,7 +35,7 @@ cc_library(
         "//modules/common_msgs/prediction_msgs:prediction_obstacle_cc_proto",
         "//modules/common_msgs/storytelling_msgs:story_cc_proto",
         "//modules/common_msgs/task_manager_msgs:task_manager_cc_proto",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
         "@com_github_nlohmann_json//:json",
         "@com_google_absl//:absl",
     ],
@@ -75,7 +75,7 @@ cc_library(
         "//modules/dreamview/backend/plugins:plugin_manager",
         "//modules/dreamview/backend/sim_control_manager:sim_control_manager",
         "//modules/dreamview/backend/sim_control",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
         "@boost",
     ],
 )

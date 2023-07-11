@@ -22,7 +22,7 @@
 
 #include "modules/common_msgs/localization_msgs/localization.pb.h"
 #include "modules/common_msgs/task_manager_msgs/task_manager.pb.h"
-#include "modules/external_command/temp_routing_converter/proto/routing.pb.h"
+#include "modules/external_command/old_routing_adpter/proto/routing.pb.h"
 
 #include "modules/common/monitor_log/monitor_log_buffer.h"
 #include "modules/common/status/status.h"
@@ -46,7 +46,7 @@ class CycleRoutingManager {
    * @return false/true
    */
   bool GetNewRouting(const localization::Pose& pose,
-                     temp_routing_converter::RoutingRequest* routing_request_);
+                     routing::RoutingRequest* routing_request_);
 
   /**
    * @brief get remaining cycle number
@@ -66,7 +66,7 @@ class CycleRoutingManager {
   routing::LaneWaypoint begin_point_;
   routing::LaneWaypoint end_point_;
   std::unique_ptr<apollo::dreamview::MapService> map_service_;
-  temp_routing_converter::RoutingRequest original_routing_request_;
+  routing::RoutingRequest original_routing_request_;
 };
 
 }  // namespace task_manager

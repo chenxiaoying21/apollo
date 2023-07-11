@@ -1,68 +1,25 @@
 syntax = "proto2";
 
-package apollo.routing;
+package apollo.new_routing;
 
-import "modules/common_msgs/basic_msgs/error_code.proto";
-import "modules/common_msgs/basic_msgs/geometry.proto";
+import "modules/common_msgs/routing_msgs/geometry.proto";
 import "modules/common_msgs/basic_msgs/header.proto";
-
-message LaneWaypoint {
-  optional string id = 1;
-  optional double s = 2;
-  optional apollo.common.PointENU pose = 3;
-  // When the developer selects a point on the dreamview route editing
-  // the direction can be specified by dragging the mouse
-  // dreamview calculates the heading based on this to support construct lane way point with heading
-  optional double heading = 4;
-}
-
-message LaneSegment {
-  optional string id = 1;
-  optional double start_s = 2;
-  optional double end_s = 3;
-}
-
-enum DeadEndRoutingType {
-  ROUTING_OTHER = 0;
-  ROUTING_IN = 1;
-  ROUTING_OUT = 2;
-}
+import "modules/common_msgs/basic_msgs/error_code.proto";
 
 message RoutingRequest {
   optional apollo.common.Header header = 1;
   // at least two points. The first is start point, the end is final point.
   // The routing must go through each point in waypoint.
-  repeated LaneWaypoint waypoint = 2;
-  repeated LaneSegment blacklisted_lane = 3;
+  repeated apollo.routing.LaneWaypoint waypoint = 2;
+  repeated apollo.routing.LaneSegment blacklisted_lane = 3;
   repeated string blacklisted_road = 4;
   optional bool broadcast = 5 [default = true];
 }
 
-message Measurement {
-  optional double distance = 1;
-}
-
-enum ChangeLaneType {
-  FORWARD = 0;
-  LEFT = 1;
-  RIGHT = 2;
-};
-
-message Passage {
-  repeated LaneSegment segment = 1;
-  optional bool can_exit = 2;
-  optional ChangeLaneType change_lane_type = 3 [default = FORWARD];
-}
-
-message RoadSegment {
-  optional string id = 1;
-  repeated Passage passage = 2;
-}
-
 message RoutingResponse {
   optional apollo.common.Header header = 1;
-  repeated RoadSegment road = 2;
-  optional Measurement measurement = 3;
+  repeated apollo.routing.RoadSegment road = 2;
+  optional apollo.routing.Measurement measurement = 3;
   optional RoutingRequest routing_request = 4;
 
   // the map version which is used to build road graph

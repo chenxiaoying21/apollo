@@ -11,7 +11,7 @@ import "modules/common_msgs/perception_msgs/perception_obstacle.proto";
 import "modules/common_msgs/prediction_msgs/feature.proto";
 import "modules/common_msgs/prediction_msgs/prediction_obstacle.proto";
 import "modules/common_msgs/perception_msgs/traffic_light_detection.proto";
-import "modules/common_msgs/routing_msgs/routing.proto";
+import "modules/common_msgs/routing_msgs/geometry.proto";
 
 message OverlapFeature {
   optional string id = 1;
@@ -162,7 +162,7 @@ message ObstacleFeature {
   optional PredictionObstacleFeature obstacle_prediction = 7;
 }
 
-// based on apollo.routing.RoutingResponse
+// based on apollo.new_routing.RoutingResponse
 message RoutingResponseFeature {
   repeated apollo.routing.RoadSegment road = 1;
   optional apollo.routing.Measurement measurement = 2;

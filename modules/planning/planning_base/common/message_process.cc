@@ -54,7 +54,7 @@ using apollo::localization::LocalizationEstimate;
 using apollo::perception::TrafficLightDetection;
 using apollo::prediction::PredictionObstacle;
 using apollo::prediction::PredictionObstacles;
-using apollo::routing::RoutingResponse;
+using apollo::new_routing::RoutingResponse;
 using apollo::storytelling::CloseToJunction;
 using apollo::storytelling::Stories;
 
@@ -266,7 +266,7 @@ void MessageProcess::OnPrediction(
 }
 
 void MessageProcess::OnRoutingResponse(
-    const apollo::routing::RoutingResponse& routing_response) {
+    const apollo::new_routing::RoutingResponse& routing_response) {
   ADEBUG << "routing_response received at frame["
          << total_learning_data_frame_num_ << "]";
   routing_response_.CopyFrom(routing_response);

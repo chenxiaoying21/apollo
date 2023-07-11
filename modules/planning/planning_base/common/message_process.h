@@ -62,7 +62,7 @@ class MessageProcess {
       const apollo::prediction::PredictionObstacles& prediction_obstacles);
 
   void OnRoutingResponse(
-      const apollo::routing::RoutingResponse& routing_response);
+      const apollo::new_routing::RoutingResponse& routing_response);
 
   void OnStoryTelling(const apollo::storytelling::Stories& stories);
 
@@ -134,7 +134,7 @@ class MessageProcess {
   ChassisFeature chassis_feature_;
   std::string map_name_;
   PlanningTag planning_tag_;
-  apollo::routing::RoutingResponse routing_response_;
+  apollo::new_routing::RoutingResponse routing_response_;
   double traffic_light_detection_message_timestamp_;
   std::vector<TrafficLightFeature> traffic_lights_;
   int total_learning_data_frame_num_ = 0;

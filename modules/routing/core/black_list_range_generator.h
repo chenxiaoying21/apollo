@@ -30,7 +30,7 @@ class BlackListRangeGenerator {
   BlackListRangeGenerator() = default;
   ~BlackListRangeGenerator() = default;
 
-  void GenerateBlackMapFromRequest(const RoutingRequest& request,
+  void GenerateBlackMapFromRequest(const new_routing::RoutingRequest& request,
                                    const TopoGraph* graph,
                                    TopoRangeManager* const range_manager) const;
 

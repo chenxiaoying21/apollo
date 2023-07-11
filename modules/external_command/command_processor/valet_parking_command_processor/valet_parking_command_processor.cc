@@ -26,7 +26,7 @@ namespace external_command {
 
 bool ValetParkingCommandProcessor::Convert(
     const std::shared_ptr<ValetParkingCommand>& command,
-    std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const {
+    std::shared_ptr<apollo::new_routing::RoutingRequest>& routing_request) const {
   if (!MotionCommandProcessorBase<ValetParkingCommand>::Convert(
           command, routing_request)) {
     return false;

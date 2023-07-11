@@ -33,8 +33,8 @@ using apollo::common::util::FillHeader;
 using apollo::control::ControlCommand;
 using apollo::localization::LocalizationEstimate;
 using apollo::prediction::PredictionObstacles;
-using apollo::temp_routing_converter::RoutingRequest;
-using apollo::temp_routing_converter::RoutingResponse;
+using apollo::routing::RoutingRequest;
+using apollo::routing::RoutingResponse;
 using apollo::sim_control::SimCarStatus;
 using Json = nlohmann::json;
 

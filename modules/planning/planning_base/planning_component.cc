@@ -33,8 +33,8 @@ using apollo::cyber::ComponentBase;
 using apollo::hdmap::HDMapUtil;
 using apollo::perception::TrafficLightDetection;
 using apollo::relative_map::MapMsg;
-using apollo::routing::RoutingRequest;
-using apollo::routing::RoutingResponse;
+using apollo::new_routing::RoutingRequest;
+using apollo::new_routing::RoutingResponse;
 using apollo::storytelling::Stories;
 
 bool PlanningComponent::Init() {

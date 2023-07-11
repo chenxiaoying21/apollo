@@ -57,12 +57,13 @@ class Routing {
    */
   virtual ~Routing() = default;
 
-  bool Process(const std::shared_ptr<RoutingRequest> &routing_request,
-               RoutingResponse *const routing_response);
+  bool Process(
+      const std::shared_ptr<new_routing::RoutingRequest> &routing_request,
+      new_routing::RoutingResponse *const routing_response);
 
  private:
-  std::vector<RoutingRequest> FillLaneInfoIfMissing(
-      const RoutingRequest &routing_request);
+  std::vector<new_routing::RoutingRequest> FillLaneInfoIfMissing(
+      const new_routing::RoutingRequest &routing_request);
 
  private:
   std::unique_ptr<Navigator> navigator_ptr_;

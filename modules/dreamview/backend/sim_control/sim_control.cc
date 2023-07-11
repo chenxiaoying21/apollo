@@ -42,8 +42,8 @@ using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
 using apollo::prediction::PredictionObstacles;
 using apollo::relative_map::NavigationInfo;
-using apollo::temp_routing_converter::RoutingRequest;
-using apollo::temp_routing_converter::RoutingResponse;
+using apollo::routing::RoutingRequest;
+using apollo::routing::RoutingResponse;
 
 namespace {
 

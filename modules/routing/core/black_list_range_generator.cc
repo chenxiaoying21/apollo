@@ -70,7 +70,7 @@ void GetInParallelLane(const TopoNode* node,
 }
 
 // for new navigator
-void AddBlackMapFromRoad(const RoutingRequest& request, const TopoGraph* graph,
+void AddBlackMapFromRoad(const new_routing::RoutingRequest& request, const TopoGraph* graph,
                          TopoRangeManager* const range_manager) {
   for (const auto& road_id : request.blacklisted_road()) {
     std::unordered_set<const TopoNode*> road_nodes_set;
@@ -82,7 +82,7 @@ void AddBlackMapFromRoad(const RoutingRequest& request, const TopoGraph* graph,
 }
 
 // for new navigator
-void AddBlackMapFromLane(const RoutingRequest& request, const TopoGraph* graph,
+void AddBlackMapFromLane(const new_routing::RoutingRequest& request, const TopoGraph* graph,
                          TopoRangeManager* const range_manager) {
   for (const auto& lane : request.blacklisted_lane()) {
     const auto* node = graph->GetNode(lane.id());
@@ -117,7 +117,7 @@ void AddBlackMapFromInParallel(const TopoNode* node, double cut_ratio,
 }  // namespace
 
 void BlackListRangeGenerator::GenerateBlackMapFromRequest(
-    const RoutingRequest& request, const TopoGraph* graph,
+    const new_routing::RoutingRequest& request, const TopoGraph* graph,
     TopoRangeManager* const range_manager) const {
   AddBlackMapFromLane(request, graph, range_manager);
   AddBlackMapFromRoad(request, graph, range_manager);

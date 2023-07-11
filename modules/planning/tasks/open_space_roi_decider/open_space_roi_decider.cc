@@ -1625,7 +1625,7 @@ void OpenSpaceRoiDecider::GetParkSpotFromMap(
 }
 
 void OpenSpaceRoiDecider::GetAllLaneSegments(
-    const routing::RoutingResponse &routing_response,
+    const new_routing::RoutingResponse &routing_response,
     std::vector<routing::LaneSegment> *routing_segments) {
   routing_segments->clear();
   for (const auto &road : routing_response.road()) {
@@ -1638,7 +1638,7 @@ void OpenSpaceRoiDecider::GetAllLaneSegments(
 }
 
 bool OpenSpaceRoiDecider::GetNearbyPath(
-    const apollo::routing::RoutingResponse &routing_response,
+    const apollo::new_routing::RoutingResponse &routing_response,
     const ParkingSpaceInfoConstPtr &parking_spot,
     std::shared_ptr<hdmap::Path> *nearby_path) {
   LaneInfoConstPtr nearest_lane;

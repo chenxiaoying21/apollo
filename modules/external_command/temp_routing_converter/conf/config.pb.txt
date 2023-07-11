@@ -1,5 +1,0 @@
-routing_request_topic: "/apollo/routing_request"
-routing_response_topic: "/apollo/routing_response"
-lane_follow_command_topic: "/apollo/external_command/lane_follow"
-valet_parking_command_topic: "/apollo/external_command/valet_parking"
-planning_command_topic: "/apollo/planning/command"

@@ -76,8 +76,8 @@ using apollo::prediction::PredictionObstacle;
 using apollo::prediction::PredictionObstacles;
 using apollo::relative_map::MapMsg;
 using apollo::relative_map::NavigationInfo;
-using apollo::temp_routing_converter::RoutingRequest;
-using apollo::temp_routing_converter::RoutingResponse;
+using apollo::routing::RoutingRequest;
+using apollo::routing::RoutingResponse;
 using apollo::storytelling::Stories;
 using apollo::task_manager::Task;
 

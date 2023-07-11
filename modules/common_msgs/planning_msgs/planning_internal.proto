@@ -13,6 +13,7 @@ import "modules/common_msgs/planning_msgs/decision.proto";
 import "modules/common_msgs/planning_msgs/navigation.proto";
 import "modules/common_msgs/planning_msgs/sl_boundary.proto";
 import "modules/common_msgs/routing_msgs/routing.proto";
+import "modules/common_msgs/routing_msgs/geometry.proto";
 
 message Debug {
   optional PlanningData planning_data = 2;
@@ -188,7 +189,7 @@ message PlanningData {
   // input
   optional apollo.localization.LocalizationEstimate adc_position = 7;
   optional apollo.canbus.Chassis chassis = 8;
-  optional apollo.routing.RoutingResponse routing = 9;
+  optional apollo.new_routing.RoutingResponse routing = 9;
   optional apollo.common.TrajectoryPoint init_point = 10;
 
   repeated apollo.common.Path path = 6;
@@ -247,7 +248,7 @@ message CloudReferenceLineRequest {
 }
 
 message CloudReferenceLineRoutingRequest {
-  optional apollo.routing.RoutingResponse routing = 1;
+  optional apollo.new_routing.RoutingResponse routing = 1;
 }
 
 message CloudReferenceLineResponse {

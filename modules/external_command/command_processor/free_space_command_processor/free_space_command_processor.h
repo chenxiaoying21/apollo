@@ -41,7 +41,7 @@ class FreeSpaceCommandProcessor
    * @return Return true if there is error occurs for converting.
    */
   bool Convert(const std::shared_ptr<FreeSpaceCommand>& command,
-               std::shared_ptr<apollo::routing::RoutingRequest>&
+               std::shared_ptr<apollo::new_routing::RoutingRequest>&
                    routing_request) const override;
   /**
    * @brief Process special command except RoutingRequest.

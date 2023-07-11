@@ -25,7 +25,7 @@ namespace external_command {
 
 bool PathFollowCommandProcessor::Convert(
     const std::shared_ptr<PathFollowCommand>& command,
-    std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const {
+    std::shared_ptr<apollo::new_routing::RoutingRequest>& routing_request) const {
   routing_request = nullptr;
   return true;
 }

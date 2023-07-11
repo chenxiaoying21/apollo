@@ -33,7 +33,7 @@ bool LaneFollowCommandProcessor::ProcessSpecialCommand(
 
 bool LaneFollowCommandProcessor::Convert(
     const std::shared_ptr<LaneFollowCommand>& command,
-    std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const {
+    std::shared_ptr<apollo::new_routing::RoutingRequest>& routing_request) const {
   if (!MotionCommandProcessorBase<LaneFollowCommand>::Convert(
           command, routing_request)) {
     return false;

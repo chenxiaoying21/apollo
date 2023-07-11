@@ -29,7 +29,7 @@
 #include "nlohmann/json.hpp"
 
 #include "modules/dreamview/proto/simulation_world.pb.h"
-#include "modules/external_command/temp_routing_converter/proto/routing.pb.h"
+#include "modules/external_command/old_routing_adpter/proto/routing.pb.h"
 
 #include "modules/map/pnc_map/path.h"
 
@@ -53,7 +53,7 @@ class MapService {
                             double raidus, MapElementIds *ids) const;
 
   bool GetPathsFromRouting(
-      const apollo::temp_routing_converter::RoutingResponse &routing,
+      const apollo::routing::RoutingResponse &routing,
       std::vector<apollo::hdmap::Path> *paths) const;
 
   // The returned value is of a hdmap::Map proto. This
@@ -112,7 +112,7 @@ class MapService {
                                  const double heading) const;
 
   bool CreatePathsFromRouting(
-      const temp_routing_converter::RoutingResponse &routing,
+      const routing::RoutingResponse &routing,
       std::vector<apollo::hdmap::Path> *paths) const;
 
   bool AddPathFromPassageRegion(const routing::Passage &passage_region,

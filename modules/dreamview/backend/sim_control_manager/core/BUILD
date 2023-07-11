@@ -46,7 +46,7 @@ cc_library(
         "//modules/dreamview/backend/sim_control_manager/common:sim_control_util",
         "//modules/dreamview/backend/sim_control_manager/core:sim_control_base",
         "//modules/dreamview/backend/sim_control_manager/dynamic_model/perfect_control:sim_perfect_control",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
     ],
     alwayslink = True,
 )
@@ -66,7 +66,7 @@ cc_library(
         "//modules/dreamview/backend/sim_control_manager/core:sim_control_base",
         "//modules/dreamview/backend/sim_control_manager/core:sim_control_with_model_base",
         "//modules/dreamview/backend/sim_control_manager/proto:dynamic_model_conf_cc_proto",
-        "//modules/external_command/temp_routing_converter/proto:routing_cc_proto",
+        "//modules/external_command/old_routing_adpter/proto:routing_cc_proto",
     ],
 )
 

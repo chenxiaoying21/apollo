@@ -183,7 +183,7 @@ proto_library(
         "//modules/common_msgs/prediction_msgs:feature_proto",
         "//modules/common_msgs/prediction_msgs:prediction_obstacle_proto",
         "//modules/common_msgs/perception_msgs:traffic_light_detection_proto",
-        "//modules/common_msgs/routing_msgs:routing_proto",
+        "//modules/common_msgs/routing_msgs:geometry_proto",
     ],
 )
 

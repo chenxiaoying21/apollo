@@ -26,8 +26,8 @@ using apollo::cyber::ComponentBase;
 using apollo::cyber::Rate;
 using apollo::localization::LocalizationEstimate;
 using apollo::planning::ADCTrajectory;
-using apollo::temp_routing_converter::RoutingRequest;
-using apollo::temp_routing_converter::RoutingResponse;
+using apollo::routing::RoutingRequest;
+using apollo::routing::RoutingResponse;
 
 bool TaskManagerComponent::Init() {
   TaskManagerConfig task_manager_conf;
@@ -64,7 +64,7 @@ bool TaskManagerComponent::Init() {
   // Don't send the history message when new readers are found.
   qos->set_durability(
       apollo::cyber::proto::QosDurabilityPolicy::DURABILITY_SYSTEM_DEFAULT);
-  request_writer_ = node_->CreateWriter<RoutingRequest>(attr);
+  request_writer_ = node_->CreateWriter<routing::RoutingRequest>(attr);
   return true;
 }
 

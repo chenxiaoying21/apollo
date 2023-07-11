@@ -208,10 +208,10 @@ class OpenSpaceRoiDecider : public Decider {
    * @param routing_response The routing response containing the lane segments.
    * @param routing_segments The output vector of lane segments.
    */
-  void GetAllLaneSegments(const routing::RoutingResponse &routing_response,
+  void GetAllLaneSegments(const new_routing::RoutingResponse &routing_response,
                           std::vector<routing::LaneSegment> *routing_segments);
 
-  bool GetNearbyPath(const apollo::routing::RoutingResponse &routing_response,
+  bool GetNearbyPath(const apollo::new_routing::RoutingResponse &routing_response,
                      const hdmap::ParkingSpaceInfoConstPtr &parking_spot,
                      std::shared_ptr<hdmap::Path> *nearby_path);
   bool AdjustPointsOrderToClockwise(std::vector<common::math::Vec2d> *polygon);

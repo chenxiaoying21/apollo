@@ -33,11 +33,11 @@ class Navigator {
 
   bool IsReady() const;
 
-  bool SearchRoute(const RoutingRequest& request,
-                   RoutingResponse* const response);
+  bool SearchRoute(const new_routing::RoutingRequest& request,
+                   new_routing::RoutingResponse* const response);
 
  private:
-  bool Init(const RoutingRequest& request, const TopoGraph* graph,
+  bool Init(const new_routing::RoutingRequest& request, const TopoGraph* graph,
             std::vector<const TopoNode*>* const way_nodes,
             std::vector<double>* const way_s);
 

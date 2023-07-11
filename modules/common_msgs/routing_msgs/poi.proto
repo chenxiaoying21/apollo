@@ -5,6 +5,7 @@ package apollo.routing;
 import "modules/common_msgs/routing_msgs/routing.proto";
 import "modules/common_msgs/map_msgs/map_geometry.proto";
 import "modules/common_msgs/basic_msgs/geometry.proto";
+import "modules/common_msgs/routing_msgs/geometry.proto";
 
 enum ParkingSpaceType {
   VERTICAL_PLOT = 0;

@@ -32,14 +32,14 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<apollo::cyber::Node> cast_node(
       apollo::cyber::CreateNode("routing_cast"));
 
-  apollo::routing::RoutingResponse routing_response;
+  apollo::new_routing::RoutingResponse routing_response;
   if (!apollo::cyber::common::GetProtoFromFile(FLAGS_routing_dump_file,
                                                &routing_response)) {
     AERROR << "failed to load file: " << FLAGS_routing_dump_file;
     return -1;
   }
 
-  auto cast_writer = cast_node->CreateWriter<apollo::routing::RoutingResponse>(
+  auto cast_writer = cast_node->CreateWriter<apollo::new_routing::RoutingResponse>(
       "/apollo/raw_routing_response");
   Rate rate(1.0);
   while (apollo::cyber::OK()) {

@@ -86,7 +86,7 @@ class SimPerfectControl final : public SimControlBase {
   void OnRoutingResponse(
       const std::shared_ptr<apollo::planning::PlanningCommand> &routing);
   void OnRoutingRequest(
-      const std::shared_ptr<apollo::temp_routing_converter::RoutingRequest>
+      const std::shared_ptr<apollo::routing::RoutingRequest>
           &routing_request);
   void OnReceiveNavigationInfo(
       const std::shared_ptr<apollo::relative_map::NavigationInfo>
@@ -144,7 +144,7 @@ class SimPerfectControl final : public SimControlBase {
       planning_reader_;
   std::shared_ptr<cyber::Reader<apollo::planning::PlanningCommand>>
       planning_command_reader_;
-  std::shared_ptr<cyber::Reader<apollo::temp_routing_converter::RoutingRequest>>
+  std::shared_ptr<cyber::Reader<apollo::routing::RoutingRequest>>
       routing_request_reader_;
   std::shared_ptr<cyber::Reader<apollo::relative_map::NavigationInfo>>
       navigation_reader_;

@@ -38,7 +38,7 @@ message Scenario {
 
   // This is used if 1) the logsim bag does not contain one.
   // 2) the worldsim has different start pose for routing and ego car.
-  optional apollo.routing.RoutingRequest routing_request = 9;
+  optional apollo.new_routing.RoutingRequest routing_request = 9;
 
   // map dir, only used in offline env
   optional string map_dir = 10;

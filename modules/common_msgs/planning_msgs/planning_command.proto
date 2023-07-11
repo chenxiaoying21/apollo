@@ -21,7 +21,7 @@ message PlanningCommand {
   // Unique identification for command.
   optional int64 command_id = 2 [default = -1];
   // Move along the lanes on map.
-  optional apollo.routing.RoutingResponse lane_follow_command = 3;
+  optional apollo.new_routing.RoutingResponse lane_follow_command = 3;
   // Target speed in command.
   optional double target_speed = 4;
   // Indicate if the command is a motion command.

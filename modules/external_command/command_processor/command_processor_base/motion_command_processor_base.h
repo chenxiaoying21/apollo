@@ -27,6 +27,7 @@
 #include "modules/common_msgs/planning_msgs/planning_command.pb.h"
 #include "modules/common_msgs/routing_msgs/routing.pb.h"
 #include "modules/external_command/command_processor/command_processor_base/proto/command_processor_config.pb.h"
+
 #include "cyber/cyber.h"
 #include "modules/common/adapters/adapter_gflags.h"
 #include "modules/common/util/message_util.h"
@@ -75,9 +76,9 @@ class MotionCommandProcessorBase : public CommandProcessorBase {
    * LaneFollow action in moving command, the convert result can be nullptr.
    * @return Return true if there is error occurs for converting.
    */
-  virtual bool Convert(
-      const std::shared_ptr<T>& command,
-      std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const;
+  virtual bool Convert(const std::shared_ptr<T>& command,
+                       std::shared_ptr<apollo::new_routing::RoutingRequest>&
+                           routing_request) const;
 
  private:
   /**
@@ -178,7 +179,8 @@ void MotionCommandProcessorBase<T>::OnCommand(
   last_received_command_.CopyFrom(*command);
   status->set_command_id(command->command_id());
   // Convert command to RoutingRequest.
-  std::shared_ptr<apollo::routing::RoutingRequest> routing_request = nullptr;
+  std::shared_ptr<apollo::new_routing::RoutingRequest> routing_request =
+      nullptr;
   bool convert_result = Convert(command, routing_request);
   if (!convert_result) {
     status->set_status(CommandStatusType::ERROR);
@@ -197,7 +199,7 @@ void MotionCommandProcessorBase<T>::OnCommand(
   if (nullptr != routing_request) {
     AINFO << routing_request->DebugString();
     auto routing_response =
-        std::make_shared<apollo::routing::RoutingResponse>();
+        std::make_shared<apollo::new_routing::RoutingResponse>();
     if (!routing_->Process(routing_request, routing_response.get())) {
       status->set_status(CommandStatusType::ERROR);
       status->set_message("Cannot get routing of command: " +
@@ -227,13 +229,14 @@ void MotionCommandProcessorBase<T>::OnCommand(
 template <typename T>
 bool MotionCommandProcessorBase<T>::Convert(
     const std::shared_ptr<T>& command,
-    std::shared_ptr<apollo::routing::RoutingRequest>& routing_request) const {
+    std::shared_ptr<apollo::new_routing::RoutingRequest>& routing_request)
+    const {
   routing_request = nullptr;
   if (nullptr == command) {
     AWARN << "The lane follow command to be converted is null!";
     return true;
   }
-  routing_request = std::make_shared<apollo::routing::RoutingRequest>();
+  routing_request = std::make_shared<apollo::new_routing::RoutingRequest>();
   // Get the current vehicle pose as start pose.
   auto start_pose = routing_request->add_waypoint();
   if (!lane_way_tool_->GetVehicleLaneWayPoint(start_pose)) {
