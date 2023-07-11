@@ -214,6 +214,11 @@ void MotionCommandProcessorBase<T>::OnCommand(
     return;
   }
   planning_command->set_command_id(command->command_id());
+  // Set target_speed.
+  if (command->has_target_speed()) {
+    planning_command->set_target_speed(command->target_speed());
+  }
+  planning_command->set_is_motion_command(true);
   // Send routing response to planning module.
   planning_command_writer_->Write(planning_command);
   status->set_status(CommandStatusType::RUNNING);

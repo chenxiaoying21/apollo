@@ -286,14 +286,13 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     AINFO << "new_command:" << last_command_.DebugString();
     injector_->history()->Clear();
     injector_->planning_context()->mutable_planning_status()->Clear();
-    if (!reference_line_provider_->UpdatePlanningCommand(
+    if (reference_line_provider_->UpdatePlanningCommand(
             *(local_view_.planning_command))) {
-      reference_line_provider_->Reset();
+      planner_->Reset(frame_.get());
     }
-    reference_line_provider_->GetEndLaneWayPoint(
-        local_view_.end_lane_way_point);
-    planner_->Reset(frame_.get());
   }
+  // Get end lane way point.
+  reference_line_provider_->GetEndLaneWayPoint(local_view_.end_lane_way_point);
 
   // planning is triggered by prediction data, but we can still use an estimated
   // cycle time for stitching

@@ -190,6 +190,7 @@ class ReferenceLineProvider {
   std::mutex routing_mutex_;
   planning::PlanningCommand planning_command_;
   bool has_planning_command_ = false;
+  bool is_new_command_ = false;
 
   std::mutex reference_lines_mutex_;
   std::list<ReferenceLine> reference_lines_;

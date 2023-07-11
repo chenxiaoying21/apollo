@@ -109,10 +109,11 @@ ReferenceLineProvider::ReferenceLineProvider(
 bool ReferenceLineProvider::UpdatePlanningCommand(
     const planning::PlanningCommand &command) {
   std::lock_guard<std::mutex> routing_lock(routing_mutex_);
-  current_pnc_map_ = nullptr;
+  bool find_matched_pnc_map = false;
   for (const auto &pnc_map : pnc_map_list_) {
     if (pnc_map->CanProcess(command)) {
       current_pnc_map_ = pnc_map;
+      find_matched_pnc_map = true;
       break;
     }
   }
@@ -120,6 +121,20 @@ bool ReferenceLineProvider::UpdatePlanningCommand(
     AERROR << "Cannot find pnc map to process input command!"
            << command.DebugString();
     return false;
+  }
+  if (!find_matched_pnc_map) {
+    AWARN << "Find no pnc map for the input command and the old one will be "
+             "used!";
+  }
+  // Update routing in pnc_map
+  std::lock_guard<std::mutex> lock(pnc_map_mutex_);
+  if (current_pnc_map_->IsNewPlanningCommand(command)) {
+    is_new_command_ = true;
+    if (!current_pnc_map_->UpdatePlanningCommand(command)) {
+      AERROR << "Failed to update routing in pnc map: "
+             << command.DebugString();
+      return false;
+    }
   }
   planning_command_ = command;
   has_planning_command_ = true;
@@ -177,6 +192,7 @@ void ReferenceLineProvider::Stop() {
 void ReferenceLineProvider::Reset() {
   std::lock_guard<std::mutex> lock(routing_mutex_);
   has_planning_command_ = false;
+  is_new_command_ = false;
   reference_lines_.clear();
   route_segments_.clear();
   is_reference_line_updated_ = false;
@@ -199,7 +215,6 @@ void ReferenceLineProvider::UpdateReferenceLine(
   if (reference_lines_.size() != reference_lines.size()) {
     reference_lines_ = reference_lines;
     route_segments_ = route_segments;
-
   } else {
     auto segment_iter = route_segments.begin();
     auto internal_iter = reference_lines_.begin();
@@ -622,25 +637,12 @@ bool ReferenceLineProvider::CreateReferenceLine(
     AERROR << "Current pnc map is null! " << command.DebugString();
     return false;
   }
-  bool is_new_command = false;
-  {
-    // Update routing in pnc_map
-    std::lock_guard<std::mutex> lock(pnc_map_mutex_);
-    if (current_pnc_map_->IsNewPlanningCommand(command)) {
-      is_new_command = true;
-      if (!current_pnc_map_->UpdatePlanningCommand(command)) {
-        AERROR << "Failed to update routing in pnc map: "
-               << command.DebugString();
-        return false;
-      }
-    }
-  }
 
   if (!CreateRouteSegments(vehicle_state, segments)) {
     AERROR << "Failed to create reference line from routing";
     return false;
   }
-  if (is_new_command || !FLAGS_enable_reference_line_stitching) {
+  if (is_new_command_ || !FLAGS_enable_reference_line_stitching) {
     for (auto iter = segments->begin(); iter != segments->end();) {
       reference_lines->emplace_back();
       if (!SmoothRouteSegment(*iter, &reference_lines->back())) {
@@ -657,6 +659,7 @@ bool ReferenceLineProvider::CreateReferenceLine(
         ++iter;
       }
     }
+    is_new_command_ = false;
     return true;
   } else {  // stitching reference line
     for (auto iter = segments->begin(); iter != segments->end();) {

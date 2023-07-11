@@ -81,7 +81,7 @@ bool PathFollowMap::UpdatePlanningCommand(
                 lane_->mutable_right_boundary());
   }
   lane_->set_length(lane_->central_curve().segment().Get(0).length());
-  lane_->set_type(apollo::hdmap::Lane::NONE);
+  lane_->set_type(apollo::hdmap::Lane::CITY_DRIVING);
   lane_->set_turn(apollo::hdmap::Lane::NO_TURN);
   lane_->set_direction(apollo::hdmap::Lane::FORWARD);
   lane_info_ = std::make_shared<apollo::hdmap::LaneInfo>(*lane_);

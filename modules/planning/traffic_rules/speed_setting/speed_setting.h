@@ -28,12 +28,18 @@ namespace planning {
 
 class SpeedSetting : public TrafficRule {
  public:
+  SpeedSetting();
+
   virtual ~SpeedSetting() = default;
 
   common::Status ApplyRule(Frame* const frame,
                            ReferenceLineInfo* const reference_line_info);
 
   void Reset() override {}
+
+ private:
+  double last_cruise_speed_;
+  uint32_t last_sequence_num_;
 };
 
 CYBER_PLUGIN_MANAGER_REGISTER_PLUGIN(apollo::planning::SpeedSetting,

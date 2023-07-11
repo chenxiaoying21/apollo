@@ -64,11 +64,6 @@ int Destination::MakeDecisions(Frame* frame,
     return 0;
   }
 
-  if (nullptr == frame->local_view().end_lane_way_point) {
-    AERROR << "routing_request has no end";
-    return -1;
-  }
-
   const auto routing_end = frame->local_view().end_lane_way_point;
   if (nullptr == routing_end) {
     AERROR << "routing_request has no end";

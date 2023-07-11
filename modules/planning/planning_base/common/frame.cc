@@ -177,11 +177,14 @@ bool Frame::CreateReferenceLineInfo(
     reference_line_info_.front().SetOffsetToOtherReferenceLine(offset);
     reference_line_info_.back().SetOffsetToOtherReferenceLine(-offset);
   }
-
+  double target_speed = FLAGS_default_cruise_speed;
+  if (local_view_.planning_command->has_target_speed()) {
+    target_speed = local_view_.planning_command->target_speed();
+  }
   bool has_valid_reference_line = false;
   for (auto iter = reference_line_info_.begin();
        iter != reference_line_info_.end();) {
-    if (!iter->Init(obstacles())) {
+    if (!iter->Init(obstacles(), target_speed)) {
       reference_line_info_.erase(iter++);
     } else {
       has_valid_reference_line = true;

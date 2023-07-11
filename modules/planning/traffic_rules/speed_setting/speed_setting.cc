@@ -27,13 +27,37 @@ namespace planning {
 
 using apollo::common::Status;
 
+SpeedSetting::SpeedSetting()
+    : last_cruise_speed_(-1.0), last_sequence_num_(-1) {}
+
 Status SpeedSetting::ApplyRule(Frame* const frame,
                                ReferenceLineInfo* const reference_line_info) {
-  if (!frame->local_view().planning_command->has_custom_command()) {
+  const auto& planning_command = frame->local_view().planning_command;
+  // Compare the sequence num to check if there is new planning command.
+  if (!planning_command->has_header() ||
+      !planning_command->header().has_sequence_num() ||
+      planning_command->header().sequence_num() == last_sequence_num_) {
+    // Set the cruise speed with last speed limit.
+    if (last_cruise_speed_ > 0.0) {
+      reference_line_info->SetCruiseSpeed(last_cruise_speed_);
+    }
     return Status::OK();
   }
-  const auto& custom_command =
-      frame->local_view().planning_command->custom_command();
+  // Update the new cruise speed when new motion command comes. The first time
+  // received new motion command, use the new cruise speed.
+  if (planning_command->is_motion_command()) {
+    last_cruise_speed_ = reference_line_info->GetBaseCruiseSpeed();
+    return Status::OK();
+  }
+  // Set the cruise speed with last speed limit.
+  if (last_cruise_speed_ > 0.0) {
+    reference_line_info->SetCruiseSpeed(last_cruise_speed_);
+  }
+  // Only deal with planning command which has "SpeedCommand" as custom command.
+  if (!planning_command->has_custom_command()) {
+    return Status::OK();
+  }
+  const auto& custom_command = planning_command->custom_command();
   if (!custom_command.Is<external_command::SpeedCommand>()) {
     return Status::OK();
   }
@@ -42,14 +66,20 @@ Status SpeedSetting::ApplyRule(Frame* const frame,
     AERROR << "Unpack speed command failed!";
     return Status(common::PLANNING_ERROR);
   }
+  last_sequence_num_ = planning_command->header().sequence_num();
+  // Get the cruise speed for the first time.
+  if (last_cruise_speed_ < 0.0) {
+    last_cruise_speed_ = reference_line_info->GetBaseCruiseSpeed();
+  }
   if (speed_command.has_target_speed()) {
     reference_line_info->SetCruiseSpeed(speed_command.target_speed());
   } else if (speed_command.has_target_speed_factor()) {
     // Calculate the target speed with speed_factor.
-    double target_speed = reference_line_info->GetBaseCruiseSpeed() *
-                          speed_command.target_speed_factor();
+    double target_speed =
+        last_cruise_speed_ * speed_command.target_speed_factor();
     reference_line_info->SetCruiseSpeed(target_speed);
   }
+  last_cruise_speed_ = reference_line_info->GetBaseCruiseSpeed();
   return Status::OK();
 }
 

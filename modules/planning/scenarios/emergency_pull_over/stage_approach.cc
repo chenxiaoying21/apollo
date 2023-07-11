@@ -45,7 +45,7 @@ StageResult EmergencyPullOverStageApproach::Process(
   const auto& scenario_config = scenario_context->scenario_config;
 
   auto& reference_line_info = frame->mutable_reference_line_info()->front();
-  reference_line_info.SetCruiseSpeed(scenario_context->target_slow_down_speed);
+  reference_line_info.LimitCruiseSpeed(scenario_context->target_slow_down_speed);
   // set vehicle signal
   reference_line_info.SetTurnSignal(VehicleSignal::TURN_RIGHT);
 

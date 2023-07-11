@@ -58,7 +58,8 @@ ReferenceLineInfo::ReferenceLineInfo(const common::VehicleState& vehicle_state,
       reference_line_(reference_line),
       lanes_(segments) {}
 
-bool ReferenceLineInfo::Init(const std::vector<const Obstacle*>& obstacles) {
+bool ReferenceLineInfo::Init(const std::vector<const Obstacle*>& obstacles,
+                             double target_speed) {
   const auto& param = VehicleConfigHelper::GetConfig().vehicle_param();
   // stitching point
   const auto& path_point = adc_planning_point_.path_point();
@@ -108,10 +109,9 @@ bool ReferenceLineInfo::Init(const std::vector<const Obstacle*>& obstacles) {
                                   FLAGS_speed_bump_speed_limit);
   }
 
-  SetCruiseSpeed(FLAGS_default_cruise_speed);
-
+  SetCruiseSpeed(target_speed);
   // set lattice planning target speed limit;
-  SetLatticeCruiseSpeed(FLAGS_default_cruise_speed);
+  SetLatticeCruiseSpeed(target_speed);
 
   vehicle_signal_.Clear();
 

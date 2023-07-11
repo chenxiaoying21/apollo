@@ -62,7 +62,7 @@ class ReferenceLineInfo {
                     const ReferenceLine& reference_line,
                     const hdmap::RouteSegments& segments);
 
-  bool Init(const std::vector<const Obstacle*>& obstacles);
+  bool Init(const std::vector<const Obstacle*>& obstacles, double target_speed);
 
   bool AddObstacles(const std::vector<const Obstacle*>& obstacles);
   Obstacle* AddObstacle(const Obstacle* obstacle);
