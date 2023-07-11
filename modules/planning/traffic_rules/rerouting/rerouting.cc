@@ -23,8 +23,8 @@
 #include <memory>
 #include <string>
 
-#include "cyber/time/clock.h"
 #include "modules/common_msgs/basic_msgs/pnc_point.pb.h"
+#include "cyber/time/clock.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/planning/planning_base/common/planning_context.h"
 

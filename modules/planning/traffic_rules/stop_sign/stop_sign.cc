@@ -33,9 +33,8 @@ namespace planning {
 using apollo::common::Status;
 using apollo::hdmap::PathOverlap;
 
-bool StopSign::Init(
-    const std::string& name,
-    const std::shared_ptr<DependencyInjector>& injector) {
+bool StopSign::Init(const std::string& name,
+                    const std::shared_ptr<DependencyInjector>& injector) {
   if (!TrafficRule::Init(name, injector)) {
     return false;
   }
@@ -82,12 +81,10 @@ void StopSign::MakeDecisions(Frame* const frame,
     const std::vector<std::string> wait_for_obstacle_ids(
         stop_sign_status.wait_for_obstacle_id().begin(),
         stop_sign_status.wait_for_obstacle_id().end());
-    util::BuildStopDecision(virtual_obstacle_id, stop_sign_overlap.start_s,
-                            config_.stop_distance(),
-                            StopReasonCode::STOP_REASON_STOP_SIGN,
-                            wait_for_obstacle_ids,
-                            Getname(),
-                            frame, reference_line_info);
+    util::BuildStopDecision(
+        virtual_obstacle_id, stop_sign_overlap.start_s, config_.stop_distance(),
+        StopReasonCode::STOP_REASON_STOP_SIGN, wait_for_obstacle_ids, Getname(),
+        frame, reference_line_info);
   }
 }
 

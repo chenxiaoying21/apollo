@@ -14,11 +14,11 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include "modules/planning/scenarios/yield_sign/stage_approach.h"
 #include "gtest/gtest.h"
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "modules/planning/planning_base/common/planning_gflags.h"
-#include "modules/planning/scenarios/yield_sign/stage_approach.h"
 
 namespace apollo {
 namespace planning {

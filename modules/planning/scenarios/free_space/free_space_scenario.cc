@@ -18,11 +18,11 @@
  * @file
  **/
 
+#include "modules/planning/scenarios/free_space/free_space_scenario.h"
 #include <vector>
 #include "modules/planning/planning_base/common/frame.h"
 #include "modules/planning/planning_base/common/util/print_debug_info.h"
 #include "modules/planning/planning_base/open_space/utils/open_space_roi_util.h"
-#include "modules/planning/scenarios/free_space/free_space_scenario.h"
 #include "modules/planning/scenarios/free_space/stage_free_space.h"
 
 namespace apollo {

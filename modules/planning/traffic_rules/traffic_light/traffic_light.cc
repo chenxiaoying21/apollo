@@ -39,9 +39,8 @@ namespace planning {
 using apollo::common::Status;
 using apollo::hdmap::PathOverlap;
 
-bool TrafficLight::Init(
-    const std::string& name,
-    const std::shared_ptr<DependencyInjector>& injector) {
+bool TrafficLight::Init(const std::string& name,
+                        const std::shared_ptr<DependencyInjector>& injector) {
   if (!TrafficRule::Init(name, injector)) {
     return false;
   }
@@ -158,12 +157,10 @@ void TrafficLight::MakeDecisions(Frame* const frame,
     std::string virtual_obstacle_id =
         TRAFFIC_LIGHT_VO_ID_PREFIX + traffic_light_overlap.object_id;
     const std::vector<std::string> wait_for_obstacles;
-    util::BuildStopDecision(virtual_obstacle_id, traffic_light_overlap.start_s,
-                            config_.stop_distance(),
-                            StopReasonCode::STOP_REASON_SIGNAL,
-                            wait_for_obstacles,
-                            Getname(),
-                            frame, reference_line_info);
+    util::BuildStopDecision(
+        virtual_obstacle_id, traffic_light_overlap.start_s,
+        config_.stop_distance(), StopReasonCode::STOP_REASON_SIGNAL,
+        wait_for_obstacles, Getname(), frame, reference_line_info);
   }
 }
 

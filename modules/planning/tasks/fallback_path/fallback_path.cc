@@ -14,6 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
+#include "modules/planning/tasks/fallback_path/fallback_path.h"
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "modules/planning/planning_base/task_base/common/path_util/path_assessment_decider_util.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_bounds_decider_util.h"
 #include "modules/planning/planning_base/task_base/common/path_util/path_optimizer_util.h"
-#include "modules/planning/tasks/fallback_path/fallback_path.h"
 
 namespace apollo {
 namespace planning {

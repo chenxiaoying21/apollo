@@ -35,9 +35,8 @@ namespace planning {
 using apollo::common::Status;
 using apollo::hdmap::PathOverlap;
 
-bool KeepClear::Init(
-    const std::string& name,
-    const std::shared_ptr<DependencyInjector>& injector) {
+bool KeepClear::Init(const std::string& name,
+                     const std::shared_ptr<DependencyInjector>& injector) {
   if (!TrafficRule::Init(name, injector)) {
     return false;
   }
@@ -187,8 +186,7 @@ bool KeepClear::BuildKeepClearObstacle(
 
   // check
   const double adc_front_edge_s = reference_line_info->AdcSlBoundary().end_s();
-  if (adc_front_edge_s - keep_clear_start_s >
-      config_.min_pass_s_distance()) {
+  if (adc_front_edge_s - keep_clear_start_s > config_.min_pass_s_distance()) {
     ADEBUG << "adc inside keep_clear zone[" << virtual_obstacle_id << "] s["
            << keep_clear_start_s << ", " << keep_clear_end_s
            << "] adc_front_edge_s[" << adc_front_edge_s

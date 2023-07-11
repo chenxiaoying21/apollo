@@ -52,8 +52,7 @@ Status ReferenceLineEnd::ApplyRule(
   // check
   double remain_s =
       reference_line.Length() - reference_line_info->AdcSlBoundary().end_s();
-  if (remain_s >
-      config_.min_reference_line_remain_length()) {
+  if (remain_s > config_.min_reference_line_remain_length()) {
     return Status::OK();
   }
 
@@ -76,8 +75,7 @@ Status ReferenceLineEnd::ApplyRule(
   }
 
   // build stop decision
-  const double stop_line_s =
-      obstacle_start_s - config_.stop_distance();
+  const double stop_line_s = obstacle_start_s - config_.stop_distance();
   auto stop_point = reference_line.GetReferencePoint(stop_line_s);
 
   ObjectDecisionType stop;
@@ -90,8 +88,7 @@ Status ReferenceLineEnd::ApplyRule(
   stop_decision->mutable_stop_point()->set_z(0.0);
 
   auto* path_decision = reference_line_info->path_decision();
-  path_decision->AddLongitudinalDecision(
-      Getname(), stop_wall->Id(), stop);
+  path_decision->AddLongitudinalDecision(Getname(), stop_wall->Id(), stop);
 
   return Status::OK();
 }
